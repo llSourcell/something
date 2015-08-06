@@ -1,4 +1,4 @@
-package com.twilio.rtd;
+package com.twilio.ipmessaging;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,57 +25,65 @@ public interface Channel {
 		/** User has been joined to this channel. */
 		JOINED,
 		/** User has NOT been invited or joined to this channel. */
-		IDLE
+		NOT_PARTICIATING
 	};
 	
 	/**
 	 * Method that returns the unique identifier for this channel.
 	 * 
-	 * @return
+	 * @return the sid.
 	 */
 	public String getSid();
 	
 	/**
 	 * Method that returns the friendlyName of the channel.
 	 * 
-	 * @return
+	 * @return the firendlyName.
 	 */
 	public String getFriendlyName();
 	
 	/**
 	 * Custom attributes associated with the Channel.
 	 * 
-	 * @return
+	 * @return the map of attributes.
 	 */
 	public Map<String, String> getAttributes();
 	
 	/**
+	 * Method to get messages.
+	 * 
+	 * @param count number of messages to return.
+	 * @return the count number of messages.
+	 */
+	public Messages getMessages(int count);
+	
+	/**
 	 * Returns the current user's status on this channel.
 	 * 
-	 * @return
+	 * @return the channel status.
 	 */
-	public Channel getStatus();
+	public Channel.ChannelStatus getStatus();
 	
 	/**
 	 * Method to set ChannelListener for this Channel.
 	 * 
-	 * @param listener
+	 * @param listener The channel listener.
 	 */
 	public void setListener(ChannelListener listener);
 	
 	/**
 	 * Method to retrieve ChannelListener for this Channel.
 	 * 
-	 * @return lister for this channel.
+	 * @return listener for this channel.
 	 */
 	public ChannelListener getListener();
 		
 	/**
-	 * Method to fetch the channel members.
+	 * Method to get the channel members.
 	 * 
 	 * @return Set of Member objects.
 	 */
-	public Set<Member> fetchMembers();
+	public Set<Member> getMembers();
 	
 	/**
 	 * Updates the attribute data for this channel.
@@ -89,12 +97,34 @@ public interface Channel {
 	 * 
 	 * @param friendlyName updated friendly name.
 	 */
-	public void updateFriendlyName(String friendlyName);
+	public void updateFriendlyName(String friendlyName);	
+	
+	/**
+	 * Add specified identity to this channel without inviting them.
+	 * 
+	 * @param identity	The identity to add to this channel.
+	 */
+	public void addByIdentity(String identity);
+		
+	/**
+	 * Invite a user to this Channel.
+	 * 
+	 * @param identity The identity to add to this channel. 
+	 */
+	public void inviteByIdentity(String identity);
+	
+	/**
+	 * Remove the specified member.
+	 * 
+	 * @param member
+	 */
+	public void removeMember(Member member);
 	
 	/**
 	 * Joins the current user to the channel.
+	 * 
 	 */
-	public void joinUser();
+	public void join();
 	
 	/**
 	 * Leaves the current channel.
@@ -105,35 +135,7 @@ public interface Channel {
 	 * Destroys the current channel.
 	 * 
 	 */
-	public void destroy();
-	
-	/**
-	 * Add specified user to this channel without inviting them.
-	 * 
-	 * @param userName	The userName to add to this channel.
-	 */
-	public void addUser(String userName);
-	
-	/**
-	 * Invite a user to this Channel.
-	 * 
-	 * @param userName
-	 */
-	public void inviteUser(String userName);
-	
-	/**
-	 * Remove the specified member.
-	 * 
-	 * @param member
-	 */
-	public void removeMember(Member member);
-	
-	/**
-	 * Method to createMessage.
-	 * 
-	 * @param message	Message body.
-	 */
-	public void createMessage(String message);
+	public void destroy();	
 
 }
 

@@ -1,4 +1,4 @@
-package com.twilio.rtd;
+package com.twilio.ipmessaging;
 
 import java.util.Date;
 
@@ -13,18 +13,18 @@ public interface Message {
 	public String getSid();
 	
 	/** 
-	 * The author of this message. 
+	 * The global identity of the author of this message. 
 	 *
-	 *@return The member.
+	 *@return The global identity.
 	 */
-	public Member getAuthor();
+	public String getAuthor();
 	
 	/** 
 	 * The created timestamp for this message.
 	 * 
 	 * @return The date this message was created.
 	 * 
-	 * /
+	 */
 	public Date getDateCreated();
 	
 	/** 
@@ -33,7 +33,7 @@ public interface Message {
 	 * @return The date this message was last updated.
 	 *
 	 */
-	public Date getDateUPdated();
+	public Date getDateUpdated();
 	
 	/** 
 	 * The body for this message. 
@@ -46,7 +46,6 @@ public interface Message {
 	/** Updates the body for a message.
 	 * 
 	 *  @param body The body for the message.
-	 *  @param completion Completion block that will specify the result of the operation.
 	 *  
 	 */
 	public void updateMessageBody(String body);

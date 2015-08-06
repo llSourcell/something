@@ -1,9 +1,8 @@
-package com.twilio.rtd.impl;
+package com.twilio.ipmessaging.impl;
 
 import java.util.Date;
 
-import com.twilio.rtd.Member;
-import com.twilio.rtd.Message;
+import com.twilio.ipmessaging.Message;
 
 public class MessageImpl implements Message{
 
@@ -14,13 +13,13 @@ public class MessageImpl implements Message{
 	}
 
 	@Override
-	public Member getAuthor() {
+	public String getAuthor() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Date getDateUPdated() {
+	public Date getDateUpdated() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -35,6 +34,12 @@ public class MessageImpl implements Message{
 	public void updateMessageBody(String body) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Date getDateCreated() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

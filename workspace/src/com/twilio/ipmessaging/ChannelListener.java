@@ -1,4 +1,4 @@
-package com.twilio.rtd;
+package com.twilio.ipmessaging;
 
 import java.util.Map;
 
@@ -21,33 +21,35 @@ public interface ChannelListener {
 	/**
 	 * Called when a Message is changed for the channel the current user is subscribed to.
 	 * 
-	 * @param msg
+	 * @param message The message that changed.
 	 */
 	void onMessageChanged(Message message);   
 	
 	/**
 	 * Called when a Message is deleted from the channel the current user is subscribed to.
 	 * 
-	 * @param msg
+	 * @param message The message that got deleted.
 	 */
 	void onMessageDeleted(Message message);
 	
 	/**
 	 * Called when a Member is added to the channel the current user is subscribed to.
 	 * 
-	 * @param member
+	 * @param member The member that joined.
 	 */
 	void onMemberJoined(Member member);
 	
 	/**
 	 * Called when a Member is changed in the channel the current user is subscribed to.
-	 * @param member
+	 * 
+	 * @param member The member that changed.
 	 */
 	void onMemberChanged(Member member);
 	
 	/**
 	 * Called when a Member is deleted from the channel the current user is subscribed to.
-	 * @param member
+	 * 
+	 * @param member The member that was deleted.
 	 */
 	void onMemberDeleted(Member member);
 	
@@ -56,5 +58,5 @@ public interface ChannelListener {
 	 * 
 	 * @param updatedAttributes updated channel attribute. 
 	 */
-	void onAttributeChanged(Map<String, String> updatedAttributes);
+	void onAttributesChanged(Map<String, String> updatedAttributes);
 }

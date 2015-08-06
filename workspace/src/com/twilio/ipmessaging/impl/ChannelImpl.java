@@ -1,12 +1,13 @@
-package com.twilio.rtd.impl;
+package com.twilio.ipmessaging.impl;
 
 import java.util.Map;
 import java.util.Set;
 
-import com.twilio.rtd.Channel;
-import com.twilio.rtd.ChannelListener;
-import com.twilio.rtd.Member;
-import com.twilio.rtd.Message;
+import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.ChannelListener;
+import com.twilio.ipmessaging.Member;
+import com.twilio.ipmessaging.Message;
+import com.twilio.ipmessaging.Messages;
 
 public class ChannelImpl implements Channel {
 
@@ -29,7 +30,7 @@ public class ChannelImpl implements Channel {
 	}
 
 	@Override
-	public Channel getStatus() {
+	public Channel.ChannelStatus getStatus() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -47,7 +48,7 @@ public class ChannelImpl implements Channel {
 	}
 
 	@Override
-	public Set<Member> fetchMembers() {
+	public Set<Member> getMembers() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -65,7 +66,7 @@ public class ChannelImpl implements Channel {
 	}
 
 	@Override
-	public void joinUser() {
+	public void join() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -83,25 +84,25 @@ public class ChannelImpl implements Channel {
 	}
 
 	@Override
-	public void addUser(String userName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void inviteUser(String userName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void removeMember(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void createMessage(String message) {
+	public Messages getMessages(int count) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addByIdentity(String identity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void inviteByIdentity(String identity) {
 		// TODO Auto-generated method stub
 		
 	}
