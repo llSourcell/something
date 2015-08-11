@@ -22,7 +22,7 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 	}
 
 	@Override
-	public void initialize(Context inContext, InitListener inListener) {
+	public void initializeSDK(Context inContext, InitListener inListener) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -83,8 +83,8 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 		return null;
 	}
 
-	
-	public IPMessagingClient initMessagingClientWithTokenManager(
+	@Override
+	public IPMessagingClient init(
 			IdentityManager tokenManager, IPMessagingClientListener listener) {
 		// TODO Auto-generated method stub
 		return null;
@@ -96,7 +96,4 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 		return null;
 	}
 	
-
-	
-
 }

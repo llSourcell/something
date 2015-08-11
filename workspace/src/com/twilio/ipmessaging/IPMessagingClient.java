@@ -51,21 +51,8 @@ public class IPMessagingClient {
 	 * 
 	 * @throws IllegalArgumentException
 	 */
-	public void initialize(Context inContext,IPMessagingClient.InitListener inListener) {
+	public void initializeSDK(Context inContext,IPMessagingClient.InitListener inListener) {
 		
-	}
-
-
-	/**
-	 * Initialize a new IP Messaging client instance with a token.
-	 * 
-	 * @param accessToken   an AccessToken used to register this Client.
-	 * @param attributes	a map representing all custom attributes associated with the local User.
-	 * @param listener		the listener for this IP MessagingClient.
-	 * @return  The newly initialized IPMessagingClient.
-	 */
-	public IPMessagingClient initMessagingClientWithToken(String accessToken, Map<String, String> attributes, IPMessagingClientListener listener) {
-		return null;
 	}
 
 	/**
@@ -75,8 +62,8 @@ public class IPMessagingClient {
 	 * @param listener		the listener for thisIP MessagingClient.
 	 * @return The newly initialized IPMessagingClient.
 	 */
-	public IPMessagingClient initMessagingClientWithTokenManager(IdentityManager tokenManager, IPMessagingClientListener listener) {
-		return IPMessagingClientImpl.getInstance().initMessagingClientWithTokenManager(tokenManager, listener);
+	public IPMessagingClient init(IdentityManager tokenManager, IPMessagingClientListener listener) {
+		return IPMessagingClientImpl.getInstance().init(tokenManager, listener);
 	}
 	
 	/**

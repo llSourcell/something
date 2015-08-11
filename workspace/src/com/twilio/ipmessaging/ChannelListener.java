@@ -16,47 +16,47 @@ public interface ChannelListener {
 	 * 
 	 * @param message
 	 */
-	void onMessageAdded(Message message);
+	void onMessageAdd(Message message);
 	
 	/**
 	 * Called when a Message is changed for the channel the current user is subscribed to.
 	 * 
 	 * @param message The message that changed.
 	 */
-	void onMessageChanged(Message message);   
+	void onMessageChang(Message message);   
 	
 	/**
 	 * Called when a Message is deleted from the channel the current user is subscribed to.
 	 * 
 	 * @param message The message that got deleted.
 	 */
-	void onMessageDeleted(Message message);
+	void onMessageDelete(Message message);
 	
 	/**
 	 * Called when a Member is added to the channel the current user is subscribed to.
 	 * 
 	 * @param member The member that joined.
 	 */
-	void onMemberJoined(Member member);
+	void onMemberJoin(Member member);
 	
 	/**
 	 * Called when a Member is changed in the channel the current user is subscribed to.
 	 * 
 	 * @param member The member that changed.
 	 */
-	void onMemberChanged(Member member);
+	void onMemberChange(Member member);
 	
 	/**
 	 * Called when a Member is deleted from the channel the current user is subscribed to.
 	 * 
 	 * @param member The member that was deleted.
 	 */
-	void onMemberDeleted(Member member);
+	void onMemberDelete(Member member);
 	
 	/**
 	 * Called when channel attributes have changed.
 	 * 
 	 * @param updatedAttributes updated channel attribute. 
 	 */
-	void onAttributesChanged(Map<String, String> updatedAttributes);
+	void onAttributesChange(Map<String, String> updatedAttributes);
 }

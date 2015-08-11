@@ -33,7 +33,7 @@ public class QuickStartIPMessagingClient implements IdentityManagerListener, IPM
 		IdentityManager idManager = IdentityManager.init(jwt, this);
 		
 		IPMessagingClient messagingClient = new IPMessagingClient();
-		messagingClient.initMessagingClientWithTokenManager(idManager, this);
+		messagingClient.init(idManager, this);
 		
 		//Get the list of channels for this IPMessaging client
 		Channels myChannels = messagingClient.getChannels();
@@ -85,49 +85,49 @@ public class QuickStartIPMessagingClient implements IdentityManagerListener, IPM
 
 	//ChannelListener
 	@Override
-	public void onMessageAdded(Message message) {
+	public void onMessageAdd(Message message) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onMessageChanged(Message message) {
+	public void onMessageChang(Message message) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onMessageDeleted(Message message) {
+	public void onMessageDelete(Message message) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onMemberJoined(Member member) {
+	public void onMemberJoin(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onMemberChanged(Member member) {
+	public void onMemberChange(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onMemberDeleted(Member member) {
+	public void onMemberDelete(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onAttributesChanged(Map<String, String> updatedAttributes) {
+	public void onAttributesChange(Map<String, String> updatedAttributes) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -153,6 +153,13 @@ public class QuickStartIPMessagingClient implements IdentityManagerListener, IPM
 			return capabilityToken;
 		}
     }
+
+
+	@Override
+	public void onAttributesChange(String attributes) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 	
