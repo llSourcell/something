@@ -19,6 +19,7 @@ public class QuickStartIPMessagingClient implements IdentityManagerListener, IPM
 
 	private String token;
 	private Context context;
+
 	   
 
 	public QuickStartIPMessagingClient(String token) {

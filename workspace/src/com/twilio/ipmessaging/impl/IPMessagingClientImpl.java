@@ -12,6 +12,11 @@ import com.twilio.ipmessaging.IPMessagingClientListener;
 
 public class IPMessagingClientImpl extends IPMessagingClient {
 	
+	static
+	{
+		System.loadLibrary("twilio-rtd-native");
+	}
+	
 	private static IPMessagingClientImpl instance = null;
 	
 	public static IPMessagingClientImpl getInstance(){
