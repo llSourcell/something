@@ -13,7 +13,7 @@ class TDSCoreDataEntityImpl;
 // Higher level user extended object API.
 // Here we expect the developer to inherit from TDSCoreDataEntity and expect teh data to sync
 
-class TDSCoreDataEntity
+class
 {
 public:
     /**
