@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 
 	LOGW("Java_com_twilio_example_TestRTDJNI_testRTD 2");
 
-	//rtd::ITDLogger::initialize(true, filters.data(), filters.size());
+	rtd::ITDLogger::initialize(true, filters.data(), filters.size());
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 3");
 
