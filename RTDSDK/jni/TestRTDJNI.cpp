@@ -6,6 +6,7 @@
 #include <android/log.h>
 #include <array>
 
+
 #include <Notification/ITNNotificationClient.h>
 
 #include <Poco/Net/SSLManager.h>
@@ -46,20 +47,33 @@ std::map<std::string, std::string> configMap;
 #define TEST_SUBSCRIPTIONS_SERVICE "https://cds.dev-us1.twilio.com"
 #endif
 
-#define WITH_SSL 1
+#define WITH_SSL 0
 
 void resultHandler(TMResult result) {
 
 }
 
-std::string capabilityToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9QVA3MDBkNzNmZTE1Y2FkYzM1NzFlOGE2MmU0ZDgxYzg1NyZhcHBQYXJhbXM9ZW5kcG9pbnRfaWQlM0RDNzYwRjM1Mi1EQTE1LTQwN0UtODEzNi1DQTY5MTJFOTlENDAlMjZjcmVkZW50aWFsX3NpZCUzRENSNDJjZDcyMjViYjIxZTkzYTE1NThjYTZjMGVhMDI4Y2QlMjZpZGVudGl0eSUzRGt1bWt1bSUyNnNlcnZpY2Vfc2lkJTNESVM2YjBmYTYwODM5YzUxMWU1YTE1MWZlZmY4MTljZGM5ZiIsImlzcyI6IkFDMGY5MjU4MTAyYjExMzg5MTY1ODZmYmQxYzcyMWRjZWMiLCJleHAiOjE0Mzk4ODIxNjR9.fuXwj-D-LY-7JGTkDl-MYS0GudC-TM1w3__xPgpP0do";
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__))
+
+std::string capabilityToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9QVA3MDBkNzNmZTE1Y2FkYzM1NzFlOGE2MmU0ZDgxYzg1NyZhcHBQYXJhbXM9ZW5kcG9pbnRfaWQlM0RDNzYwRjM1Mi1EQTE1LTQwN0UtODEzNi1DQTY5MTJFOTlENDAlMjZjcmVkZW50aWFsX3NpZCUzRENSNDJjZDcyMjViYjIxZTkzYTE1NThjYTZjMGVhMDI4Y2QlMjZpZGVudGl0eSUzRGt1bWt1bSUyNnNlcnZpY2Vfc2lkJTNESVM2YjBmYTYwODM5YzUxMWU1YTE1MWZlZmY4MTljZGM5ZiIsImlzcyI6IkFDMGY5MjU4MTAyYjExMzg5MTY1ODZmYmQxYzcyMWRjZWMiLCJleHAiOjE0NDA2MTMxMzB9.EVkU9nLmdwGeIqwp2LfTBpWEtViIJ2OQcSExKPH8KXY";
 // Implementation of native method testRTD() of TestRTDJNI class
 
 
 JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, jobject thisObj) {
 
+	LOGW("Java_com_twilio_example_TestRTDJNI_testRTD 1");
+
 	std::array<const char*, sizeof("TMessaging")> filters = { "TMessaging" };
-	rtd::ITDLogger::initialize(true, filters.data(), filters.size());
+
+	LOGW("Java_com_twilio_example_TestRTDJNI_testRTD 2");
+
+	//rtd::ITDLogger::initialize(true, filters.data(), filters.size());
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 3");
+
+	std::string userName = "kumkum";
+
 
 #if WITH_SSL
 	Poco::Net::initializeSSL();
@@ -67,50 +81,41 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 	Poco::Net::SSLManager::instance().initializeClient(nullptr, nullptr, context);
 #endif
 
-
-
-	std::string userName = "kumkum";
-
-	__android_log_print(ANDROID_LOG_VERBOSE, TAG, "Capability token");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 4");
 	configMap.insert(std::make_pair("RTDIPMessagingServiceAddr", TEST_IPMESSAGING_SERVICE));
 	configMap.insert(std::make_pair("RTDRegistrationServiceAddr", TEST_REGISTRATION_SERVICE));
 	configMap.insert(std::make_pair("RTDTwilsockServiceAddr", TEST_TWILSOCK_SERVICE));
 	configMap.insert(std::make_pair("RTDDataServiceAddr", TEST_DATA_SERVICE));
 	configMap.insert(std::make_pair("RTDSubscriptionServiceAddr", TEST_SUBSCRIPTIONS_SERVICE));
 
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 5: capability Token");
 	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 6");
 
-	__android_log_print(ANDROID_LOG_VERBOSE, TAG, "ITNNotificationClientPtr");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 7 : ITNNotificationClientPtr");
 	ITNNotificationClientPtr notificationClient;
 	notificationClient = TNNotificationClientFactory::CreateNotificationClient(capabilityToken,configurationProvider);
 
-	__android_log_print(ANDROID_LOG_VERBOSE, TAG, "notificationClientObserver");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 8: notificationClientObserver");
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
 	notificationClient->Init(notificationClientObserver);
 
-	__android_log_print(ANDROID_LOG_VERBOSE, TAG, "TwilioIPMessagingClientListener");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 9: TwilioIPMessagingClientListener");
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener = std::make_shared<TwilioIPMessagingClientListener>(thisObj);
+
+	//auto messagingListener = std::make_shared<MessagingListener>();
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 10 : TwilioIPMessagingClientListener");
 	ITMClientPtr messagingClient = ITMClient::createClient(capabilityToken,
 		                                                   messagingListener,
 		                                                   configurationProvider,
 		                                                   notificationClient,
-														   [](TMResult result){ std::cout << "client initialized" << std::endl; });
+		                                                   ([](TMResult result) { }));
+		                                                  //[](TMResult result){ LOGW( "INIT : Java_com_twilio_example_TestRTDJNI_testRTD 10 : TwilioIPMessagingClientListener");});
 
-
-	{
-	        //get channels object//////////////////////////////////////
-	        ITMChannelsPtr channels = messagingClient->getChannels();
-	        while (channels == nullptr)
-	        {
-	            std::cout << "app: messaging lib not ready, retrying..." << std::endl;
-	            Poco::Thread::sleep(1000);
-	            channels = messagingClient->getChannels();
-	        }
-	}
-
-
-
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 11 : TwilioIPMessagingClientListener");
    return;
+
 }
 
 

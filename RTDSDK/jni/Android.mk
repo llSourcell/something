@@ -1,5 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 
+
 # OpenSSL
 include $(CLEAR_VARS)
 LOCAL_MODULE := OpenSSL
@@ -122,7 +123,7 @@ LOCAL_SRC_FILES := \
 LOCAL_STATIC_LIBRARIES := \
     RTDMessaging \
 	RTDNotification \
-	RTDDataSyncLib \
+	RTDDataSync\
 	PocoNet \
 	PocoNetSSL \
 	PocoCrypto \
@@ -131,7 +132,8 @@ LOCAL_STATIC_LIBRARIES := \
 	PocoJSON \
 	PocoFoundation \
 	OpenSSL \
-	OpenSSLCrypto
+	OpenSSLCrypto \
+	twilio-jni
 	
 	
 include $(BUILD_SHARED_LIBRARY)
