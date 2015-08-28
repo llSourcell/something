@@ -12,13 +12,23 @@ extern "C" {
  * Method:    testRTD
  * Signature: ()V
  */
+
+JNIEXPORT void  JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *, jobject);
+
+JNIEXPORT void  JNICALL Java_com_twilio_example_TestRTDJNI_shutDown(JNIEnv *, jobject);
+
 JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *, jobject);
 
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingListener(JNIEnv *, jobject);
 
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *, jobject);
-
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvider(JNIEnv *, jobject);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *, jobject, jlong, jlong, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClientObserver(JNIEnv *, jobject);
+
 
 
 #ifdef __cplusplus

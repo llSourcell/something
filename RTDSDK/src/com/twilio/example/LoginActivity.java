@@ -8,28 +8,48 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class LoginActivity extends Activity {
 	
 	private Button login;
+	private Button logout;
 	private ProgressDialog progressDialog;
 	private String capabilityToken = null;
-	
+	private EditText clientNameTextBox;
+	private static final String DEFAULT_CLIENT_NAME = "kumkum";
 	private TestRTDJNI testJNI;
 	
+	 private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?identity=";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 		
+		clientNameTextBox = (EditText)findViewById(R.id.client_name);
+        clientNameTextBox.setText(DEFAULT_CLIENT_NAME);
+		
 		this.login = (Button)findViewById(R.id.register);
 		this.login.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LoginAsyncTask().execute();
+				StringBuilder url = new StringBuilder();
+		    	url.append(AUTH_PHP_SCRIPT);
+				url.append(clientNameTextBox.getText().toString());
+				
+				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
 		});
+		
+		this.logout = (Button)findViewById(R.id.logout);
+		this.logout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				testJNI.shutdown();
+			}
+		});
+		
 		
 		testJNI = new TestRTDJNI();
 	}
@@ -65,18 +85,26 @@ public class LoginActivity extends Activity {
 
 		@Override
 		protected String doInBackground(String... params) {
-			LoginActivity.this.testJNI.testRTD();
+			LoginActivity.this.testJNI.doTest("");//testRTD();
 			return null;
 		}
 
 	}
 	
 	
-	private class GetAuthTokenAsyncTask extends AsyncTask<String, Void, String> {
+	private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String> {
 
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
+			LoginActivity.this.testJNI.doTest(capabilityToken);
+		}
+		
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        LoginActivity.this.progressDialog = ProgressDialog.show(LoginActivity.this, "",
+	                "Logging in. Please wait...", true);
 		}
 
 		@Override

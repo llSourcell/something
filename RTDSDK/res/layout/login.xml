@@ -38,31 +38,9 @@
         android:id="@+id/inviteParticipant"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone" >
+        android:orientation="vertical" >
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
-            <EditText
-                android:id="@+id/invite"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:hint="@string/invite_participant"
-                android:singleLine="true" />
-
-            <Button
-                android:id="@+id/plus"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="Add" />
-        </LinearLayout>
-
+  
         <Button
             android:id="@+id/logout"
             android:layout_width="100dp"
