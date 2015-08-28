@@ -1,5 +1,8 @@
-LOCAL_PATH := $(call my-dir)
+TWSDK_JNI_PATH := $(call my-dir)
 
+include $(TWSDK_JNI_PATH)/../external/twilio-jni/Android.mk
+
+LOCAL_PATH := $(TWSDK_JNI_PATH)
 
 # OpenSSL
 include $(CLEAR_VARS)

@@ -1,5 +1,6 @@
 package com.twilio.ipmessaging.impl;
 
+
 import java.util.Map;
 
 import android.content.Context;
@@ -18,11 +19,46 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 	}
 	
 	private static IPMessagingClientImpl instance = null;
+	protected Context context;
+	private IPMessagingClientListener ipMessagingListener;
+	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
 	
+	
+	class IPMessagingClientListenerInternal implements NativeHandleInterface {
+
+		private long nativeIPMessagingClientListener;
+
+		public IPMessagingClientListenerInternal(IPMessagingClientListener listener) {
+			// this.listener = listener;
+			this.nativeIPMessagingClientListener = wrapNativeObserver(listener, IPMessagingClientImpl.this);
+		}
+
+		private native long wrapNativeObserver(IPMessagingClientListener listener,
+				IPMessagingClient client);
+
+		// ::TODO figure out when to call this - may be Endpoint.release() ??
+		private native void freeNativeObserver(long nativeEndpointObserver);
+
+		@Override
+		public long getNativeHandle() {
+			return nativeIPMessagingClientListener;
+		}
+
+	}
+
+	
+	public IPMessagingClientImpl(Context context2,
+			IPMessagingClientListener inListener) {
+		this.context = context2;
+		this.ipMessagingListener = inListener;
+		
+		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(inListener);
+	}
+
 	public static IPMessagingClientImpl getInstance(){
-		if(instance == null) {
+		/*if(instance == null) {
 			instance = new IPMessagingClientImpl();
-		}		
+		}*/		
 		return instance;
 	}
 
@@ -89,10 +125,31 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 	}
 
 	@Override
-	public IPMessagingClient init(
-			IdentityManager tokenManager, IPMessagingClientListener listener) {
+	public IPMessagingClient init(IdentityManager tokenManager,
+			IPMessagingClientListener listener) {
+			String token = "";
+			final IPMessagingClientImpl msgClient = new IPMessagingClientImpl(context, listener);
+			long nativeObserverHandle = msgClient.getIPMessagingClientListenerHandle();
+			if (nativeObserverHandle == 0) {
+				return null;
+			}
+			final long nativeEndpointHandle = createEndpoint(token,
+					nativeObserverHandle);
+			if (nativeEndpointHandle == 0) {
+				return null;
+			}
+			msgClient.setNativeHandle(nativeEndpointHandle);
+			
+			return msgClient;
+	}
+
+
+
+
+
+	private void setNativeHandle(long nativeEndpointHandle) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	@Override
@@ -100,5 +157,12 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	long getIPMessagingClientListenerHandle() {
+		return this.ipMessagingClientListenerInternal.getNativeHandle();
+	}
+	
+	private native long createEndpoint(String token, long nativeEndpointObserver);
+
 	
 }

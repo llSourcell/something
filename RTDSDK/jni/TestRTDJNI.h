@@ -14,6 +14,13 @@ extern "C" {
  */
 JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *, jobject);
 
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingListener(JNIEnv *, jobject);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *, jobject);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvider(JNIEnv *, jobject);
+
+
 #ifdef __cplusplus
 }
 #endif

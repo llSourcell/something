@@ -23,9 +23,8 @@ using namespace rtd;
 class TwilioIPMessagingClientListener : public ITMClientListener
 {
 public:
-    TwilioIPMessagingClientListener(void* target);
+    TwilioIPMessagingClientListener();
     virtual ~TwilioIPMessagingClientListener();
-    void setTarget(void* target);
 
     void onMessage(TMAction action, ITMessagePtr message);
     void onChannel(TMAction action, ITMChannelPtr channel);
@@ -36,8 +35,6 @@ public:
     void onToastSubscribed();
     void onToastFailed(TNError code);
 
-private:
-    void* m_target;
 };
 
 #endif /* TwilioIPMessagingClientListener_cpp */

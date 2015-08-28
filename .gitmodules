@@ -1,0 +1,9 @@
+[submodule "RTDSDK/RTDSDK/external/twilio-jni"]
+	path = RTDSDK/RTDSDK/external/twilio-jni
+	url = git@code.hq.twilio.com:twilio/twilio-jni.git
+[submodule "RTDSDK/external/RTDSDK/external/twilio-jni"]
+	path = RTDSDK/external/RTDSDK/external/twilio-jni
+	url = git@code.hq.twilio.com:twilio/twilio-jni.git
+[submodule "RTDSDK/external/twilio-jni"]
+	path = RTDSDK/external/twilio-jni
+	url = git@code.hq.twilio.com:twilio/twilio-jni.git

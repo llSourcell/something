@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 
 	LOGW("Java_com_twilio_example_TestRTDJNI_testRTD 2");
 
-	rtd::ITDLogger::initialize(true, filters.data(), filters.size());
+	//rtd::ITDLogger::initialize(true, filters.data(), filters.size());
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 3");
 
@@ -98,10 +98,12 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 8: notificationClientObserver");
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
+
 	notificationClient->Init(notificationClientObserver);
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 9: TwilioIPMessagingClientListener");
-	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener = std::make_shared<TwilioIPMessagingClientListener>(thisObj);
+	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
+	messagingListener = std::make_shared<TwilioIPMessagingClientListener>();
 
 	//auto messagingListener = std::make_shared<MessagingListener>();
 
@@ -114,11 +116,57 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 		                                                  //[](TMResult result){ LOGW( "INIT : Java_com_twilio_example_TestRTDJNI_testRTD 10 : TwilioIPMessagingClientListener");});
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 11 : TwilioIPMessagingClientListener");
+
+	sleep(999);
    return;
 
 }
 
 
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingListener(JNIEnv *env, jobject obj) {
+
+	LOGW( "creating MessagingClientListener: TwilioIPMessagingClientListener");
+	//std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
+	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>();
+	return 0;//reinterpret_cast<jlong>(messagingListener);
+}
+
+
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvider(JNIEnv *env, jobject obj) {
+
+	/*LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 4");
+	configMap.insert(std::make_pair("RTDIPMessagingServiceAddr", TEST_IPMESSAGING_SERVICE));
+	configMap.insert(std::make_pair("RTDRegistrationServiceAddr", TEST_REGISTRATION_SERVICE));
+	configMap.insert(std::make_pair("RTDTwilsockServiceAddr", TEST_TWILSOCK_SERVICE));
+	configMap.insert(std::make_pair("RTDDataServiceAddr", TEST_DATA_SERVICE));
+	configMap.insert(std::make_pair("RTDSubscriptionServiceAddr", TEST_SUBSCRIPTIONS_SERVICE));
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 5: capability Token");
+	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 6"); */
+
+	return 0;//(jlong)configurationProvider;
+}
+
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *env, jobject obj, jlong nativeConfigurationProvider) {
+/*
+	TwilioIPMessagingConfigurationProvider configurationProvider= TwilioIPMessagingConfigurationProvider(reinterpret_cast<TwilioIPMessagingConfigurationProvider*>(nativeConfigurationProvider));
+);
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : ITNNotificationClientPtr");
+	ITNNotificationClientPtr notificationClient;
+	notificationClient = TNNotificationClientFactory::CreateNotificationClient(capabilityToken,configurationProvider);
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver");
+	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
+
+	notificationClient->Init(notificationClientObserver);
+
+*/
+	return 0; //(jlong)notificationClient;
+}
 
 
 
