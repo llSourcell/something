@@ -58,12 +58,19 @@ void resultHandler(TMResult result) {
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
 
-std::string capabilityToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9QVA3MDBkNzNmZTE1Y2FkYzM1NzFlOGE2MmU0ZDgxYzg1NyZhcHBQYXJhbXM9ZW5kcG9pbnRfaWQlM0RDNzYwRjM1Mi1EQTE1LTQwN0UtODEzNi1DQTY5MTJFOTlENDAlMjZjcmVkZW50aWFsX3NpZCUzRENSNDJjZDcyMjViYjIxZTkzYTE1NThjYTZjMGVhMDI4Y2QlMjZpZGVudGl0eSUzRGt1bWt1bSUyNnNlcnZpY2Vfc2lkJTNESVM2YjBmYTYwODM5YzUxMWU1YTE1MWZlZmY4MTljZGM5ZiIsImlzcyI6IkFDMGY5MjU4MTAyYjExMzg5MTY1ODZmYmQxYzcyMWRjZWMiLCJleHAiOjE0NDA2MTMxMzB9.EVkU9nLmdwGeIqwp2LfTBpWEtViIJ2OQcSExKPH8KXY";
 // Implementation of native method testRTD() of TestRTDJNI class
 
 
-JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, jobject thisObj) {
+JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, jobject thisObj, jstring token) {
+
+	if (token == NULL) {
+			__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+			return;
+	}
+
+	const char *capabilityToken = env->GetStringUTFChars(token, 0);
 
 	LOGW("Java_com_twilio_example_TestRTDJNI_testRTD 1");
 
@@ -95,13 +102,13 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 6");
 
-	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 7 : ITNNotificationClientPtr");
-	ITNNotificationClientPtr notificationClient;
-	notificationClient = TNNotificationClientFactory::CreateNotificationClient(capabilityToken,configurationProvider);
-
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 8: notificationClientObserver");
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
 
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 7 : ITNNotificationClientPtr");
+	ITNNotificationClientPtr notificationClient;
+	notificationClient = TNNotificationClientFactory::CreateNotificationClient(capabilityToken,configurationProvider);
 	notificationClient->Init(notificationClientObserver);
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 9: TwilioIPMessagingClientListener");
@@ -160,16 +167,15 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvi
 	configMap.insert(std::make_pair("RTDDataServiceAddr", TEST_DATA_SERVICE));
 	configMap.insert(std::make_pair("RTDSubscriptionServiceAddr", TEST_SUBSCRIPTIONS_SERVICE));
 
-	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 5: capability Token");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getConfigurationProvider 5: capability Token");
 	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
-	LOGW( "Java_com_twilio_example_TestRTDJNI_testRTD 6");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getConfigurationProvider 6");
 
-	jlong t = reinterpret_cast<jlong>(configurationProvider.get());
+	//jlong t = reinterpret_cast<jlong>(configurationProvider.get());
 
-	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", " printing the reference of configurationProvider : %d",t);
+	//__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", " printing the reference of configurationProvider : %d",t);
 
-	return t ;
-
+	return reinterpret_cast<jlong>(configurationProvider.get()) ;
 }
 
 
@@ -188,7 +194,15 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient
 }
 
 
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *env, jobject obj, jlong nativeCfgProvider, jlong nativeNotificationClientObserver) {
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *env, jobject obj, jstring token, jlong nativeCfgProvider, jlong nativeNotificationClientObserver) {
+
+
+	if (token == NULL) {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating notificationClient, token is null ");
+		return 0;
+	}
+	const char *tokenStr = env->GetStringUTFChars(token, 0);
+
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating notificationClient ");
 
@@ -202,29 +216,37 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating TwilioIPMessagingNotificationClientListener from the native reference");
 
 	//The following block get compilation error - No idea why ..
-	/*TwilioIPMessagingNotificationClientListener* l = (TwilioIPMessagingNotificationClientListener*) nativeNotificationClientObserver;
-	std::make_shared<TwilioIPMessagingNotificationClientListener> notificationClientObserverbs(l); */
-
-	auto  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
+	TwilioIPMessagingNotificationClientListener* l = (TwilioIPMessagingNotificationClientListener*) nativeNotificationClientObserver;
+	std::shared_ptr<TwilioIPMessagingNotificationClientListener> notificationClientObserver(l);
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 1");
+	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObs = std::make_shared<TwilioIPMessagingNotificationClientListener>();
 
 	ITNNotificationClientPtr notificationClient;
-	notificationClient = TNNotificationClientFactory::CreateNotificationClient(capabilityToken,configurationProvider);
-	notificationClient->Init(notificationClientObserver);
+	notificationClient = TNNotificationClientFactory::CreateNotificationClient(tokenStr,configurationProvider);
+	notificationClient->Init(notificationClientObs);
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 3");
 
-	jlong ptr = reinterpret_cast<jlong>(notificationClient.get());
+	//jlong ptr = reinterpret_cast<jlong>(notificationClient.get());
 
-	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 4");
+	//LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 4");
 
-	return ptr;
+	sleep(999);
+
+	return reinterpret_cast<jlong>(&notificationClient);
 }
 
 
 
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *env, jobject obj, jlong nativeMsgClientListener, jlong nativeConfigProvider, jlong nativeNotificationClient) {
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *env, jobject obj, jstring token, jlong nativeMsgClientListener, jlong nativeConfigProvider, jlong nativeNotificationClient) {
+
+
+	if (token == NULL) {
+		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+		return 0;
+	}
+	const char *tokenStr = env->GetStringUTFChars(token, 0);
 
 	TwilioIPMessagingClientListener* mc = (TwilioIPMessagingClientListener*)nativeMsgClientListener;
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener(mc);
@@ -234,20 +256,19 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JN
 
 	//Commenting out because it does not work :(
 
-/*
-	ITNNotificationClientPtr nc = (ITNNotificationClientPtr)nativeNotificationClient;
-	std::shared_ptr<ITNNotificationClientPtr> notificationClient(nc);
+	ITNNotificationClientPtr& notificationClient = (ITNNotificationClientPtr&)nativeNotificationClient;
+	//std::shared_ptr<ITNNotificationClientPtr> notificationClient(nc);
 
-	ITNNotificationClientPtr nc = ITNNotificationClientPtr(reinterpret_cast<ITNNotificationClientPtr>(nativeNotificationClient));
+	///ITNNotificationClientPtr nc = ITNNotificationClientPtr(reinterpret_cast<ITNNotificationClientPtr>(nativeNotificationClient));
 
 
-	ITMClientPtr messagingClient = ITMClient::createClient(capabilityToken,
+	ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
 			                                                  messagingListener,
 			                                                  configurationProvider,
-			                                                  nc,
-			                                                  ([](TMResult result) { })); */
+															  notificationClient,
+			                                                  ([](TMResult result) { }));
 
-	return 0;
+	return reinterpret_cast<jlong>(messagingClient.get());
 }
 
 

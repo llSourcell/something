@@ -111,7 +111,8 @@ public class LoginActivity extends Activity {
 		protected String doInBackground(String... params) {
 			
 			try {
-				capabilityToken = HttpHelper.httpGet(params[0]);;
+				capabilityToken = HttpHelper.httpGet(params[0]);
+				testJNI.setCapabilityToken(capabilityToken);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -23,11 +23,11 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingListener(
 
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvider(JNIEnv *, jobject);
 
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *, jobject, jlong);
-
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *, jobject, jlong, jlong, jlong);
-
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClientObserver(JNIEnv *, jobject);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *, jobject, jstring, jlong, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *, jobject, jstring, jlong, jlong, jlong);
 
 
 
