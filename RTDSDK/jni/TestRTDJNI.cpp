@@ -31,6 +31,7 @@
 
 #define TAG  "RTD_TESTS"
 #define PRODUCTION 1
+#define WITH_SSL 1
 
 using namespace rtd;
 
@@ -50,7 +51,7 @@ std::map<std::string, std::string> configMap;
 #define TEST_SUBSCRIPTIONS_SERVICE "https://cds.dev-us1.twilio.com"
 #endif
 
-#define WITH_SSL 0
+
 
 // structure with all the shared pointer
 typedef struct ClientContext {
@@ -151,6 +152,13 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, jobject obj, jstring token) {
 
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : Initializing ssl");
+
+#if WITH_SSL
+	Poco::Net::initializeSSL();
+	auto context = new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, "", "", "", Poco::Net::Context::VERIFY_NONE, 9, true, "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH");
+	Poco::Net::SSLManager::instance().initializeClient(nullptr, nullptr, context);
+#endif
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : Checking if token is null");
 	if (token == NULL) {
