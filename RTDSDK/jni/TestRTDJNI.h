@@ -17,20 +17,7 @@ JNIEXPORT jlong  JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *, jobje
 
 JNIEXPORT void  JNICALL Java_com_twilio_example_TestRTDJNI_shutDown(JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *, jobject);
-
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingListener(JNIEnv *, jobject);
-
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvider(JNIEnv *, jobject);
-
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClientObserver(JNIEnv *, jobject);
-
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *, jobject, jstring, jlong, jlong, jlong);
-
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *, jobject, jstring, jlong, jlong, jlong);
-
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient(JNIEnv *, jobject, jstring );
-
 
 
 #ifdef __cplusplus
