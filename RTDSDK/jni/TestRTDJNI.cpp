@@ -14,6 +14,8 @@
 
 #include <Common/TLLoggerInitializer.h>
 
+#include <twilio-jni/twilio-jni.h>
+
 #include "ITMClient.h"
 #include "ITMChannels.h"
 #include "ITMChannel.h"
@@ -28,6 +30,7 @@
 #include "TwilioIPMessagingClientListener.h"
 
 #define TAG  "RTD_TESTS"
+#define PRODUCTION 1
 
 using namespace rtd;
 
@@ -49,8 +52,21 @@ std::map<std::string, std::string> configMap;
 
 #define WITH_SSL 0
 
+// structure with all the shared pointer
+typedef struct ClientContext {
+	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver;
+	std::shared_ptr<TwilioIPMessagingConfigurationProvider> configurationProvider;
+	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
+	ITNNotificationClientPtr notificationClient;
+} ClientContext;
+
+
 
 jobject j_rtd_test_obj_;
+ITNNotificationClientPtr notificationClient;
+ClientContext *clientParams_;
+
+
 
 void resultHandler(TMResult result) {
 
@@ -58,7 +74,7 @@ void resultHandler(TMResult result) {
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
 
 // Implementation of native method testRTD() of TestRTDJNI class
 
@@ -133,9 +149,73 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_testRTD(JNIEnv *env, j
 }
 
 
-JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, jobject obj) {
-	LOGW( "Creating a Global Reference of top Java object");
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, jobject obj, jstring token) {
+
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : Checking if token is null");
+	if (token == NULL) {
+		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+		return 0;
+	}
+
+	const char *tokenStr = env->GetStringUTFChars(token, 0);
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating a Global Reference of top Java object");
 	j_rtd_test_obj_ = env->NewGlobalRef(obj);
+
+	clientParams_ = new ClientContext();
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating messagingListener");
+	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>();
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating  config map");
+	configMap.insert(std::make_pair("RTDIPMessagingServiceAddr", TEST_IPMESSAGING_SERVICE));
+	configMap.insert(std::make_pair("RTDRegistrationServiceAddr", TEST_REGISTRATION_SERVICE));
+	configMap.insert(std::make_pair("RTDTwilsockServiceAddr", TEST_TWILSOCK_SERVICE));
+	configMap.insert(std::make_pair("RTDDataServiceAddr", TEST_DATA_SERVICE));
+	configMap.insert(std::make_pair("RTDSubscriptionServiceAddr", TEST_SUBSCRIPTIONS_SERVICE));
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating configurationProvider");
+	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
+
+	if(configurationProvider == NULL) {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_init : configurationProvider is NULL");
+	} else {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_init : configurationProvider is NOT NULL");
+	}
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating notificationClientObserver");
+	auto  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
+	if(notificationClientObserver == NULL) {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientObserver is NULL");
+	} else {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientObserver is NOT NULL");
+	}
+
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating ITNNotificationClientPtr");
+	ITNNotificationClientPtr notificationClientPtr;
+	notificationClientPtr = TNNotificationClientFactory::CreateNotificationClient(tokenStr,configurationProvider);
+	notificationClientPtr->Init(notificationClientObserver);
+
+	if(notificationClientPtr == NULL) {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientPtr is NULL");
+	} else {
+		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientPtr is NOT NULL");
+	}
+
+	//sleep(1000);
+
+	clientParams_->messagingListener = messagingListener;
+	clientParams_->configurationProvider = configurationProvider;
+	clientParams_->notificationClientObserver = notificationClientObserver;
+	clientParams_->notificationClient = notificationClientPtr;
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Setting nativeClientParam");
+	tw_jni_set_long(env, obj, "nativeClientParam", (jlong)clientParams_);
+
+	return reinterpret_cast<jlong>(clientParams_);
+
 }
 
 
@@ -171,9 +251,9 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getConfigurationProvi
 	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getConfigurationProvider 6");
 
-	//jlong t = reinterpret_cast<jlong>(configurationProvider.get());
+	jlong t = reinterpret_cast<jlong>(configurationProvider.get());
 
-	//__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", " printing the reference of configurationProvider : %d",t);
+	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", "Printing Native Configuration Provider reference : %d",(int)t);
 
 	return reinterpret_cast<jlong>(configurationProvider.get()) ;
 }
@@ -188,13 +268,13 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient
 
 	jlong t = reinterpret_cast<jlong>(notificationClientObserver.get());
 
-	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", "Need to print : %d",t);
+	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", "Printing Native Notification Client Observer reference : %d",(int)t);
 
 	return t ;
 }
 
 
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *env, jobject obj, jstring token, jlong nativeCfgProvider, jlong nativeNotificationClientObserver) {
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient(JNIEnv *env, jobject obj, jstring token, jlong nativeCfgProvider, jlong nativeNotificationClientObserver, jlong nativeMsgClientListener) {
 
 
 	if (token == NULL) {
@@ -206,7 +286,9 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating notificationClient ");
 
-	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", "Printing Native Configuration provider reference : %d",nativeCfgProvider);
+	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", "Printing Native Configuration provider reference : %d",(int)nativeCfgProvider);
+
+	__android_log_print(ANDROID_LOG_WARN, "LOG_TAG", "Printing Native Notification Client Observer reference : %d",(int)nativeNotificationClientObserver);
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating nativeCfgProvider from the native reference");
 
@@ -215,31 +297,26 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getNotificationClient
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating TwilioIPMessagingNotificationClientListener from the native reference");
 
-	//The following block get compilation error - No idea why ..
 	TwilioIPMessagingNotificationClientListener* l = (TwilioIPMessagingNotificationClientListener*) nativeNotificationClientObserver;
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener> notificationClientObserver(l);
 
-	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 1");
-	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObs = std::make_shared<TwilioIPMessagingNotificationClientListener>();
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Creating ITNNotificationClientPtr from the native reference");
 
-	ITNNotificationClientPtr notificationClient;
-	notificationClient = TNNotificationClientFactory::CreateNotificationClient(tokenStr,configurationProvider);
-	notificationClient->Init(notificationClientObs);
+	//ITNNotificationClientPtr notificationClient;
+    notificationClient = TNNotificationClientFactory::CreateNotificationClient(tokenStr,configurationProvider);
+	notificationClient->Init(notificationClientObserver);
 
-	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 3");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : Created ITNNotificationClientPtr from the native reference");
 
-	//jlong ptr = reinterpret_cast<jlong>(notificationClient.get());
 
-	//LOGW( "Java_com_twilio_example_TestRTDJNI_getNotificationClient : notificationClientObserver 4");
-
-	sleep(999);
-
-	return reinterpret_cast<jlong>(&notificationClient);
+	return reinterpret_cast<jlong>(&notificationClient);//(jlong)(notificationClient.get());reinterpret_cast<jlong>(messagingClient.get());//
 }
 
 
 
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JNIEnv *env, jobject obj, jstring token, jlong nativeMsgClientListener, jlong nativeConfigProvider, jlong nativeNotificationClient) {
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Creating the msgClient.");
 
 
 	if (token == NULL) {
@@ -248,27 +325,93 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_getMessagingClient(JN
 	}
 	const char *tokenStr = env->GetStringUTFChars(token, 0);
 
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Creating the TwilioIPMessagingClientListener.");
+
 	TwilioIPMessagingClientListener* mc = (TwilioIPMessagingClientListener*)nativeMsgClientListener;
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener(mc);
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Creating the TwilioIPMessagingConfigurationProvider.");
 
 	TwilioIPMessagingConfigurationProvider* cp = (TwilioIPMessagingConfigurationProvider*) nativeConfigProvider;
 	std::shared_ptr<TwilioIPMessagingConfigurationProvider> configurationProvider(cp);
 
-	//Commenting out because it does not work :(
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Creating the ITNNotificationClientPtr.");
 
 	ITNNotificationClientPtr& notificationClient = (ITNNotificationClientPtr&)nativeNotificationClient;
+	ITNNotificationClientPtr notificationClientPtr =  notificationClient;
 	//std::shared_ptr<ITNNotificationClientPtr> notificationClient(nc);
 
-	///ITNNotificationClientPtr nc = ITNNotificationClientPtr(reinterpret_cast<ITNNotificationClientPtr>(nativeNotificationClient));
 
+	LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Creating the ITMClient::createClient.");
 
 	ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
-			                                                  messagingListener,
-			                                                  configurationProvider,
-															  notificationClient,
-			                                                  ([](TMResult result) { }));
+			                                               messagingListener,
+			                                               configurationProvider,
+														   notificationClientPtr,
+			                                               ([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
 
 	return reinterpret_cast<jlong>(messagingClient.get());
 }
+
+
+
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient(JNIEnv *env, jobject obj, jstring token) {
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking token validity.");
+
+	if (token == NULL) {
+		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+		return 0;
+	}
+	const char *tokenStr = env->GetStringUTFChars(token, 0);
+
+	jlong nativeClientContext = tw_jni_fetch_long(env, obj, "nativeClientParam");
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking nativeClientContext.");
+
+	if (nativeClientContext == NULL) {
+			__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+			return 0;
+	} else {
+
+		if(clientParams_->messagingListener == NULL ) {
+			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : messagingListener is NULL.");
+			return 0;
+		}
+
+		if(clientParams_->configurationProvider == NULL) {
+			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : configurationProvider is NULL.");
+			return 0;
+		}
+
+		if( clientParams_->notificationClient == NULL) {
+			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : notificationClient is NULL.");
+			return 0;
+		}
+
+		LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Creating the msgClient.");
+
+		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
+														   clientParams_->messagingListener,
+														   clientParams_->configurationProvider,
+														   clientParams_->notificationClient,
+			                                               ([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
+
+
+		//get channels object//////////////////////////////////////
+		ITMChannelsPtr channels = messagingClient->getChannels();
+		while (channels == nullptr)
+		{
+			LOGW("app: messaging lib not ready, retrying...");
+			Poco::Thread::sleep(1000);
+			channels = messagingClient->getChannels();
+		}
+
+
+	}
+
+	return 0;//reinterpret_cast<jlong>(messagingClient.get());
+}
+
 
 

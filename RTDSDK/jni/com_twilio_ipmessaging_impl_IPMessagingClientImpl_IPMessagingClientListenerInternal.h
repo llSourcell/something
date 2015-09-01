@@ -42,6 +42,7 @@ private:
     jobject j_ipmessagingclient_listener_;
     jobject j_ipmessagingclient_;
     void* m_target;
+    JNIEnv* env_;
 };
 
 
