@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,9 +20,10 @@ public class LoginActivity extends Activity {
 	private EditText clientNameTextBox;
 	private static final String DEFAULT_CLIENT_NAME = "kumkum";
 	private TestRTDJNI testJNI;
+	private String endpoint_id = "";
 	
-	 private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?identity=";
-	
+	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?identity=";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,6 +31,7 @@ public class LoginActivity extends Activity {
 		
 		clientNameTextBox = (EditText)findViewById(R.id.client_name);
         clientNameTextBox.setText(DEFAULT_CLIENT_NAME);
+        this.endpoint_id = Secure.getString(this.getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
 		
 		this.login = (Button)findViewById(R.id.register);
 		this.login.setOnClickListener(new View.OnClickListener() {
@@ -37,6 +40,7 @@ public class LoginActivity extends Activity {
 				StringBuilder url = new StringBuilder();
 		    	url.append(AUTH_PHP_SCRIPT);
 				url.append(clientNameTextBox.getText().toString());
+				url.append("&endpoint_id="+LoginActivity.this.endpoint_id);
 				
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
