@@ -3,67 +3,68 @@ TWSDK_JNI_PATH := $(call my-dir)
 include $(TWSDK_JNI_PATH)/../external/twilio-jni/Android.mk
 
 LOCAL_PATH := $(TWSDK_JNI_PATH)
+LOCAL_PREBUILT_ROOT = $(TWSDK_JNI_PATH)/../target/android
 
 # OpenSSL
 include $(CLEAR_VARS)
 LOCAL_MODULE := OpenSSL
-LOCAL_SRC_FILES := $(LOCAL_PATH)/openssl/lib/libssl.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/openssl/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/openssl/lib/release/armv7/libssl.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/openssl/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # OpenSSLCrypto
 include $(CLEAR_VARS)
 LOCAL_MODULE := OpenSSLCrypto
-LOCAL_SRC_FILES := $(LOCAL_PATH)/openssl/lib/libcrypto.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/openssl/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/openssl/lib/release/armv7/libcrypto.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/openssl/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # POCO Foundation
 include $(CLEAR_VARS)
-LOCAL_MODULE := PocoFoundation
-LOCAL_SRC_FILES := libPocoFoundation.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_MODULE := PocoFoundation 
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoFoundation.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # POCO Net
 include $(CLEAR_VARS)
 LOCAL_MODULE := PocoNet
-LOCAL_SRC_FILES := libPocoNet.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoNet.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 #POCO Crypto
 include $(CLEAR_VARS)
 LOCAL_MODULE := PocoCrypto
-LOCAL_SRC_FILES := libPocoCrypto.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoCrypto.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCALOCAL_PREBUILT_ROOTL_PATH)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # POCO Net SSL
 LOCAL_MODULE := PocoNetSSL
-LOCAL_SRC_FILES := libPocoNetSSL.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoNetSSL.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # POCO Util
 include $(CLEAR_VARS)
 LOCAL_MODULE := PocoUtil
-LOCAL_SRC_FILES := libPocoUtil.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoUtil.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # POCO XML
 include $(CLEAR_VARS)
 LOCAL_MODULE := PocoXML
-LOCAL_SRC_FILES := libPocoXML.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoXML.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # POCO JSON
 include $(CLEAR_VARS)
 LOCAL_MODULE := PocoJSON
-LOCAL_SRC_FILES := libPocoJSON.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/poco/include
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/poco/lib/release/armv7/libPocoJSON.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/poco/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 # RTDMessaging
@@ -71,11 +72,11 @@ include $(PREBUILT_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := RTDMessaging
-LOCAL_SRC_FILES := libRTDIPMessagingLib.a
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/ip-messaging-lib/lib/release/armv7/libRTDIPMessagingLib.a
 	
 LOCAL_EXPORT_C_INCLUDES := \
-		$(LOCAL_PATH)/datasync-client-core/include \
-		$(LOCAL_PATH)/ip-messaging-lib/include
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include \
+		$(LOCAL_PREBUILT_ROOT)/ip-messaging-lib/include
 
 include $(PREBUILT_STATIC_LIBRARY)
 
@@ -85,11 +86,11 @@ include $(PREBUILT_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := RTDDataSync
-LOCAL_SRC_FILES := libRTDDataSyncLib.a
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/datasync-client-core/lib/release/armv7/libRTDDataSyncLib.a
 	
 LOCAL_EXPORT_C_INCLUDES := \
-		$(LOCAL_PATH)/datasync-client-core/include/Common \
-		$(LOCAL_PATH)/datasync-client-core/include/DataSync 
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include/Common \
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include/DataSync 
 
 include $(PREBUILT_STATIC_LIBRARY)
 
@@ -98,11 +99,11 @@ include $(PREBUILT_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := RTDNotification
-LOCAL_SRC_FILES := libRTDNotificationLib.a
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/datasync-client-core/lib/release/armv7/libRTDNotificationLib.a
 	
 LOCAL_EXPORT_C_INCLUDES := \
-		$(LOCAL_PATH)/datasync-client-core/include/Common \
-		$(LOCAL_PATH)/datasync-client-core/include/Notification 
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include/Common \
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include/Notification 
 
 include $(PREBUILT_STATIC_LIBRARY)
 

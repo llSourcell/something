@@ -79,7 +79,11 @@ void resultHandler(TMResult result) {
 
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, jobject obj, jstring token) {
 
-	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : Initializing ssl");
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : Initializing ssl.");
+
+	//rtd::ITDLogger::initialize(true);
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : set ITDLogger to true.");
 
 #if WITH_SSL
 	Poco::Net::initializeSSL();
@@ -207,7 +211,8 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 														   clientParams_->messagingListener,
 														   clientParams_->configurationProvider,
 														   clientParams_->notificationClient,
-			                                               ([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
+														   NULL);
+			                                               //([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
 
 
 		//get channels object//////////////////////////////////////
