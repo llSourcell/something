@@ -13,6 +13,9 @@ import android.widget.EditText;
 
 public class LoginActivity extends Activity {
 	
+	private static final Logger logger = Logger.getLogger(LoginActivity.class);
+
+	
 	private Button login;
 	private Button logout;
 	private ProgressDialog progressDialog;
@@ -26,6 +29,7 @@ public class LoginActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 		
@@ -41,7 +45,7 @@ public class LoginActivity extends Activity {
 		    	url.append(AUTH_PHP_SCRIPT);
 				url.append(clientNameTextBox.getText().toString());
 				url.append("&endpoint_id="+LoginActivity.this.endpoint_id);
-				
+				logger.e("url string : " + url.toString());
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
 		});
@@ -78,24 +82,6 @@ public class LoginActivity extends Activity {
 	}
 	
 	
-	private class LoginAsyncTask extends AsyncTask<String, Void, String> {
-
-		@Override
-	    protected void onPreExecute() {
-	        super.onPreExecute();
-	        LoginActivity.this.progressDialog = ProgressDialog.show(LoginActivity.this, "",
-	                "Logging in. Please wait...", true);
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			LoginActivity.this.testJNI.doTest("");//testRTD();
-			return null;
-		}
-
-	}
-	
-	
 	private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String> {
 
 		@Override
@@ -116,6 +102,7 @@ public class LoginActivity extends Activity {
 			
 			try {
 				capabilityToken = HttpHelper.httpGet(params[0]);
+				logger.e("capabilityToken string : " + capabilityToken);
 				testJNI.setCapabilityToken(capabilityToken);
 			} catch (Exception e) {
 				e.printStackTrace();
