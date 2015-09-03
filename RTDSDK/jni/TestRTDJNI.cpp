@@ -11,6 +11,7 @@
 
 #include <Poco/Net/SSLManager.h>
 #include <Poco/Net/Context.h>
+#include <Poco/UUIDGenerator.h>
 
 #include <Common/TLLoggerInitializer.h>
 
@@ -32,6 +33,8 @@
 #define TAG  "RTD_TESTS"
 #define PRODUCTION 1
 #define WITH_SSL 1
+#define CHANNEL_PREFIX "RTD Android Test / kbagchi@twilio.com / "
+
 
 using namespace rtd;
 
@@ -59,6 +62,7 @@ typedef struct ClientContext {
 	std::shared_ptr<TwilioIPMessagingConfigurationProvider> configurationProvider;
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
 	ITNNotificationClientPtr notificationClient;
+	ITMClientPtr messagingClient;
 } ClientContext;
 
 
@@ -163,10 +167,25 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, job
 
 JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_shutDown(JNIEnv *env, jobject obj) {
 	LOGW( "Deleteing the Global Ref.");
+
+	clientParams_->messagingClient->shutdown();
+	clientParams_->notificationClient->Shutdown();
+	clientParams_->notificationClientObserver->waitShutdown();
+
+	clientParams_->notificationClientObserver.reset();
+	clientParams_->notificationClient.reset();
+	clientParams_->messagingClient.reset();
+
 	if(j_rtd_test_obj_ != NULL) {
 		env->DeleteGlobalRef(j_rtd_test_obj_);
 		j_rtd_test_obj_ = NULL;
 	}
+}
+
+std::string generateRandomName()
+{
+    auto guid = Poco::UUIDGenerator::defaultGenerator().createRandom();
+    return std::string(CHANNEL_PREFIX + guid.toString().substr(0, 8));
 }
 
 
@@ -214,6 +233,8 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 														   NULL);
 			                                               //([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
 
+		clientParams_->messagingClient = messagingClient;
+
 
 		//get channels object//////////////////////////////////////
 		ITMChannelsPtr channels = messagingClient->getChannels();
@@ -224,6 +245,85 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 			channels = messagingClient->getChannels();
 		}
 
+		 //get channel lists//////////////////////////////////////
+		std::vector<ITMChannelPtr> channelsList;
+		channels->getMyChannelsList(channelsList);
+
+		std::vector<ITMChannelPtr> publicChannels;
+		channels->getPublicChannelsList(publicChannels);
+
+        LOGW("app: public channels count : %d",publicChannels.size());
+        LOGW("app: my channels count : %d.", channelsList.size() );
+
+        //create new channel//////////////////////////////////////
+	   ITMChannelPtr channel = channels->createChannel();
+	   channel->setType(rtd::kTMChannelTypePublic, [](TMResult result) {});
+	   channel->setName(generateRandomName(), NULL);
+
+	   channel->setAttributes("{\"name\":\"sample name\"}", NULL);
+
+	   channels->add(channel, NULL);
+
+	   channels->getMyChannelsList(channelsList);
+	   LOGW("app: my channels count : %d.", channelsList.size() );
+
+	   ITMessagesPtr messages = channel->getMessages();
+	   while (messages == nullptr)
+	   {
+		   LOGW("app: messages not available...");
+		   Poco::Thread::sleep(1000);
+		   messages = channel->getMessages();
+	   }
+
+	   ITMMembersPtr members = channel->getMembers();
+	   while (members == nullptr)
+	   {
+		   LOGW("app: members not available...");
+		   Poco::Thread::sleep(1000);
+		   members = channel->getMembers();
+	   }
+
+	   //join created channel//////////////////////////////////////
+	   channel->join(NULL);
+
+	   channel->setName(generateRandomName(), NULL);
+
+	   channel->setAttributes("{\"name\":\"second channel name\"}", NULL);
+
+
+	   //add member//////////////////////////////////////
+	   ITMMemberPtr member = members->createMember("kbagchi@twilio.com");
+	   members->add(member, NULL);
+
+
+	   //post messages//////////////////////////////////////
+	   ITMessagePtr message = messages->createMessage();
+	   message->setBody("there is a sausage in the kettle", [](TMResult result) {});
+	   messages->send(message, NULL);
+
+	   LOGW("message 1 was added");
+
+
+	   ITMessagePtr message2 = messages->createMessage();
+	   message2->setBody("there are 2 sausages in the kettle", [](TMResult result) {});
+	   messages->send(message2, NULL);
+
+	   LOGW("message 2 was added");
+
+	   ITMessagePtr message3 = messages->createMessage();
+	   message3->setBody("there are 3 sausages in the kettle", [](TMResult result) {});
+	   messages->send(message3, NULL);
+
+	   LOGW("message 3 was added");
+
+	   ITMessagePtr message4 = messages->createMessage();
+	   message4->setBody("there are 4 sausages in the kettle", [](TMResult result) {});
+	   messages->send(message4, NULL);
+
+	   LOGW("message 4 was added");
+
+	   //leave channel//////////////////////////////////////
+	   channel->leave(NULL);
 
 	}
 

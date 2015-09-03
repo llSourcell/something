@@ -1,5 +1,7 @@
 package com.twilio.example;
 
+import com.twilio.example.TestRTDJNI.LoginListener;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -10,31 +12,39 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity implements LoginListener {
 	
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 
 	
 	private Button login;
 	private Button logout;
-	private ProgressDialog progressDialog;
+	public ProgressDialog progressDialog;
 	private String capabilityToken = null;
 	private EditText clientNameTextBox;
-	private static final String DEFAULT_CLIENT_NAME = "kumkum";
+	private static final String DEFAULT_CLIENT_NAME = "Bagchi";
 	private TestRTDJNI testJNI;
 	private String endpoint_id = "";
 	
-	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?identity=";
+	private LinearLayout createChannel;
+	private LinearLayout loginUser;
+	
+	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC522a45bc9300658950cebbac64f2bf78&auth_token=3e9b9f7d914c4b8e1e59ff29331d86df&service_sid=ISf24591d8f4a84fc7b0c99dff0ee3124b&identity=";
 
+		
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
+		this.loginUser = (LinearLayout)findViewById(R.id.loginUser);
+		this.createChannel = (LinearLayout)findViewById(R.id.createChannel);
 		
-		clientNameTextBox = (EditText)findViewById(R.id.client_name);
-        clientNameTextBox.setText(DEFAULT_CLIENT_NAME);
+		this.clientNameTextBox = (EditText)findViewById(R.id.client_name);
+        this.clientNameTextBox.setText(DEFAULT_CLIENT_NAME);
         this.endpoint_id = Secure.getString(this.getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
 		
 		this.login = (Button)findViewById(R.id.register);
@@ -54,7 +64,7 @@ public class LoginActivity extends Activity {
 		this.logout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				testJNI.shutdown();
+				testJNI.cleanupTest();
 			}
 		});
 		
@@ -87,7 +97,7 @@ public class LoginActivity extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			LoginActivity.this.testJNI.doTest(capabilityToken);
+			LoginActivity.this.testJNI.doTest(capabilityToken, LoginActivity.this);
 		}
 		
 		@Override
@@ -110,5 +120,46 @@ public class LoginActivity extends Activity {
 			return capabilityToken;
 		}
     }
+
+
+	@Override
+	public void onLoginStarted() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLoginFinished() {
+		/*
+		 * Intent intent = new Intent(this, ConversationActivity.class);
+		 * this.startActivity(intent);
+		 */
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if(LoginActivity.this.progressDialog.isShowing()){
+					LoginActivity.this.progressDialog.dismiss();
+				}
+				LoginActivity.this.createChannel.setVisibility(View.VISIBLE);
+				LoginActivity.this.loginUser.setVisibility(View.GONE);
+
+			}
+		});
+
+		
+	}
+
+	@Override
+	public void onLoginError(String errorMessage) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLogoutFinished() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -16,6 +16,16 @@ public class TestRTDJNI {
 	private long nativeMessagingClient;
 	private String capabilityToken;
 	private long nativeClientParam;
+	 private LoginListener loginListener;
+	
+	public interface LoginListener
+    {
+        public void onLoginStarted();
+        public void onLoginFinished();
+        public void onLoginError(String errorMessage);
+        public void onLogoutFinished();
+    }
+
 
 	public String getCapabilityToken() {
 		return capabilityToken;
@@ -28,22 +38,31 @@ public class TestRTDJNI {
 	
 	//This seems to be holding on to the object references. But notificationClientPtr->Init(notificationClientObserver);
 	//results in errorcode 7 (TwilsockError). Currently my test device is connected to TwilioAV and tested using PROD.
-	public void doTest(String capabilityToken) {
+	public void doTest(String capabilityToken,  LoginListener listener) {
 		
 		System.out.println("Test starting .....");
 		
 		long i = this.init(this.capabilityToken);
-		this.nativeMessagingClient = createMessagingClient(this.capabilityToken);
+		long statusCode = createMessagingClient(this.capabilityToken);
 		
+		if (statusCode == 0 && listener != null) {
+			listener.onLoginFinished();
+		} else {
+			listener.onLoginError("some error");
+		}
 
 		System.out.println("Test Done");
 
+	}
+	
+	public void cleanupTest() {
+		this.shutDown();
 	}
 
 	
 	
 	public native long init(String token);
-	public native void shutdown();
-	public native long  createMessagingClient(String token);
+	public native void shutDown();
+	public native long createMessagingClient(String token);
 
 }
