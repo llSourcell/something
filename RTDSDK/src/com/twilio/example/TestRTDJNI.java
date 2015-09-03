@@ -1,7 +1,6 @@
 package com.twilio.example;
 
 import java.util.List;
-
 import com.twilio.ipmessaging.Channel;
 
 public class TestRTDJNI {

@@ -6,10 +6,38 @@ import java.util.Set;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
-import com.twilio.ipmessaging.Message;
+import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Messages;
 
 public class ChannelImpl implements Channel {
+	
+	/** ChannelListener */
+	private ChannelListener listener;
+
+	/** The unique identifier for this channel. */
+	private String sid;
+
+	/** The friendly name for this channel. */
+	private String friendlyName;
+
+	/** The messages list object for this channel. */
+	Messages messages;
+
+	/** The members list object for this channel. */
+	Members members;
+
+	/** The current user's status on this channel. */
+	ChannelStatus status;
+
+	/** The channel's visibility type. */
+	ChannelType type;
+
+
+	public ChannelImpl(ChannelListener listener, String friendlyName) {
+		super();
+		this.listener = listener;
+		this.friendlyName = friendlyName;
+	}
 
 	@Override
 	public String getSid() {
