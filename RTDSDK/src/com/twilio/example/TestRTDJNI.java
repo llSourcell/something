@@ -1,5 +1,8 @@
 package com.twilio.example;
 
+import java.util.List;
+
+import com.twilio.ipmessaging.Channel;
 
 public class TestRTDJNI {
 
@@ -64,5 +67,6 @@ public class TestRTDJNI {
 	public native long init(String token);
 	public native void shutDown();
 	public native long createMessagingClient(String token);
+	public native List<Channel> getChannels();
 
 }

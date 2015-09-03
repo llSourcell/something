@@ -19,6 +19,8 @@ JNIEXPORT void  JNICALL Java_com_twilio_example_TestRTDJNI_shutDown(JNIEnv *, jo
 
 JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient(JNIEnv *, jobject, jstring );
 
+JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JNIEnv *, jobject);
+
 
 #ifdef __cplusplus
 }

@@ -190,7 +190,7 @@ std::string generateRandomName()
 
 
 
-JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient(JNIEnv *env, jobject obj, jstring token) {
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClientTest(JNIEnv *env, jobject obj, jstring token) {
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking token validity.");
 
@@ -331,4 +331,101 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 }
 
 
+JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient(JNIEnv *env, jobject obj, jstring token) {
 
+	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking token validity.");
+
+	if (token == NULL) {
+		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+		return 0;
+	}
+	const char *tokenStr = env->GetStringUTFChars(token, 0);
+
+	jlong nativeClientContext = tw_jni_fetch_long(env, obj, "nativeClientParam");
+
+	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking nativeClientContext.");
+
+	if (nativeClientContext == NULL) {
+			__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+			return 0;
+	} else {
+
+		if(clientParams_->messagingListener == NULL ) {
+			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : messagingListener is NULL.");
+			return 0;
+		}
+
+		if(clientParams_->configurationProvider == NULL) {
+			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : configurationProvider is NULL.");
+			return 0;
+		}
+
+		if( clientParams_->notificationClient == NULL) {
+			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : notificationClient is NULL.");
+			return 0;
+		}
+
+		LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Creating the msgClient.");
+
+		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
+														   clientParams_->messagingListener,
+														   clientParams_->configurationProvider,
+														   clientParams_->notificationClient,
+														   NULL);
+			                                               //([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
+
+		clientParams_->messagingClient = messagingClient;
+
+
+
+	}
+
+	return 0;//reinterpret_cast<jlong>(messagingClient.get());
+}
+
+
+
+JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JNIEnv *env, jobject obj) {
+
+	jobject channel = NULL;
+	if( clientParams_ != NULL) {
+		if(clientParams_->messagingClient != NULL) {
+			//get channels object//////////////////////////////////////
+			ITMChannelsPtr channels = clientParams_->messagingClient->getChannels();
+			while (channels == nullptr)
+			{
+				LOGW("app: messaging lib not ready, retrying...");
+				Poco::Thread::sleep(1000);
+				channels = clientParams_->messagingClient->getChannels();
+			}
+
+			 //get channel lists//////////////////////////////////////
+			std::vector<ITMChannelPtr> channelsList;
+			channels->getMyChannelsList(channelsList);
+
+			std::vector<ITMChannelPtr> publicChannels;
+			channels->getPublicChannelsList(publicChannels);
+
+			LOGW("app: public channels count : %d",publicChannels.size());
+			LOGW("app: my channels count : %d.", channelsList.size() );
+
+			jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
+			jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Lcom/twilio/ipmessaging/ChannelListener;Ljava/lang/String;)V");
+			jobjectArray channelsArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),java_channel_impl_cls, 0);
+
+			/*for (int i= 0; i<publicChannels.size() ; i++ ) {
+
+				const char* name = publicChannels[i].get()->getName();
+				const char* sid = publicChannels[i].get()->getSid();
+				LOGW("Channel Name  : %s.", name );
+				channel = tw_jni_new_object(env, java_channel_impl_cls, construct, name, sid );
+				env->SetObjectArrayElement(channelsArray, i, channel);
+			} */
+
+
+		}
+	}
+
+	return NULL;
+
+}

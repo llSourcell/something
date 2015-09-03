@@ -28,6 +28,16 @@ public interface Channel {
 		NOT_PARTICIATING
 	};
 	
+	/** 
+	 * Enumeration indicating the channel's visibility. 
+	 * 
+	 */
+	public enum ChannelType {
+	    CHANNEL_TYPE_PUBLIC,      ///< Channel is publicly visible
+	    CHANNEL_TYPE_PRIVATE      ///< Channel is private and only visible to invited members.
+	};
+
+	
 	/**
 	 * Method that returns the unique identifier for this channel.
 	 * 
