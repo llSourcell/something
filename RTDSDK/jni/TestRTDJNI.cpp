@@ -63,6 +63,8 @@ typedef struct ClientContext {
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
 	ITNNotificationClientPtr notificationClient;
 	ITMClientPtr messagingClient;
+	ITMChannelsPtr channels;
+
 } ClientContext;
 
 
@@ -427,5 +429,29 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 	}
 
 	return NULL;
+
+}
+
+JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env, jobject obj, jstring name) {
+	if( clientParams_ != NULL) {
+		if(clientParams_->channels != NULL) {
+			std::vector<ITMChannelPtr> channelsList;
+			clientParams_->channels->getMyChannelsList(channelsList);
+
+			LOGW("app: my channels count : %d.", channelsList.size() );
+
+			ITMChannelPtr channel = clientParams_->channels->createChannel();
+			channel->setType(rtd::kTMChannelTypePublic, NULL);
+			channel->setName(generateRandomName(), NULL);
+
+		    channel->setAttributes("{\"name\":\"sample name\"}", NULL);
+
+		    clientParams_->channels->add(channel, NULL);
+
+		    clientParams_->channels->getMyChannelsList(channelsList);
+		    LOGW("app: my channels count : %d.", channelsList.size() );
+
+		}
+	}
 
 }

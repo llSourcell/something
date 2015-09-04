@@ -21,6 +21,8 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JNIEnv *, jobject);
 
+JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *, jobject, jstring );
+
 
 #ifdef __cplusplus
 }
