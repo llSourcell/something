@@ -11,6 +11,7 @@
 
 #include <Poco/Net/SSLManager.h>
 #include <Poco/Net/Context.h>
+#include <Poco/Net/PrivateKeyPassphraseHandler.h>
 #include <Poco/UUIDGenerator.h>
 
 #include <Common/TLLoggerInitializer.h>
@@ -101,7 +102,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, job
 #endif
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_init() : Checking if token is null");
-	if (token == NULL) {
+	if (token == nullptr) {
 		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
 		return 0;
 	}
@@ -126,7 +127,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, job
 	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating configurationProvider");
 	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
 
-	if(configurationProvider == NULL) {
+	if(configurationProvider == nullptr) {
 		LOGW( "Java_com_twilio_example_TestRTDJNI_init : configurationProvider is NULL");
 	} else {
 		LOGW( "Java_com_twilio_example_TestRTDJNI_init : configurationProvider is NOT NULL");
@@ -134,7 +135,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, job
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_init : Creating notificationClientObserver");
 	auto  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
-	if(notificationClientObserver == NULL) {
+	if(notificationClientObserver == nullptr) {
 		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientObserver is NULL");
 	} else {
 		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientObserver is NOT NULL");
@@ -146,7 +147,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_init(JNIEnv *env, job
 	notificationClientPtr = TNNotificationClientFactory::CreateNotificationClient(tokenStr,configurationProvider);
 	notificationClientPtr->Init(notificationClientObserver);
 
-	if(notificationClientPtr == NULL) {
+	if(notificationClientPtr == nullptr) {
 		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientPtr is NULL");
 	} else {
 		LOGW( "Java_com_twilio_example_TestRTDJNI_init : notificationClientPtr is NOT NULL");
@@ -178,9 +179,9 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_shutDown(JNIEnv *env, 
 	clientParams_->notificationClient.reset();
 	clientParams_->messagingClient.reset();
 
-	if(j_rtd_test_obj_ != NULL) {
+	if(j_rtd_test_obj_ != nullptr) {
 		env->DeleteGlobalRef(j_rtd_test_obj_);
-		j_rtd_test_obj_ = NULL;
+		j_rtd_test_obj_ = nullptr;
 	}
 }
 
@@ -196,7 +197,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking token validity.");
 
-	if (token == NULL) {
+	if (token == nullptr) {
 		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
 		return 0;
 	}
@@ -206,22 +207,22 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking nativeClientContext.");
 
-	if (nativeClientContext == NULL) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+	if (nativeClientContext == 0) {
+			__android_log_print(ANDROID_LOG_ERROR, TAG, "client context is null");
 			return 0;
 	} else {
 
-		if(clientParams_->messagingListener == NULL ) {
+		if(clientParams_->messagingListener == nullptr ) {
 			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : messagingListener is NULL.");
 			return 0;
 		}
 
-		if(clientParams_->configurationProvider == NULL) {
+		if(clientParams_->configurationProvider == nullptr) {
 			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : configurationProvider is NULL.");
 			return 0;
 		}
 
-		if( clientParams_->notificationClient == NULL) {
+		if( clientParams_->notificationClient == nullptr) {
 			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : notificationClient is NULL.");
 			return 0;
 		}
@@ -232,7 +233,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 														   clientParams_->messagingListener,
 														   clientParams_->configurationProvider,
 														   clientParams_->notificationClient,
-														   NULL);
+														   nullptr);
 			                                               //([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
 
 		clientParams_->messagingClient = messagingClient;
@@ -260,11 +261,11 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
         //create new channel//////////////////////////////////////
 	   ITMChannelPtr channel = channels->createChannel();
 	   channel->setType(rtd::kTMChannelTypePublic, [](TMResult result) {});
-	   channel->setName(generateRandomName(), NULL);
+	   channel->setName(generateRandomName(), nullptr);
 
-	   channel->setAttributes("{\"name\":\"sample name\"}", NULL);
+	   channel->setAttributes("{\"name\":\"sample name\"}", nullptr);
 
-	   channels->add(channel, NULL);
+	   channels->add(channel, nullptr);
 
 	   channels->getMyChannelsList(channelsList);
 	   LOGW("app: my channels count : %d.", channelsList.size() );
@@ -286,46 +287,46 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 	   }
 
 	   //join created channel//////////////////////////////////////
-	   channel->join(NULL);
+	   channel->join(nullptr);
 
-	   channel->setName(generateRandomName(), NULL);
+	   channel->setName(generateRandomName(), nullptr);
 
-	   channel->setAttributes("{\"name\":\"second channel name\"}", NULL);
+	   channel->setAttributes("{\"name\":\"second channel name\"}", nullptr);
 
 
 	   //add member//////////////////////////////////////
 	   ITMMemberPtr member = members->createMember("kbagchi@twilio.com");
-	   members->add(member, NULL);
+	   members->add(member, nullptr);
 
 
 	   //post messages//////////////////////////////////////
 	   ITMessagePtr message = messages->createMessage();
 	   message->setBody("there is a sausage in the kettle", [](TMResult result) {});
-	   messages->send(message, NULL);
+	   messages->send(message, nullptr);
 
 	   LOGW("message 1 was added");
 
 
 	   ITMessagePtr message2 = messages->createMessage();
 	   message2->setBody("there are 2 sausages in the kettle", [](TMResult result) {});
-	   messages->send(message2, NULL);
+	   messages->send(message2, nullptr);
 
 	   LOGW("message 2 was added");
 
 	   ITMessagePtr message3 = messages->createMessage();
 	   message3->setBody("there are 3 sausages in the kettle", [](TMResult result) {});
-	   messages->send(message3, NULL);
+	   messages->send(message3, nullptr);
 
 	   LOGW("message 3 was added");
 
 	   ITMessagePtr message4 = messages->createMessage();
 	   message4->setBody("there are 4 sausages in the kettle", [](TMResult result) {});
-	   messages->send(message4, NULL);
+	   messages->send(message4, nullptr);
 
 	   LOGW("message 4 was added");
 
 	   //leave channel//////////////////////////////////////
-	   channel->leave(NULL);
+	   channel->leave(nullptr);
 
 	}
 
@@ -337,7 +338,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking token validity.");
 
-	if (token == NULL) {
+	if (token == nullptr) {
 		__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
 		return 0;
 	}
@@ -347,22 +348,22 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 	LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : Checking nativeClientContext.");
 
-	if (nativeClientContext == NULL) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "token is null");
+	if (nativeClientContext == 0) {
+			__android_log_print(ANDROID_LOG_ERROR, TAG, "client context is null");
 			return 0;
 	} else {
 
-		if(clientParams_->messagingListener == NULL ) {
+		if(clientParams_->messagingListener == nullptr) {
 			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : messagingListener is NULL.");
 			return 0;
 		}
 
-		if(clientParams_->configurationProvider == NULL) {
+		if(clientParams_->configurationProvider == nullptr) {
 			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : configurationProvider is NULL.");
 			return 0;
 		}
 
-		if( clientParams_->notificationClient == NULL) {
+		if( clientParams_->notificationClient == nullptr) {
 			LOGW( "Java_com_twilio_example_TestRTDJNI_createMessagingClient : notificationClient is NULL.");
 			return 0;
 		}
@@ -373,7 +374,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 														   clientParams_->messagingListener,
 														   clientParams_->configurationProvider,
 														   clientParams_->notificationClient,
-														   NULL);
+														   nullptr);
 			                                               //([](TMResult result) { LOGW( "Java_com_twilio_example_TestRTDJNI_getMessagingClient : Client init.");}));
 
 		clientParams_->messagingClient = messagingClient;
@@ -389,9 +390,9 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JNIEnv *env, jobject obj) {
 
-	jobject channel = NULL;
-	if( clientParams_ != NULL) {
-		if(clientParams_->messagingClient != NULL) {
+	jobject channel = nullptr;
+	if(clientParams_ != nullptr) {
+		if(clientParams_->messagingClient != nullptr) {
 			//get channels object//////////////////////////////////////
 			ITMChannelsPtr channels = clientParams_->messagingClient->getChannels();
 			while (channels == nullptr)
@@ -412,7 +413,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 			LOGW("app: my channels count : %d.", channelsList.size() );
 
 			jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
-			if(java_channel_impl_cls != NULL) {
+			if(java_channel_impl_cls != nullptr) {
 				LOGW("Found java_channel_impl_cls class" );
 			}
 
@@ -437,7 +438,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 				LOGW("Added object to array");
 			}
 
-			if(channelsArray != NULL) {
+			if(channelsArray != nullptr) {
 				LOGW("channelsArray is NOT NULL ");
 			} else {
 				LOGW("channelsArray is  NULL *********");
@@ -448,16 +449,16 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 	}
 
 	LOGW("*************** SHOULD NEVER {RINT THIS *********");
-	return NULL;
+	return nullptr;
 
 }
 
 JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env, jobject obj, jstring name) {
-	if (clientParams_ != NULL) {
+	if (clientParams_ != nullptr) {
 		ITMChannelsPtr channels = clientParams_->messagingClient->getChannels();
 		clientParams_->channels = channels;
 
-		if (clientParams_->channels != NULL) {
+		if (clientParams_->channels != nullptr) {
 
 			std::vector<ITMChannelPtr> publicChannels;
 			clientParams_->channels->getPublicChannelsList(publicChannels);
@@ -470,13 +471,13 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env
 			channel->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 1.5");});
 			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 2");
 
-			channel->setName(generateRandomName(), NULL);
+			channel->setName(generateRandomName(), nullptr);
 			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 3");
 
-			channel->setAttributes("{\"name\":\"sample name\"}", NULL);
+			channel->setAttributes("{\"name\":\"sample name\"}", nullptr);
 			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 4");
 
-			clientParams_->channels->add(channel, NULL);
+			clientParams_->channels->add(channel, nullptr);
 			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 5");
 
 			std::vector<ITMChannelPtr> publicChannels1;
