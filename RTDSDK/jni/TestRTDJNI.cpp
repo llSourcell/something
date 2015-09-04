@@ -412,22 +412,42 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 			LOGW("app: my channels count : %d.", channelsList.size() );
 
 			jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
-			jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Lcom/twilio/ipmessaging/ChannelListener;Ljava/lang/String;)V");
+			if(java_channel_impl_cls != NULL) {
+				LOGW("Found java_channel_impl_cls class" );
+			}
+
+			jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 			jobjectArray channelsArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),java_channel_impl_cls, 0);
 
-			/*for (int i= 0; i<publicChannels.size() ; i++ ) {
+			for (int i= 0; i<publicChannels.size() ; i++ ) {
+				ITMChannelPtr channelPtr = publicChannels[i];
+				const char* sid = channelPtr->getSid().c_str();
+				const char* name = channelPtr->getName().c_str();
 
-				const char* name = publicChannels[i].get()->getName();
-				const char* sid = publicChannels[i].get()->getSid();
 				LOGW("Channel Name  : %s.", name );
-				channel = tw_jni_new_object(env, java_channel_impl_cls, construct, name, sid );
+				LOGW("Channel Sid %s", sid);
+
+				jstring nameString = env->NewStringUTF(name);
+				jstring sidString = env->NewStringUTF(sid);
+
+
+				channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString);
+				LOGW("Created Channel Object.");
 				env->SetObjectArrayElement(channelsArray, i, channel);
-			} */
+				LOGW("Added object to array");
+			}
 
+			if(channelsArray != NULL) {
+				LOGW("channelsArray is NOT NULL ");
+			} else {
+				LOGW("channelsArray is  NULL *********");
+			}
 
+			return channelsArray;
 		}
 	}
 
+	LOGW("*************** SHOULD NEVER {RINT THIS *********");
 	return NULL;
 
 }
@@ -436,22 +456,34 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env
 	if (clientParams_ != NULL) {
 		ITMChannelsPtr channels = clientParams_->messagingClient->getChannels();
 		clientParams_->channels = channels;
+
 		if (clientParams_->channels != NULL) {
-			std::vector<ITMChannelPtr> channelsList;
-			clientParams_->channels->getMyChannelsList(channelsList);
 
-			LOGW("app: my channels count : %d.", channelsList.size() );
+			std::vector<ITMChannelPtr> publicChannels;
+			clientParams_->channels->getPublicChannelsList(publicChannels);
 
-			ITMChannelPtr channel = clientParams_->channels->createChannel();
-			channel->setType(rtd::kTMChannelTypePublic, NULL);
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count : %d.", publicChannels.size() );
+
+			ITMChannelPtr channel = channels->createChannel();
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 1");
+
+			channel->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 1.5");});
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 2");
+
 			channel->setName(generateRandomName(), NULL);
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 3");
 
-		    channel->setAttributes("{\"name\":\"sample name\"}", NULL);
+			channel->setAttributes("{\"name\":\"sample name\"}", NULL);
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 4");
 
-		    clientParams_->channels->add(channel, NULL);
+			clientParams_->channels->add(channel, NULL);
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 5");
 
-		    clientParams_->channels->getMyChannelsList(channelsList);
-		    LOGW("app: my channels count : %d.", channelsList.size() );
+			std::vector<ITMChannelPtr> publicChannels1;
+			clientParams_->channels->getPublicChannelsList(publicChannels1);
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 6");
+
+			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count : %d.", publicChannels1.size() );
 
 		} else {
 			LOGE("hello world");

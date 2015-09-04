@@ -33,10 +33,17 @@ public class ChannelImpl implements Channel {
 	ChannelType type;
 
 
-	public ChannelImpl(ChannelListener listener, String friendlyName) {
+	public ChannelImpl(ChannelListener listener, String friendlyName, String sid) {
 		super();
 		this.listener = listener;
 		this.friendlyName = friendlyName;
+		this.sid = sid;
+	}
+	
+	public ChannelImpl(String friendlyName, String sid) {
+		super();
+		this.friendlyName = friendlyName;
+		this.sid = sid;
 	}
 
 	@Override

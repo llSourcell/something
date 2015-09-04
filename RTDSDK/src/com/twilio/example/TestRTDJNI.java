@@ -1,6 +1,8 @@
 package com.twilio.example;
 
+import java.util.Arrays;
 import java.util.List;
+
 import com.twilio.ipmessaging.Channel;
 
 public class TestRTDJNI {
@@ -17,6 +19,7 @@ public class TestRTDJNI {
 	private String capabilityToken;
 	private long nativeClientParam;
 	private LoginListener loginListener;
+	private Channel[] channels;
 
 	public interface LoginListener {
 		public void onLoginStarted();
@@ -45,21 +48,29 @@ public class TestRTDJNI {
 		System.out.println("Test starting .....");
 
 		long i = this.init(this.capabilityToken);
-		long statusCode = createMessagingClient(this.capabilityToken);
+		long statusCode = this.createMessagingClient(this.capabilityToken);
 
 		if (statusCode == 0 && listener != null) {
 			listener.onLoginFinished();
 		} else {
 			listener.onLoginError("some error");
 		}
+		
+		this.channels = this.getChannels();
 
-		System.out.println("Test Done");
+		System.out.println("Test Done : " + channels.length);
 
 	}
 
 	public void cleanupTest() {
 		this.shutDown();
 	}
+	
+	public List<Channel> getChannelList() {
+		List<Channel> list = Arrays.asList(this.channels);
+		return list;
+	}
+	
 
 	public native long init(String token);
 
@@ -67,9 +78,11 @@ public class TestRTDJNI {
 
 	public native long createMessagingClient(String token);
 
-	public native List<Channel> getChannels();
+	public native Channel[] getChannels();
 
 	public native void addChannel(String name);
 
 	public native void removeChannel(Channel channel);
+	
+	public native void createMessage(String message);
 }

@@ -11,7 +11,7 @@
 # Generated files
 RTDSDK/bin
 RTDSDK/gen
-RTDSDK/IPMessagingLib/include
+RTDSDK/IPMessagingLib
 RTDSDK/obj
 RTDSDK/target
 

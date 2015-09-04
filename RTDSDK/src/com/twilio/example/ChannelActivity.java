@@ -81,7 +81,7 @@ public class ChannelActivity extends Activity {
 
 	private void setupListView() {
 		listView = (ListView) findViewById(R.id.channel_list);
-		channels.add(new ChannelImpl(null, "Michael's channel"));
+		channels = rtdJni.getChannelList();
 		adapter = new EasyAdapter<>(this, ChannelViewHolder.class, channels,
 				new ChannelViewHolder.OnChannelClickListener() {
 					@Override

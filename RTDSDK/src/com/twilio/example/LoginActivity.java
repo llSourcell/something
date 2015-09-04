@@ -25,7 +25,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private Button logout;
 	private String capabilityToken = null;
 	private EditText clientNameTextBox;
-	private TestRTDJNI testJNI;
+	private TestRTDJNI rtdJni;
 	private String endpoint_id = "";
 
 	@Override
@@ -54,11 +54,11 @@ public class LoginActivity extends Activity implements LoginListener {
 		this.logout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				testJNI.cleanupTest();
+				rtdJni.cleanupTest();
 			}
 		});
 
-		testJNI = new TestRTDJNI();
+		rtdJni = TwilioApplication.get().getRtdJni();
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class LoginActivity extends Activity implements LoginListener {
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			LoginActivity.this.testJNI.doTest(capabilityToken, LoginActivity.this);
+			LoginActivity.this.rtdJni.doTest(capabilityToken, LoginActivity.this);
 		}
 
 		@Override
@@ -97,7 +97,7 @@ public class LoginActivity extends Activity implements LoginListener {
 			try {
 				capabilityToken = HttpHelper.httpGet(params[0]);
 				logger.e("capabilityToken string : " + capabilityToken);
-				testJNI.setCapabilityToken(capabilityToken);
+				rtdJni.setCapabilityToken(capabilityToken);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
