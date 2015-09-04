@@ -41,7 +41,7 @@ public class ChannelViewHolder extends ItemViewHolder<Channel> {
 	@Override
 	public void onSetValues(Channel channel, PositionInfo arg1) {
 		friendlyName.setText(channel.getFriendlyName());
-		channelSid.setText(channel.getSid());
+//		channelSid.setText(channel.getSid());
 	}
 
 	public interface OnChannelClickListener {

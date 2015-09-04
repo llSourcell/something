@@ -47,8 +47,7 @@ public class ChannelImpl implements Channel {
 
 	@Override
 	public String getFriendlyName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.friendlyName;
 	}
 
 	@Override

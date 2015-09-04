@@ -4,23 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.impl.ChannelImpl;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
+@SuppressLint("InflateParams")
 public class ChannelActivity extends Activity {
 	private static final String[] CHANNEL_OPTIONS = { "Join", "Leave", "Destroy" };
+	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
 
 	private ListView listView;
 	private TestRTDJNI rtdJni;
 	private List<Channel> channels = new ArrayList<Channel>();
 	private EasyAdapter<Channel> adapter;
+	private AlertDialog createChannelDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +47,42 @@ public class ChannelActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_create:
-			// TODO:
+			showCreateChannelDialog();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
 
 	}
 
+	private void showCreateChannelDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_add_channel, null))
+				// Add action buttons
+				.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText().toString();
+						logger.e(channelName);
+						rtdJni.addChannel(channelName);
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		createChannelDialog = builder.create();
+		createChannelDialog.show();
+	}
+
 	private void setupListView() {
 		listView = (ListView) findViewById(R.id.channel_list);
-		adapter = new EasyAdapter<>(this, ChannelViewHolder.class, rtdJni.getChannels(),
+		channels.add(new ChannelImpl(null, "Michael's channel"));
+		adapter = new EasyAdapter<>(this, ChannelViewHolder.class, channels,
 				new ChannelViewHolder.OnChannelClickListener() {
 					@Override
 					public void onChannelClicked(final Channel channel) {

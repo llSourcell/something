@@ -433,8 +433,10 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 }
 
 JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env, jobject obj, jstring name) {
-	if( clientParams_ != NULL) {
-		if(clientParams_->channels != NULL) {
+	if (clientParams_ != NULL) {
+		ITMChannelsPtr channels = clientParams_->messagingClient->getChannels();
+		clientParams_->channels = channels;
+		if (clientParams_->channels != NULL) {
 			std::vector<ITMChannelPtr> channelsList;
 			clientParams_->channels->getMyChannelsList(channelsList);
 
@@ -451,7 +453,11 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env
 		    clientParams_->channels->getMyChannelsList(channelsList);
 		    LOGW("app: my channels count : %d.", channelsList.size() );
 
+		} else {
+			LOGE("hello world");
 		}
+	} else {
+		LOGE("hello world 1");
 	}
 
 }
