@@ -29,6 +29,10 @@
             android:name=".ChannelActivity"
             android:label="@string/title_activity_channel" >
         </activity>
+        <activity
+            android:name=".MessageActivity"
+            android:label="@string/title_activity_message" >
+        </activity>
     </application>
 
 </manifest>

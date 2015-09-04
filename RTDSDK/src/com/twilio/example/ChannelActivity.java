@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -89,6 +90,15 @@ public class ChannelActivity extends Activity {
 				new ChannelViewHolder.OnChannelClickListener() {
 					@Override
 					public void onChannelClicked(final Channel channel) {
+						// TODO: Remove the true here once channel is
+						// implemented
+						if (true || channel.getStatus() == Channel.ChannelStatus.JOINED) {
+							// TODO: we should send some data in intent here.
+							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+							startActivity(i);
+							return;
+						}
+
 						AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
 						builder.setTitle("Select an option").setItems(CHANNEL_OPTIONS,
 								new DialogInterface.OnClickListener() {
