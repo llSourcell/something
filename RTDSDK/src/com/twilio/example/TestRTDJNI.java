@@ -68,5 +68,6 @@ public class TestRTDJNI {
 	public native void shutDown();
 	public native long createMessagingClient(String token);
 	public native List<Channel> getChannels();
+	public native void addChannel(String name);
 
 }
