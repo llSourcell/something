@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +23,9 @@ import uk.co.ribot.easyadapter.EasyAdapter;
 public class ChannelActivity extends Activity {
 	private static final String[] CHANNEL_OPTIONS = { "Join", "Leave", "Destroy" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
+	private static final int JOIN = 0;
+	private static final int LEAVE = 1;
+	private static final int DESTROY = 2;
 
 	private ListView listView;
 	private TestRTDJNI rtdJni;
@@ -61,12 +65,12 @@ public class ChannelActivity extends Activity {
 
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
-		builder.setView(inflater.inflate(R.layout.dialog_add_channel, null))
-				// Add action buttons
+		builder.setView(inflater.inflate(R.layout.dialog_add_channel, null)).setTitle("Enter channel name")
 				.setPositiveButton("Create", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText().toString();
+						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
+								.toString();
 						logger.e(channelName);
 						rtdJni.addChannel(channelName);
 					}
@@ -86,19 +90,29 @@ public class ChannelActivity extends Activity {
 				new ChannelViewHolder.OnChannelClickListener() {
 					@Override
 					public void onChannelClicked(final Channel channel) {
+						// TODO: Remove the true here once channel is
+						// implemented
+						if (true || channel.getStatus() == Channel.ChannelStatus.JOINED) {
+							// TODO: we should send some data in intent here.
+							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+							startActivity(i);
+							return;
+						}
+
 						AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
 						builder.setTitle("Select an option").setItems(CHANNEL_OPTIONS,
 								new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int which) {
-								if (which == 0) {
+								if (which == JOIN) {
 									channel.join();
-								} else if (which == 1) {
+								} else if (which == LEAVE) {
 									channel.leave();
-								} else if (which == 2) {
+								} else if (which == DESTROY) {
 									channel.destroy();
 								}
 							}
 						});
+						builder.show();
 					}
 				});
 		listView.setAdapter(adapter);

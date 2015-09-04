@@ -4,7 +4,15 @@ import java.util.Date;
 
 import com.twilio.ipmessaging.Message;
 
-public class MessageImpl implements Message{
+public class MessageImpl implements Message {
+	private String author;
+	private Date date;
+	private String body;
+
+	public MessageImpl(String author, String body) {
+		this.author = author;
+		this.body = body;
+	}
 
 	@Override
 	public String getSid() {
@@ -15,25 +23,25 @@ public class MessageImpl implements Message{
 	@Override
 	public String getAuthor() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.author;
 	}
 
 	@Override
 	public Date getDateUpdated() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.date;
 	}
 
 	@Override
 	public String getMessageBody() {
 		// TODO Auto-generated method stub
-		return null;
+		return body;
 	}
 
 	@Override
 	public void updateMessageBody(String body) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
