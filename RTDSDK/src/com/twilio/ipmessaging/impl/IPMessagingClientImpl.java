@@ -125,7 +125,7 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 	}
 
 	@Override
-	public IPMessagingClient init(IdentityManager tokenManager,
+	public IPMessagingClient init(String tokenr,
 			IPMessagingClientListener listener) {
 			String token = "";
 			final IPMessagingClientImpl msgClient = new IPMessagingClientImpl(context, listener);
@@ -142,8 +142,6 @@ public class IPMessagingClientImpl extends IPMessagingClient {
 			
 			return msgClient;
 	}
-
-
 
 
 

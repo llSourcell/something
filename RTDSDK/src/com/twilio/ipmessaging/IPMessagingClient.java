@@ -62,8 +62,8 @@ public class IPMessagingClient {
 	 * @param listener		the listener for thisIP MessagingClient.
 	 * @return The newly initialized IPMessagingClient.
 	 */
-	public IPMessagingClient init(IdentityManager tokenManager, IPMessagingClientListener listener) {
-		return IPMessagingClientImpl.getInstance().init(tokenManager, listener);
+	public IPMessagingClient init(String token, IPMessagingClientListener listener) {
+		return IPMessagingClientImpl.getInstance().init(token, listener);
 	}
 	
 	/**
