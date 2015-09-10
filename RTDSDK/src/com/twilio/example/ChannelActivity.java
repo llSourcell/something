@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.twilio.ipmessaging.Channel;
-import com.twilio.ipmessaging.impl.ChannelImpl;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -57,7 +56,12 @@ public class ChannelActivity extends Activity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getChannels();
 	}
 
 	private void showCreateChannelDialog() {
@@ -75,6 +79,7 @@ public class ChannelActivity extends Activity {
 								.toString();
 						logger.e(channelName);
 						rtdJni.addChannel(channelName);
+						getChannels();
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -87,7 +92,6 @@ public class ChannelActivity extends Activity {
 
 	private void setupListView() {
 		listView = (ListView) findViewById(R.id.channel_list);
-		channels = rtdJni.getChannelList();
 		adapter = new EasyAdapter<>(this, ChannelViewHolder.class, channels,
 				new ChannelViewHolder.OnChannelClickListener() {
 					@Override
@@ -115,6 +119,12 @@ public class ChannelActivity extends Activity {
 					}
 				});
 		listView.setAdapter(adapter);
+		getChannels();
+	}
+
+	private void getChannels() {
+		channels.clear();
+		channels.addAll(rtdJni.getChannelList());
 		adapter.notifyDataSetChanged();
 	}
 }
