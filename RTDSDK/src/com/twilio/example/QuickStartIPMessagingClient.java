@@ -34,7 +34,7 @@ public class QuickStartIPMessagingClient implements IdentityManagerListener, IPM
 		IdentityManager idManager = IdentityManager.init(jwt, this);
 		
 		IPMessagingClient messagingClient = new IPMessagingClient();
-		messagingClient.init(idManager, this);
+		messagingClient.init(jwt, this);
 		
 		//Get the list of channels for this IPMessaging client
 		Channels myChannels = messagingClient.getChannels();

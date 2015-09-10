@@ -22,11 +22,10 @@ import uk.co.ribot.easyadapter.EasyAdapter;
 @SuppressLint("InflateParams")
 public class ChannelActivity extends Activity {
 
-	private static final String[] CHANNEL_OPTIONS = { "Join", "Leave", "Destroy" };
+	private static final String[] CHANNEL_OPTIONS = { "Join", "Destroy" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
 	private static final int JOIN = 0;
-	private static final int LEAVE = 1;
-	private static final int DESTROY = 2;
+	private static final int DESTROY = 1;
 
 	private ListView listView;
 	private TestRTDJNI rtdJni;
@@ -108,8 +107,6 @@ public class ChannelActivity extends Activity {
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == JOIN) {
 									channel.join();
-								} else if (which == LEAVE) {
-									channel.leave();
 								} else if (which == DESTROY) {
 									channel.destroy();
 								}

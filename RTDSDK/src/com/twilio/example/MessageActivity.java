@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,7 +108,12 @@ public class MessageActivity extends Activity {
 							name.append(" ,");
 						}
 					}
-					Toast.makeText(getApplicationContext(),name, Toast.LENGTH_LONG).show();
+					Toast toast= Toast.makeText(getApplicationContext(),name, Toast.LENGTH_LONG);
+					toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+					LinearLayout toastLayout = (LinearLayout) toast.getView();
+					TextView toastTV = (TextView) toastLayout.getChildAt(0);
+					toastTV.setTextSize(30);
+					toast.show();
 				} else if (which == INVITE_MEMBER) {
 					//channel.invite();
 				} else if (which == LEAVE) {
