@@ -15,5 +15,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_channel">ChannelActivity</string>
     <string name="title_activity_message">MessageActivity</string>
+    <string name="title_update_friendly_name">Enter a friendly name</string>
+    <string name="title_update_topic">Enter a topic</string>
+    <string name="title_add_channel_name">Enter a channel name</string>
 
 </resources>

@@ -5,11 +5,21 @@ import java.util.Map;
 import com.twilio.ipmessaging.Member;
 
 public class MemberImpl implements Member {
+	
+	private String sid;
+	private String identity;
+	
+
+	public MemberImpl(String sid, String identity) {
+		super();
+		this.sid = sid;
+		this.identity = identity;
+	}
 
 	@Override
 	public String getSid() {
 		// TODO Auto-generated method stub
-		return null;
+		return sid;
 	}
 
 	@Override
@@ -21,7 +31,7 @@ public class MemberImpl implements Member {
 	@Override
 	public String getIdentity() {
 		// TODO Auto-generated method stub
-		return null;
+		return identity;
 	}
 
 

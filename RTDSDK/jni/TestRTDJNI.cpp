@@ -29,6 +29,7 @@
 #include "TwilioIPMessagingConfigurationProvider.h"
 #include "TwilioIPMessagingNotificationClientListener.h"
 #include "TwilioIPMessagingClientListener.h"
+#include "com_twilio_ipmessaging_impl_ChannelImpl.h"
 
 #define TAG  "RTD_TESTS"
 #define PRODUCTION 1
@@ -64,12 +65,13 @@ typedef struct ClientContext {
 	ITNNotificationClientPtr notificationClient;
 	ITMClientPtr messagingClient;
 	ITMChannelsPtr channels;
+	std::map<const char*,ITMChannelPtr>   channelMap;
 
 } ClientContext;
 
 
 
-jobject j_rtd_test_obj_;
+static jobject j_rtd_test_obj_;
 ITNNotificationClientPtr notificationClient;
 ClientContext *clientParams_;
 
@@ -382,7 +384,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_example_TestRTDJNI_createMessagingClient
 
 	}
 
-	return 0;//reinterpret_cast<jlong>(messagingClient.get());
+	return 0;
 }
 
 
@@ -394,12 +396,15 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 		if(clientParams_->messagingClient != NULL) {
 			//get channels object//////////////////////////////////////
 			ITMChannelsPtr channels = clientParams_->messagingClient->getChannels();
+
 			while (channels == nullptr)
 			{
 				LOGW("app: messaging lib not ready, retrying...");
 				Poco::Thread::sleep(1000);
 				channels = clientParams_->messagingClient->getChannels();
 			}
+
+			clientParams_->channels = channels;
 
 			 //get channel lists//////////////////////////////////////
 			std::vector<ITMChannelPtr> channelsList;
@@ -417,6 +422,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 			}
 
 			jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+			//jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
 			jobjectArray channelsArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),java_channel_impl_cls, 0);
 
 			for (int i= 0; i<publicChannels.size() ; i++ ) {
@@ -429,7 +435,12 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_example_TestRTDJNI_getChannels(JN
 
 				jstring nameString = env->NewStringUTF(name);
 				jstring sidString = env->NewStringUTF(sid);
+				jlong channelHandle = (jlong)&channelPtr;
 
+				LOGW("INSERTING IN THE MAP %s", sid);
+				clientParams_->channelMap.insert( std::make_pair(sid, channelPtr));
+
+				__android_log_print(ANDROID_LOG_VERBOSE, TAG,"The value of channelHandle %d", channelHandle);
 
 				channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString);
 				LOGW("Created Channel Object.");
@@ -458,38 +469,380 @@ JNIEXPORT void JNICALL Java_com_twilio_example_TestRTDJNI_addChannel(JNIEnv *env
 		clientParams_->channels = channels;
 
 		if (clientParams_->channels != NULL) {
-
 			std::vector<ITMChannelPtr> publicChannels;
 			clientParams_->channels->getPublicChannelsList(publicChannels);
 
 			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count : %d.", publicChannels.size() );
 
 			ITMChannelPtr channel = channels->createChannel();
-			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 1");
-
 			channel->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 1.5");});
-			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 2");
+			const char *nativeNameString = env->GetStringUTFChars(name, JNI_FALSE);
 
-			channel->setName(generateRandomName(), NULL);
-			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 3");
-
+			channel->setName(nativeNameString, NULL);
 			channel->setAttributes("{\"name\":\"sample name\"}", NULL);
-			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 4");
-
 			clientParams_->channels->add(channel, NULL);
-			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 5");
 
 			std::vector<ITMChannelPtr> publicChannels1;
 			clientParams_->channels->getPublicChannelsList(publicChannels1);
-			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 6");
-
 			LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count : %d.", publicChannels1.size() );
 
+			env->ReleaseStringUTFChars(name, nativeNameString);
+
 		} else {
-			LOGE("hello world");
+			LOGE("clientParams_->channel is null");
 		}
 	} else {
-		LOGE("hello world 1");
+		LOGE("clientParams_ is null");
 	}
 
 }
+
+
+//Channel
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    joinChannel
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
+  (JNIEnv *env, jobject obj, jstring channel_sid) {
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel app: Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+
+	ITMChannelsPtr channels = clientParams_->channels;
+
+	if(channels != NULL) {
+
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeString);
+
+		if(channel != nullptr) {
+			LOGW("Joining channel with sid : %s ", nativeString);
+			channel->join(nullptr);
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel ELEMENT NOT found");
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel channels is null");
+	}
+
+	env->ReleaseStringUTFChars(channel_sid, nativeString);
+}
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    levaeChannel
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
+(JNIEnv *env, jobject obj, jstring channel_sid) {
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel: Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+
+	ITMChannelsPtr channels = clientParams_->channels;
+
+	if(channels != NULL) {
+
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeString);
+
+		if(channel != nullptr) {
+			LOGW("Leaving channel with sid : %s ", nativeString);
+			channel->leave(nullptr);
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel ELEMENT NOT found");
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel channels is null");
+	}
+
+	env->ReleaseStringUTFChars(channel_sid, nativeString);
+
+}
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    destroyChannel
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChannel
+(JNIEnv *env, jobject obj, jstring channel_sid) {
+
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChannel: Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+
+	ITMChannelsPtr channels = clientParams_->channels;
+
+	if(channels != NULL) {
+
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeString);
+
+		if(channel != nullptr) {
+			LOGW("Destroying channel with sid : %s ", nativeString);
+			channel->destroy(nullptr);
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChannel ELEMENT NOT found");
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChannel channels is null");
+	}
+
+	env->ReleaseStringUTFChars(channel_sid, nativeString);
+}
+
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getStatus
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jint JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus
+(JNIEnv *env, jobject obj, jstring channel_sid) {
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus: Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	ITMChannelsPtr channels = clientParams_->channels;
+	if(channels != NULL) {
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeString);
+		if(channel != nullptr) {
+			LOGW("GetStatus channel with sid : %s ", nativeString);
+			switch (channel->getStatus()) {
+				case TMChannelStatus::kTMChannelStatusInvited:
+					return 0;
+				case TMChannelStatus::kTMChannelStatusJoined:
+					return 1;
+				case TMChannelStatus::kTMChannelStatusNotParticipating:
+					return 2;
+				default:
+					break;
+			}
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus ELEMENT NOT found");
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus channels is null");
+	}
+
+	env->ReleaseStringUTFChars(channel_sid, nativeString);
+}
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getStatus
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelName
+(JNIEnv *env, jobject obj, jstring channel_sid, jstring channelName) {
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus: Entered ");
+	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	const char *nativeNameString = env->GetStringUTFChars(channelName, JNI_FALSE);
+	ITMChannelsPtr channels = clientParams_->channels;
+	if(channels != NULL) {
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeSidString);
+		if(channel != nullptr) {
+			LOGW("Update Name for channel with sid : %s ", nativeSidString);
+			channel->setName(nativeNameString, NULL);
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus ELEMENT NOT found");
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus channels is null");
+	}
+
+	env->ReleaseStringUTFChars(channel_sid, nativeSidString);
+	env->ReleaseStringUTFChars(channel_sid, nativeNameString);
+}
+
+
+JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMembers
+(JNIEnv *env, jobject obj, jstring channel_sid) {
+
+	jobject member;
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus: Entered ");
+	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	ITMChannelsPtr channels = clientParams_->channels;
+
+	if(channels != NULL) {
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeSidString);
+		env->ReleaseStringUTFChars(channel_sid, nativeSidString);
+		if(channel != nullptr) {
+		   ITMMembersPtr members = channel->getMembers();
+		   while (members == nullptr)
+		   {
+			   LOGW("app: members not available...");
+			   Poco::Thread::sleep(1000);
+			   members = channel->getMembers();
+		   }
+
+		   std::vector<ITMMemberPtr> memberList;
+		   members->getMembersList(memberList);
+
+			jclass java_member_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MemberImpl");
+
+			if(java_member_impl_cls != NULL) {
+				LOGW("Found java_member_impl_cls class" );
+			}
+
+			jmethodID construct = tw_jni_get_method_by_class(env, java_member_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+		    jobjectArray memberArray = (jobjectArray) env->NewObjectArray(memberList.size(),java_member_impl_cls, 0);
+
+			for (int i= 0; i< memberList.size() ; i++ ) {
+				ITMMemberPtr memberPtr = memberList[i];
+
+				const char* sid = memberPtr->getSid().c_str();
+				const char* name = memberPtr->getUsername().c_str();
+
+				LOGW("Name  : %s.", name );
+				LOGW("sid is %s", sid);
+
+				jstring nameString = env->NewStringUTF(name);
+				jstring sidString = env->NewStringUTF(sid);
+
+				member = tw_jni_new_object(env, java_member_impl_cls, construct, sidString, nameString);
+				LOGW("Created Member Object.");
+				env->SetObjectArrayElement(memberArray, i, member);
+				LOGW("Added member object to array");
+			}
+
+			if(memberArray != NULL) {
+				LOGW("messagesArray is NOT NULL ");
+			} else {
+				LOGW("messagesArray is  NULL *********");
+			}
+
+			return memberArray;
+
+		}
+
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus channels is null");
+	}
+
+	return nullptr;
+}
+
+//Messages
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getStatus
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMessages
+(JNIEnv *env, jobject obj, jstring channel_sid) {
+	jobject message = NULL;
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus: Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	ITMChannelsPtr channels = clientParams_->channels;
+	if(channels != NULL) {
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeString);
+		env->ReleaseStringUTFChars(channel_sid, nativeString);
+		if(channel != nullptr) {
+			LOGW("getMessages for channel with sid : %s ", nativeString);
+			ITMessagesPtr messages = channel->getMessages();
+			while (messages == nullptr)
+			{
+			   LOGW("app: messages not available...");
+			   Poco::Thread::sleep(1000);
+			   messages = channel->getMessages();
+			}
+
+			std::vector<ITMessagePtr> messageList;
+			messages->getMessagesList(messageList);
+
+			jclass java_message_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessageImpl");
+			if(java_message_impl_cls != NULL) {
+				LOGW("Found java_message_impl_cls class" );
+			}
+
+			jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+			jobjectArray messagesArray = (jobjectArray) env->NewObjectArray(messageList.size(),java_message_impl_cls, 0);
+
+			for (int i= 0; i< messageList.size() ; i++ ) {
+				ITMessagePtr messagePtr = messageList[i];
+
+				const char* author = messagePtr->getAuthor().c_str();
+				const char* body = messagePtr->getBody().c_str();
+
+				LOGW("author Name  : %s.", author );
+				LOGW("body is %s", body);
+
+				jstring authorString = env->NewStringUTF(author);
+				jstring bodyString = env->NewStringUTF(body);
+
+				message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString);
+				LOGW("Created Channel Object.");
+				env->SetObjectArrayElement(messagesArray, i, message);
+				LOGW("Added object to array");
+			}
+
+			if(messagesArray != NULL) {
+				LOGW("messagesArray is NOT NULL ");
+			} else {
+				LOGW("messagesArray is  NULL *********");
+			}
+
+			return messagesArray;
+
+
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus ELEMENT NOT found");
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus channels is null");
+	}
+}
+
+
+
+JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMessagesObject
+(JNIEnv *env, jobject obj, jstring channel_sid) {
+	jobject messagesObj = NULL;
+
+	LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus: Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	ITMChannelsPtr channels = clientParams_->channels;
+	if(channels != NULL) {
+		ITMChannelPtr channel = clientParams_->channels->getChannel(nativeString);
+		env->ReleaseStringUTFChars(channel_sid, nativeString);
+		if(channel != nullptr) {
+			LOGW("getMessages for channel with sid : %s ", nativeString);
+			ITMessagesPtr messages = channel->getMessages();
+			while (messages == nullptr)
+			{
+			   LOGW("app: messages not available...");
+			   Poco::Thread::sleep(1000);
+			   messages = channel->getMessages();
+			}
+
+			jclass java_messages_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessagesImpl");
+			if(java_messages_impl_cls != NULL) {
+				LOGW("Found java_messages_impl_cls class" );
+			}
+
+			jmethodID construct = tw_jni_get_method_by_class(env, java_messages_impl_cls, "<init>", "()V");
+
+			messagesObj = tw_jni_new_object(env, java_messages_impl_cls, construct);
+			LOGW("Created messagesObj Object.");
+
+
+			return messagesObj;
+
+		} else {
+			LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus ELEMENT NOT found");
+			return NULL;
+		}
+	} else {
+		LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus channels is null");
+		return NULL;
+	}
+}
+

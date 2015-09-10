@@ -1,6 +1,8 @@
 package com.twilio.example;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.twilio.ipmessaging.Channel;
@@ -18,6 +20,8 @@ public class TestRTDJNI {
 	private long nativeMessagingClient;
 	private String capabilityToken;
 	private long nativeClientParam;
+	
+
 	private LoginListener loginListener;
 	private Channel[] channels;
 
@@ -29,6 +33,13 @@ public class TestRTDJNI {
 		public void onLoginError(String errorMessage);
 
 		public void onLogoutFinished();
+	}
+	
+	private class CustomComparator implements Comparator<Channel> {
+		@Override
+		public int compare(Channel lhs, Channel rhs) {
+			return lhs.getFriendlyName().compareTo(rhs.getFriendlyName());		
+		}
 	}
 
 	public String getCapabilityToken() {
@@ -50,15 +61,19 @@ public class TestRTDJNI {
 		long i = this.init(this.capabilityToken);
 		long statusCode = this.createMessagingClient(this.capabilityToken);
 
+	
+		this.channels = this.getChannels();
+
+		if(this.channels != null) {
+			Collections.sort(Arrays.asList(this.channels), new CustomComparator());
+			System.out.println("Test Done : " + channels.length);
+		}
+		
 		if (statusCode == 0 && listener != null) {
 			listener.onLoginFinished();
 		} else {
 			listener.onLoginError("some error");
 		}
-		
-		this.channels = this.getChannels();
-
-		System.out.println("Test Done : " + channels.length);
 
 	}
 
@@ -71,7 +86,14 @@ public class TestRTDJNI {
 		return list;
 	}
 	
+	public long getNativeClientParam() {
+		return nativeClientParam;
+	}
 
+	public void setNativeClientParam(long nativeClientParam) {
+		this.nativeClientParam = nativeClientParam;
+	}
+	
 	public native long init(String token);
 
 	public native void shutDown();
@@ -85,4 +107,6 @@ public class TestRTDJNI {
 	public native void removeChannel(Channel channel);
 	
 	public native void createMessage(String message);
+
+	
 }

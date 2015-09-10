@@ -24,43 +24,40 @@ TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
 
 void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr message)
 {
-
+	LOGW("TwilioIPMessagingClientListener::onMessage");
 }
 
 void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr channel)
 {
+	LOGW("TwilioIPMessagingClientListener::onChannel");
 
 }
 
 void TwilioIPMessagingClientListener::onMember(TMAction action, ITMMemberPtr member)
 {
+	LOGW("TwilioIPMessagingClientListener::onMember");
 
 }
 
 void TwilioIPMessagingClientListener::onError(const std::string& error)
 {
-    //std::cout << "app: onError " << error << std::endl;
-
-   /* if (m_target)
-    {
-       // [(__bridge id<TwilioIPMessagingClientListenerDelegate>)m_target onError:error];
-    } */
+	LOGW("TwilioIPMessagingClientListener::onError");
 }
 
 void TwilioIPMessagingClientListener::onToastNotification(const std::string& channelId, const std::string& messageId)
 {
+	LOGW("TwilioIPMessagingClientListener::onToastNotification");
 
 }
 
 void TwilioIPMessagingClientListener::onToastSubscribed()
 {
-
+	LOGW("TwilioIPMessagingClientListener::onToastSubscribed");
 }
 
 void TwilioIPMessagingClientListener::onToastFailed(TNError code)
 {
-
-
+	LOGW("TwilioIPMessagingClientListener::onToastFailed");
 }
 
 

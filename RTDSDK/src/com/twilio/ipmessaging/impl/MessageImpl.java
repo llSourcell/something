@@ -8,6 +8,8 @@ public class MessageImpl implements Message {
 	private String author;
 	private Date date;
 	private String body;
+	private String sid;
+	private long nativeHandle; 
 
 	public MessageImpl(String author, String body) {
 		this.author = author;
@@ -15,26 +17,22 @@ public class MessageImpl implements Message {
 	}
 
 	@Override
-	public String getSid() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getSid() {		
+		return this.sid;
 	}
 
 	@Override
 	public String getAuthor() {
-		// TODO Auto-generated method stub
 		return this.author;
 	}
 
 	@Override
 	public Date getDateUpdated() {
-		// TODO Auto-generated method stub
 		return this.date;
 	}
 
 	@Override
 	public String getMessageBody() {
-		// TODO Auto-generated method stub
 		return body;
 	}
 

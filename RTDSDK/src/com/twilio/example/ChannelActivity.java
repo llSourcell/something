@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import uk.co.ribot.easyadapter.EasyAdapter;
 
 @SuppressLint("InflateParams")
 public class ChannelActivity extends Activity {
+
 	private static final String[] CHANNEL_OPTIONS = { "Join", "Leave", "Destroy" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
 	private static final int JOIN = 0;
@@ -90,15 +92,12 @@ public class ChannelActivity extends Activity {
 				new ChannelViewHolder.OnChannelClickListener() {
 					@Override
 					public void onChannelClicked(final Channel channel) {
-						// TODO: Remove the true here once channel is
-						// implemented
-						if (true || channel.getStatus() == Channel.ChannelStatus.JOINED) {
-							// TODO: we should send some data in intent here.
+						if (channel.getStatus() == Channel.ChannelStatus.JOINED) {
 							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+							i.putExtra("channel", (Parcelable) channel);
 							startActivity(i);
 							return;
-						}
-
+						} 
 						AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
 						builder.setTitle("Select an option").setItems(CHANNEL_OPTIONS,
 								new DialogInterface.OnClickListener() {

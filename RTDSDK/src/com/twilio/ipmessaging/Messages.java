@@ -22,5 +22,5 @@ public interface Messages
 	 * 
 	 * @param message	The message to send.
 	 */
-	public void sendMessage(String message);
+	public void sendMessage(Message message);
 }

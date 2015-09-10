@@ -122,7 +122,7 @@ LOCAL_SRC_FILES := \
 	TestRTDJNI.cpp \
 	TwilioIPMessagingConfigurationProvider.cpp \
 	TwilioIPMessagingNotificationClientListener.cpp \
-	TwilioIPMessagingClientListener.cpp
+	TwilioIPMessagingClientListener.cpp 
 
 LOCAL_STATIC_LIBRARIES := \
     RTDMessaging \

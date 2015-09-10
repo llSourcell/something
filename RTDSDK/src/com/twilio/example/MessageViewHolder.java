@@ -1,5 +1,6 @@
 package com.twilio.example;
 
+import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Message;
 
 import android.view.View;
@@ -34,6 +35,10 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 		//TODO:
 //		date.setText(message.getDateUpdated().toString());
 		body.setText(message.getMessageBody());
+	}
+	
+	public interface OnMessageClickListener {
+		void onMessageClicked(Channel channel);
 	}
 
 }
