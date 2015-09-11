@@ -7,8 +7,9 @@ public class MessagesImpl implements Messages{
 	
 	private long nativeMessagesHandler;
 
-	public MessagesImpl() {
+	public MessagesImpl(long handler) {
 		super();
+		this.nativeMessagesHandler = handler;
 	}
 
 	@Override
@@ -19,10 +20,16 @@ public class MessagesImpl implements Messages{
 
 	@Override
 	public void sendMessage(Message message) {
-		
+		sendMessageNative(message);
+	}
+
+	@Override
+	public Message[] getMessages() {
+		return this.getMessagesNative(this.nativeMessagesHandler);
 	}
 	
 	private native Message createMessageNative(String message);
-	private native void sendMessageNative(String message);
+	private native void sendMessageNative(Message message);
+	private native Message[] getMessagesNative(long handle);
 
 }

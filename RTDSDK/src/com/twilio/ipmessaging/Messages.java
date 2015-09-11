@@ -23,4 +23,11 @@ public interface Messages
 	 * @param message	The message to send.
 	 */
 	public void sendMessage(Message message);
+	
+	/**
+	 * Returns messages received so far from backend, messages are loaded asynchronously so this may 
+	 * not fully represent all history available for channel.
+	 * 
+	 */
+	public Message[] getMessages();
 }
