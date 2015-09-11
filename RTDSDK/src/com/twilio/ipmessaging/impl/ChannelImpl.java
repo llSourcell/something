@@ -157,7 +157,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public Messages getMessages(int count) {
 		
-		return null;
+		return getMessagesObject(this.sid);
 	}
 	
 	public Message[] getMessages() {

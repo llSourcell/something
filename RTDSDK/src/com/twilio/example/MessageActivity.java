@@ -37,7 +37,7 @@ public class MessageActivity extends Activity {
 	private ListView listView;
 	private EditText inputText;
 	private EasyAdapter<Message> adapter;
-	private List<Message> messages = new ArrayList<Message>();
+	private List<Message> messages;// = new ArrayList<Message>();
 	private TestRTDJNI rtdJni;
 	private Channel channel;
 	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Leave" };
@@ -204,9 +204,11 @@ public class MessageActivity extends Activity {
 
 	private void setupListView(Channel channel) {
 		listView = (ListView) findViewById(R.id.message_list_view);
-		Message[] messagesArray = channel.getMessages();
+		//Message[] messagesArray = channel.getMessages();
+		Messages messagesObject = channel.getMessages(50);
+		Message[] messagesArray = messagesObject.getMessages();
 		if(messagesArray.length > 0 ) {
-			messages = Arrays.asList(messagesArray);
+			messages = new ArrayList<Message>(Arrays.asList(messagesArray));//Arrays.asList();
 		}
 		adapter = new EasyAdapter<>(this, MessageViewHolder.class, messages,
 				new MessageViewHolder.OnMessageClickListener() {
@@ -227,11 +229,11 @@ public class MessageActivity extends Activity {
 			Messages messagesObject = this.channel.getMessages(50);
 			Message message = messagesObject.createMessage(input);
 			messagesObject.sendMessage(message);
-			
-			MessageImpl msg = new MessageImpl("kumkum", input);
-			messages.add(msg);
+		
+			/*MessageImpl msg = new MessageImpl("kumkum", input); */
+			messages.add(message);
 			adapter.notifyDataSetChanged();
-			pushNewMessage(input);
+			//pushNewMessage(input);
 			inputText.setText("");
 		}
 		inputText.requestFocus();

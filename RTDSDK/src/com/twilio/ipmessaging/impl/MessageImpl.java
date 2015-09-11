@@ -9,8 +9,14 @@ public class MessageImpl implements Message {
 	private Date date;
 	private String body;
 	private String sid;
-	private long nativeHandle; 
+	private long nativeMessageHandle; 
 
+	public MessageImpl(String author, String body, long handle) {
+		this.author = author;
+		this.body = body;
+		this.nativeMessageHandle = handle;
+	}
+	
 	public MessageImpl(String author, String body) {
 		this.author = author;
 		this.body = body;
@@ -46,6 +52,10 @@ public class MessageImpl implements Message {
 	public Date getDateCreated() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public long getNativeHandle() {
+		return nativeMessageHandle;
 	}
 
 }
