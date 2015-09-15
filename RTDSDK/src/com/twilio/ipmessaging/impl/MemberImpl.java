@@ -18,7 +18,6 @@ public class MemberImpl implements Member {
 
 	@Override
 	public String getSid() {
-		// TODO Auto-generated method stub
 		return sid;
 	}
 
@@ -30,7 +29,6 @@ public class MemberImpl implements Member {
 
 	@Override
 	public String getIdentity() {
-		// TODO Auto-generated method stub
 		return identity;
 	}
 

@@ -4,7 +4,6 @@ package com.twilio.ipmessaging.impl;
 import java.util.Map;
 import java.util.Set;
 
-import com.twilio.example.Logger;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
@@ -81,8 +80,9 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public Channel.ChannelStatus getStatus() {
-		logger.d("channelimpl leave called");
-		int status = getStatus(this.getSid());
+		logger.d("getStatus called");
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		int status = getStatus(nativeClientHandle, this.getSid());
 		switch (status) {
 		case 0:
 			return Channel.ChannelStatus.INVITED;
@@ -115,37 +115,41 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 	
 	@Override
-	public Member[] getMemberArray() {
+	public Members getMemberArray() {
 		
-		return getMembers(this.sid);
+		return getMembers(this.getNativeClientContextHandle(), this.sid);
 	}
 
 	@Override
 	public void updateAttributes(Map<String, String> updatedAttributes) {
-		
+		this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), updatedAttributes);
 	}
 
 	@Override
 	public void updateFriendlyName(String friendlyName) {
-		updateChannelName(this.getSid(), friendlyName);
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		updateChannelName(nativeClientHandle, this.getSid(), friendlyName);
 	}
 
 	@Override
 	public void join() {
 		logger.d("channelimpl join called");
-		joinChannel(this.getSid());
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		joinChannel(nativeClientHandle, this.getSid());
 	}
 
 	@Override
 	public void leave() {
 		logger.d("channelimpl leave called");
-		leaveChannel(this.getSid());
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		leaveChannel(nativeClientHandle, this.getSid());
 	}
 
 	@Override
 	public void destroy() {
 		logger.d("channelimpl destroy called");
-		destroyChannel(this.getSid());
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		destroyChannel(nativeClientHandle, this.getSid());
 	}
 
 	@Override
@@ -156,14 +160,10 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public Messages getMessages(int count) {
-		
-		return getMessagesObject(this.sid);
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		return getMessagesObject(nativeClientHandle, this.sid);
 	}
 	
-	public Message[] getMessages() {
-		
-		return getMessages(this.sid);
-	}
 
 	@Override
 	public void addByIdentity(String identity) {
@@ -181,17 +181,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		return this.nativeChannelHandle;
 	}
 	
-	public native void joinChannel(String channel_sid);
-	public native void leaveChannel(String channel_sid);
-	public native void destroyChannel(String channel_sid);
-	public native int getStatus(String channel_sid);
-	public native Message[] getMessages(String channel_sid);
-	public native Messages getMessagesObject(String channel_sid);
-	public native void updateChannelName(String channel_sid, String name);
 	
-	public native Member[] getMembers(String channel_sid);
-	public native void updateChannelAttributes(String channel_sid, Map<String, String> attrMap);
-
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -224,5 +214,21 @@ public class ChannelImpl implements Channel, Parcelable{
 			return null;
 		}
     };
+    
+	private long getNativeClientContextHandle() {
+		return TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+	}
+    
+    public native Messages getMessagesObject(long nativeClientParamHandle, String channel_sid);
+    public native int getStatus(long nativeClientParamHandle, String channel_sid);   
+    public native void joinChannel(long nativeClientParamHandle, String channel_sid);
+	public native void leaveChannel(long nativeClientParamHandle, String channel_sid);
+	public native void destroyChannel(long nativeClientParamHandle, String channel_sid);
+	
+	//public native Message[] getMessages(String channel_sid);
+	public native void updateChannelName(long nativeClientParamHandle, String channel_sid, String name);	
+	public native Members getMembers(long nativeClientParamHandle, String channel_sid);
+	public native void updateChannelAttributes(long nativeClientParamHandle, String channel_sid, Map<String, String> attrMap);
+
 
 }

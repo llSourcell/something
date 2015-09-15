@@ -32,7 +32,7 @@ using namespace rtd;
 class TwilioIPMessagingClientListener : public ITMClientListener
 {
 public:
-    TwilioIPMessagingClientListener();
+    TwilioIPMessagingClientListener(JNIEnv* env,jobject obj,jobject j_ipmessagingclient);
     virtual ~TwilioIPMessagingClientListener();
 
     void onMessage(TMAction action, ITMessagePtr message);
@@ -44,6 +44,13 @@ public:
     void onToastSubscribed();
     void onToastFailed(TNError code);
 
+private:
+    jobject j_ipmessagingclient_;
+	jmethodID j_start_listening_id_;
+	jmethodID j_stop_listening_id_;
+	jmethodID j_failed_to_start_id_;
+	jmethodID j_receive_conv_id_;
+	JNIEnv* env_;
 };
 
 #endif /* TwilioIPMessagingClientListener_cpp */

@@ -5,6 +5,7 @@
 //  Copyright © 2015 Twilio. All rights reserved.
 //
 
+#include <jni.h>
 #include "TwilioIPMessagingClientListener.h"
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
@@ -13,7 +14,7 @@
 
 using namespace rtd;
 
-TwilioIPMessagingClientListener::TwilioIPMessagingClientListener() {
+TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,jobject obj, jobject j_ipmessagingclient) {
 }
 
 TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
@@ -25,6 +26,7 @@ TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
 void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr message)
 {
 	LOGW("TwilioIPMessagingClientListener::onMessage");
+
 }
 
 void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr channel)

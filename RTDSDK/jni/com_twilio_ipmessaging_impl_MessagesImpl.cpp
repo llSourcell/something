@@ -102,8 +102,8 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 		MessageContext* messageContext_ = new MessageContext();
 		messageContext_->message = messageLocal;
-
 		jlong messageContextHandle = reinterpret_cast<jlong>(messageContext_);
+
 		const char* author = messageContext_->message->getAuthor().c_str();
 		const char* body = messageContext_->message->getBody().c_str();
 
@@ -145,8 +145,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
  * Signature: (J)[Lcom/twilio/ipmessaging/Message;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative
-  (JNIEnv *env, jobject obj){
-
+  (JNIEnv *env, jobject obj , jlong handle){
 	jobject message;
 
 	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesHandler");

@@ -68,14 +68,6 @@ public interface Channel {
 	public Messages getMessages(int count);
 	
 	/**
-	 * Method to get messages.
-	 * 
-	 * @param count number of messages to return.
-	 * @return the count number of messages.
-	 */
-	public Message[] getMessages();
-	
-	/**
 	 * Returns the current user's status on this channel.
 	 * 
 	 * @return the channel status.
@@ -106,9 +98,9 @@ public interface Channel {
 	/**
 	 * Method to get the channel members.
 	 * 
-	 * @return Set of Member objects.
+	 * @return Members objects.
 	 */
-	public Member[] getMemberArray();
+	public Members getMemberArray();
 	
 	
 	/**
