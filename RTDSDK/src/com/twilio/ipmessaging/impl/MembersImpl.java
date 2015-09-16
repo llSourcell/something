@@ -18,23 +18,27 @@ public class MembersImpl implements Members{
 	}
 
 	@Override
-	public void addByIdentity(String identity) {
-		// TODO Auto-generated method stub
-		
+	public void addByIdentity(String member) {
+		this.add(member);
 	}
 
 	@Override
 	public void inviteByIdentity(String identity) {
-		// TODO Auto-generated method stub
-		
+		this.invite(identity);
 	}
 
 	@Override
 	public void removeMember(Member member) {
-		// TODO Auto-generated method stub
+		//long memberContextHandle = ((MemberImpl)member).getNativeMemberHandler();
+		if(member != null) {
+			remove(member);
+		}
 		
 	}
 	
 	private native Member[] getMembersNative();
+	private native void invite(String member);
+	private native void add(String member);
+	private native void remove(Member handle);
 
 }

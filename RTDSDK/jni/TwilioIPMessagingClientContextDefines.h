@@ -25,27 +25,32 @@ typedef struct IPMessagingClientContext {
 
 } IPMessagingClientContext;
 
-
+//Channel
 typedef struct ChannelContext {
 	ITMChannelPtr channel;
 } ChannelContext;
 
+//Channels
 typedef struct ChannelsContext {
 	ITMChannelsPtr channels;
 } ChannelsContext;
 
+//Message
 typedef struct MessageContext {
 	ITMessagePtr message;
 } MessageContext;
 
+//Members
 typedef struct MessagesContext {
 	ITMessagesPtr messages;
 } MessagesContext;
 
+//Member
 typedef struct MemberContext {
 	ITMMemberPtr member;
 } MemberContext;
 
+//Members
 typedef struct MembersContext {
 	ITMMembersPtr members;
 } MembersContext;

@@ -8,6 +8,7 @@ public class MemberImpl implements Member {
 	
 	private String sid;
 	private String identity;
+	private long nativeMemberHandler;
 	
 
 	public MemberImpl(String sid, String identity) {
@@ -15,10 +16,21 @@ public class MemberImpl implements Member {
 		this.sid = sid;
 		this.identity = identity;
 	}
+	
+	public MemberImpl(String sid, String identity, long handle) {
+		super();
+		this.sid = sid;
+		this.identity = identity;
+		this.nativeMemberHandler = handle;
+	}
 
 	@Override
 	public String getSid() {
 		return sid;
+	}
+
+	public long getNativeMemberHandler() {
+		return nativeMemberHandler;
 	}
 
 	@Override

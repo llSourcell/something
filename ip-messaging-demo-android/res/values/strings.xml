@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Android IP Messaging</string>
+    <string name="app_name">Android IP Messaging Demo</string>
     <string name="client_name">Client Name</string>
     <string name="login">Log In</string>
     <string name="logout">Log Out</string>
@@ -18,5 +18,8 @@
     <string name="title_update_friendly_name">Enter a friendly name</string>
     <string name="title_update_topic">Enter a topic</string>
     <string name="title_add_channel_name">Enter a channel name</string>
+    <string name="title_invite_member">Invite member</string>
+    <string name="title_add_member">Add member</string>
+    <string name="title_remove_member">Remove member</string>
 
 </resources>

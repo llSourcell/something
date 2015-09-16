@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,18 +38,23 @@ public class MessageActivity extends Activity {
 	private ListView listView;
 	private EditText inputText;
 	private EasyAdapter<Message> adapter;
+	
 	private List<Message> messages =  new ArrayList<Message>();
+	private List<Member> members =  new ArrayList<Member>();
 	private TestRTDJNI rtdJni;
 	private Channel channel;
-	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Leave" };
+	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave" };
 	
 	private static final int NAME_CHANGE = 0;
 	private static final int TOPIC_CHANGE = 1;
 	private static final int LIST_MEMBERS = 2;
 	private static final int INVITE_MEMBER = 3;
-	private static final int LEAVE = 4;
+	private static final int ADD_MEMBER = 4;
+	private static final int REMOVE_MEMBER = 5;
+	private static final int LEAVE = 6;
 	
-	private AlertDialog editChannelDialog;
+	private AlertDialog editTextDialog;
+
 	
 	
 	@Override
@@ -99,8 +105,6 @@ public class MessageActivity extends Activity {
 				} else if (which == TOPIC_CHANGE) {
 					channel.leave();
 				} else if (which == LIST_MEMBERS) {
-					
-					//::TODO
 					Members membersObject = channel.getMemberArray();
 					Member[] members = membersObject.getMembers();
 					
@@ -118,11 +122,15 @@ public class MessageActivity extends Activity {
 					TextView toastTV = (TextView) toastLayout.getChildAt(0);
 					toastTV.setTextSize(30);
 					toast.show(); 
-				} else if (which == INVITE_MEMBER) {
-					//channel.invite();
+				} else if (which == INVITE_MEMBER) {			
+					showInviteMemberDialog();
+				} else if(which == ADD_MEMBER) {
+					showAddMemberDialog();
 				} else if (which == LEAVE) {
 					channel.leave();
-				}
+				} else if (which == REMOVE_MEMBER) {
+					showRemoveMemberDialog();
+				}  //REMOVE_MEMBER
 			}
 		});
 		
@@ -140,7 +148,7 @@ public class MessageActivity extends Activity {
 				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						String friendlyName = ((EditText) editChannelDialog.findViewById(R.id.update_friendly_name)).getText()
+						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
 						channel.updateFriendlyName(friendlyName);
@@ -150,8 +158,8 @@ public class MessageActivity extends Activity {
 						dialog.cancel();
 					}
 				});
-		editChannelDialog = builder.create();
-		editChannelDialog.show();
+		editTextDialog = builder.create();
+		editTextDialog.show();
 	}
 	
 	private void showChangeTopicDialog() {
@@ -165,7 +173,7 @@ public class MessageActivity extends Activity {
 				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						String topic = ((EditText) editChannelDialog.findViewById(R.id.update_topic)).getText()
+						String topic = ((EditText) editTextDialog.findViewById(R.id.update_topic)).getText()
 								.toString();
 						logger.e(topic);
 						Map attrMap = new HashMap<String, String>();
@@ -177,8 +185,87 @@ public class MessageActivity extends Activity {
 						dialog.cancel();
 					}
 				});
-		editChannelDialog = builder.create();
-		editChannelDialog.show();
+		editTextDialog = builder.create();
+		editTextDialog.show();
+	}
+	
+	private void showInviteMemberDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_invite_member, null))
+				.setPositiveButton("Invite", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String memberName = ((EditText) editTextDialog.findViewById(R.id.invite_member)).getText()
+								.toString();
+						logger.e(memberName);
+						
+						Members membersObject = channel.getMemberArray();
+						membersObject.inviteByIdentity(memberName);
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		editTextDialog = builder.create();
+		editTextDialog.show();
+	}
+	
+	private void showAddMemberDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_add_member, null))
+				.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String memberName = ((EditText) editTextDialog.findViewById(R.id.add_member)).getText()
+								.toString();
+						logger.e(memberName);
+						
+						Members membersObject = channel.getMemberArray();
+						membersObject.addByIdentity(memberName);
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		editTextDialog = builder.create();
+		editTextDialog.show();
+	}
+	
+	private void showRemoveMemberDialog() {
+		final Members membersObject = channel.getMemberArray();
+		Member[] membersArray= membersObject.getMembers();
+		if(membersArray.length > 0 ) {
+			members = new ArrayList<Member>(Arrays.asList(membersArray));
+		}
+	    
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(MessageActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.custom, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle("List");
+        ListView lv = (ListView) convertView.findViewById(R.id.listView1);
+		EasyAdapter<Member> adapterMember = new EasyAdapter<Member>(this, MemberViewHolder.class, members,
+				new MemberViewHolder.OnMemberClickListener() {
+					
+					@Override
+					public void onMemberClicked(Member member) {
+						membersObject.removeMember(member);
+					}
+				});
+		lv.setAdapter(adapterMember);
+        alertDialog.show();
 	}
 	
 
@@ -242,10 +329,5 @@ public class MessageActivity extends Activity {
 		}
 		inputText.requestFocus();
 	}
-
-	private void pushNewMessage(String message) {
-		
-	}
-	
 
 }

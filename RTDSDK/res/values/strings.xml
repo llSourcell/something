@@ -18,5 +18,6 @@
     <string name="title_update_friendly_name">Enter a friendly name</string>
     <string name="title_update_topic">Enter a topic</string>
     <string name="title_add_channel_name">Enter a channel name</string>
+     <string name="title_invite_member">Invite member</string>
 
 </resources>
