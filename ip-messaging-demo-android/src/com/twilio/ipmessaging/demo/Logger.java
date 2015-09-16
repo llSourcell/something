@@ -1,4 +1,4 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,5 +1,6 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
+import com.twilio.example.R;
 import com.twilio.ipmessaging.Member;
 
 import android.view.View;

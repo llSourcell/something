@@ -18,10 +18,10 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
  * Method:    getChannelNative
- * Signature: (Ljava/lang/String;J)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelNative
-  (JNIEnv *, jobject, jstring, jlong);
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl

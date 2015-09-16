@@ -5,7 +5,7 @@
  *  the Twilio Terms of Service located at http://www.twilio.com/legal/tos
  */
 
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
 import java.io.IOException;
 import java.io.InputStream;

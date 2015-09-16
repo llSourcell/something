@@ -1,11 +1,15 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
+import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 
 import android.annotation.SuppressLint;
@@ -15,15 +19,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
 @SuppressLint("InflateParams")
-public class ChannelActivity extends Activity {
+public class ChannelActivity extends Activity implements ChannelListener {
 
 	private static final String[] CHANNEL_OPTIONS = { "Join", "Destroy" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
@@ -31,7 +39,7 @@ public class ChannelActivity extends Activity {
 	private static final int DESTROY = 1;
 
 	private ListView listView;
-	private TestRTDJNI rtdJni;
+	private BasicIPMessagingClient rtdJni;
 	private List<Channel> channels = new ArrayList<Channel>();
 	private EasyAdapter<Channel> adapter;
 	private AlertDialog createChannelDialog;
@@ -63,7 +71,7 @@ public class ChannelActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		getChannels();
+		getChannels(null);
 	}
 
 	private void showCreateChannelDialog() {
@@ -80,8 +88,9 @@ public class ChannelActivity extends Activity {
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
 						logger.e(channelName);
-						rtdJni.addChannel(channelName);
-						getChannels();
+						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
+						Channel newChannel = channelsLocal.createChannel(channelName, ChannelActivity.this);
+						getChannels(newChannel.getSid());
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -119,14 +128,66 @@ public class ChannelActivity extends Activity {
 					}
 				});
 		listView.setAdapter(adapter);
-		getChannels();
+		getChannels(null);
 	}
 
-	private void getChannels() {
+	private void getChannels(String channelId) {
+		if(channelId != null && !channelId.isEmpty()) {
+			Channel newChannel = rtdJni.getIpMessagingClient().getChannels().getChannel(channelId);
+			String newChannelAdded = newChannel.getFriendlyName() + "Added with channel Sid: " + newChannel.getSid();
+			Toast toast= Toast.makeText(getApplicationContext(), newChannelAdded, Toast.LENGTH_LONG);
+			toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+			LinearLayout toastLayout = (LinearLayout) toast.getView();
+			TextView toastTV = (TextView) toastLayout.getChildAt(0);
+			toastTV.setTextSize(30);
+			toast.show(); 
+		}
 		channels.clear();
 		Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
 		Channel[] channelArray = channelsLocal.getChannels();
 		this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
 		adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onMessageAdd(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMessageChang(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMessageDelete(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMemberJoin(Member member) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMemberChange(Member member) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMemberDelete(Member member) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAttributesChange(Map<String, String> updatedAttributes) {
+		// TODO Auto-generated method stub
+		
 	}
 }

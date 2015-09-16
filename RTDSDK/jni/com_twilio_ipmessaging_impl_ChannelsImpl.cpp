@@ -2,9 +2,12 @@
 #include <jni.h>
 #include "com_twilio_ipmessaging_impl_ChannelsImpl.h"
 #include "TwilioIPMessagingClientContextDefines.h"
+#include "ITMChannel.h"
 
 #include <twilio-jni/twilio-jni.h>
 #include <android/log.h>
+
+using namespace rtd;
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -14,6 +17,81 @@
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
   (JNIEnv *env, jobject obj, jstring friendlyName, jobject listener) {
 
+	jobject channel;
+	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
+
+	LOGW( "createChannelNative : Checking nativeChannelsContext.");
+
+	if (nativeChannelsContext == 0) {
+			LOGW("nativeChannelsContext is null");
+			return nullptr;
+	} else {
+
+		ChannelsContext *channelsContextRecreate = reinterpret_cast<ChannelsContext *>(nativeChannelsContext);
+
+		LOGW("client context is recreated.");
+
+		if(channelsContextRecreate == nullptr) {
+			LOGW( "createChannelNative : channelsContextRecreate is NULL.");
+			return 0;
+		}
+
+		if(channelsContextRecreate->channels == nullptr) {
+			LOGW( "createChannelNative : ITChannelsPtr is NULL.");
+			return 0;
+		}
+
+		ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
+
+		if (channelsPtr != nullptr) {
+
+			const char *nativeNameString = env->GetStringUTFChars(friendlyName, JNI_FALSE);
+
+			ITMChannelPtr channelPtr = channelsPtr->createChannel();
+			LOGW( "createChannelNative : created channel setting type.");
+			channelPtr->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOGW("Java_com_twilio_example_TestRTDJNI_addChannel app: my channels count 1.5");});
+			LOGW( "createChannelNative : setting type.");
+			channelPtr->setName(nativeNameString, NULL);
+			LOGW( "createChannelNative : Setting namel.");
+			channelsPtr->add(channelPtr, nullptr);
+			LOGW("createChannelNative: channel added.");
+
+			//Create channel context
+			ChannelContext* channelContext_ = new ChannelContext();
+			channelContext_->channel = channelPtr;
+			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
+
+			const char* sid = channelPtr->getSid().c_str();
+			const char* name = channelPtr->getName().c_str();
+
+			LOGW("Channel Name  : %s.", name );
+			LOGW("Channel Sid %s", sid);
+
+
+			jstring nameString = env->NewStringUTF(name);
+			jstring sidString = env->NewStringUTF(sid);
+
+			//create channel object
+			jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
+			if(java_channel_impl_cls != nullptr) {
+				LOGW("Found java_channel_impl_cls class" );
+			}
+
+			jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
+			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
+						LOGW("Created Channel Object.");
+
+			//Cleanup
+			LOGW("createChannelNative: release native string.");
+			env->ReleaseStringUTFChars(friendlyName, nativeNameString);
+
+
+		} else {
+			LOGE("channels is null");
+		}
+	}
+
+	return channel;
 }
 
 /*
@@ -22,8 +100,71 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
  * Signature: (Ljava/lang/String;J)V
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelNative
-  (JNIEnv *env, jobject obj, jstring, jlong) {
+  (JNIEnv *env, jobject obj, jstring channel_sid) {
 
+	jobject channel;
+	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
+
+	if(channel_sid != nullptr) {
+		const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+
+		LOGW( "createChannelNative : Checking nativeChannelsContext.");
+
+		if (nativeChannelsContext == 0) {
+				LOGW("nativeChannelsContext is null");
+				return nullptr;
+		} else {
+
+			ChannelsContext *channelsContextRecreate = reinterpret_cast<ChannelsContext *>(nativeChannelsContext);
+			LOGW("client context is recreated.");
+
+			if(channelsContextRecreate == nullptr) {
+				LOGW( "createChannelNative : channelsContextRecreate is NULL.");
+				return 0;
+			}
+
+			if(channelsContextRecreate->channels == nullptr) {
+				LOGW( "createChannelNative : ITChannelsPtr is NULL.");
+				return 0;
+			}
+
+			ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
+			if(channelsPtr != nullptr) {
+				ITMChannelPtr channelPtr = channelsPtr->getChannel(nativeString);
+				if(channelPtr != nullptr) {
+					LOGW("Creating channel with sid : %s ", nativeString);
+
+					//Create channel context
+					ChannelContext* channelContext_ = new ChannelContext();
+					channelContext_->channel = channelPtr;
+					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
+
+					const char* sid = channelPtr->getSid().c_str();
+					const char* name = channelPtr->getName().c_str();
+
+					LOGW("Channel Name  : %s.", name );
+					LOGW("Channel Sid %s", sid);
+
+					jstring nameString = env->NewStringUTF(name);
+					jstring sidString = env->NewStringUTF(sid);
+
+					//create channel object
+					jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
+					if(java_channel_impl_cls != nullptr) {
+						LOGW("Found java_channel_impl_cls class" );
+					}
+
+					jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
+					channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
+								LOGW("Created Channel Object.");
+
+				} else {
+					LOGW("Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel channels is null");
+				}
+			}
+		}
+	}
+	return channel;
 }
 
 /*
@@ -95,10 +236,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 			jstring nameString = env->NewStringUTF(name);
 			jstring sidString = env->NewStringUTF(sid);
-			jlong channelHandle = (jlong)&channelPtr;
 
-			//LOGW("INSERTING IN THE MAP %s", sid);
-			//clientParams_->channelMap.insert( std::make_pair(sid, channelPtr));
 
 			__android_log_print(ANDROID_LOG_VERBOSE, TAG,"The value of channelHandle %d", channelContextHandle);
 

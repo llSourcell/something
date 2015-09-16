@@ -98,14 +98,12 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public void setListener(ChannelListener listener) {
-		// TODO Auto-generated method stub
-		
+		this.listener = listener;
 	}
 
 	@Override
-	public ChannelListener getListener() {
-		// TODO Auto-generated method stub
-		return null;
+	public ChannelListener getListener() {		
+		return this.listener;
 	}
 
 	@Override
@@ -224,8 +222,6 @@ public class ChannelImpl implements Channel, Parcelable{
     public native void joinChannel(long nativeClientParamHandle, String channel_sid);
 	public native void leaveChannel(long nativeClientParamHandle, String channel_sid);
 	public native void destroyChannel(long nativeClientParamHandle, String channel_sid);
-	
-	//public native Message[] getMessages(String channel_sid);
 	public native void updateChannelName(long nativeClientParamHandle, String channel_sid, String name);	
 	public native Members getMembers(long nativeClientParamHandle, String channel_sid);
 	public native void updateChannelAttributes(long nativeClientParamHandle, String channel_sid, Map<String, String> attrMap);

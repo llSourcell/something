@@ -1,4 +1,4 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
@@ -41,7 +42,7 @@ public class MessageActivity extends Activity {
 	
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
-	private TestRTDJNI rtdJni;
+	private BasicIPMessagingClient rtdJni;
 	private Channel channel;
 	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave" };
 	

@@ -1,6 +1,7 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
-import com.twilio.example.TestRTDJNI.LoginListener;
+import com.twilio.example.R;
+import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -25,7 +26,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private Button logout;
 	private String capabilityToken = null;
 	private EditText clientNameTextBox;
-	private TestRTDJNI rtdJni;
+	private BasicIPMessagingClient rtdJni;
 	private String endpoint_id = "";
 
 	@Override

@@ -1,11 +1,11 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
 import android.app.Application;
 
 public class TwilioApplication extends Application {
 
 	private static TwilioApplication instance;
-	private TestRTDJNI rtdJni;
+	private BasicIPMessagingClient rtdJni;
 	
 
 	public static TwilioApplication get() {
@@ -16,10 +16,10 @@ public class TwilioApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		TwilioApplication.instance = this;
-		rtdJni = new TestRTDJNI(getApplicationContext());
+		rtdJni = new BasicIPMessagingClient(getApplicationContext());
 	}
 	
-	public TestRTDJNI getRtdJni() {
+	public BasicIPMessagingClient getRtdJni() {
 		return this.rtdJni;
 	}
 }

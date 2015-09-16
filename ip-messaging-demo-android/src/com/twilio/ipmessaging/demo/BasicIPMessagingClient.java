@@ -1,4 +1,4 @@
-package com.twilio.example;
+package com.twilio.ipmessaging.demo;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,27 +12,16 @@ import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
 import android.content.Context;
 
-public class TestRTDJNI implements IPMessagingClientListener {
-	/*static {
-		System.loadLibrary("twilio-rtd-native"); // Load native library at
-													// runtime
-	}
-	*/
+public class BasicIPMessagingClient implements IPMessagingClientListener {
 
-	private long nativeIPMessagingClientListener;
-	private long nativeNotificationClientObserver;
-	private long nativeConfigurationProvider;
-	private long nativeNotificationClient;
-	private long nativeMessagingClient;
+
 	private String capabilityToken;
 	private long nativeClientParam;
-	
 	private TwilioIPMessagingClient ipMessagingClient;
-	private LoginListener loginListener;
 	private Channel[] channels;
 	private Context context;
 	
-	public TestRTDJNI(Context context) {
+	public BasicIPMessagingClient(Context context) {
 		super();
 		this.context = context;
 	}
@@ -62,32 +51,7 @@ public class TestRTDJNI implements IPMessagingClientListener {
 		this.capabilityToken = capabilityToken;
 	}
 
-	// This seems to be holding on to the object references. But
-	// notificationClientPtr->Init(notificationClientObserver);
-	// results in errorcode 7 (TwilsockError). Currently my test device is
-	// connected to TwilioAV and tested using PROD.
-	public void doTestOld(String capabilityToken, LoginListener listener) {
-
-		System.out.println("Test starting .....");
-		
-		long i = this.init(this.capabilityToken);
-		long statusCode = this.createMessagingClient(this.capabilityToken);
-
 	
-		this.channels = this.getChannelsArray();
-
-		if(this.channels != null) {
-			Collections.sort(Arrays.asList(this.channels), new CustomComparator());
-			System.out.println("Test Done : " + channels.length);
-		}
-		
-		if (statusCode == 0 && listener != null) {
-			listener.onLoginFinished();
-		} else {
-			listener.onLoginError("some error");
-		}
-		
-	}
 	
 	public void doTest(final String capabilityToken, final LoginListener listener) {
 		
@@ -96,7 +60,7 @@ public class TestRTDJNI implements IPMessagingClientListener {
             @Override
             public void onInitialized()
             {
-            	ipMessagingClient = TwilioIPMessagingClient.init(capabilityToken, TestRTDJNI.this);
+            	ipMessagingClient = TwilioIPMessagingClient.init(capabilityToken, BasicIPMessagingClient.this);
             	if(listener != null) {
 					listener.onLoginFinished();
             	}
@@ -109,19 +73,15 @@ public class TestRTDJNI implements IPMessagingClientListener {
             }
         });
 
-		System.out.println("Test starting .....");
-		
-		
-
 	}
 
-	public TestRTDJNI() {
+	public BasicIPMessagingClient() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public void cleanupTest() {
-		this.shutDown();
+		// TODO
 	}
 	
 	public List<Channel> getChannelList() {
@@ -136,22 +96,6 @@ public class TestRTDJNI implements IPMessagingClientListener {
 	public void setNativeClientParam(long nativeClientParam) {
 		this.nativeClientParam = nativeClientParam;
 	}
-	
-	public native long init(String token);
-
-	public native void shutDown();
-
-	public native long createMessagingClient(String token);
-
-	public native Channel[] getChannelsArray();
-	
-	public native Channels getChannels();
-
-	public native void addChannel(String name);
-
-	public native void removeChannel(Channel channel);
-	
-	public native void createMessage(String message);
 
 	@Override
 	public void onChannelAdd(Channel channel) {

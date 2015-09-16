@@ -15,15 +15,14 @@ public class ChannelsImpl implements Channels {
 	}
 
 	@Override
-	public Channel createChannel(String friendlyName, ChannelListener listener) {
-		// TODO Auto-generated method stub
-		return null;
+	public Channel createChannel(String friendlyName, ChannelListener listener) {	
+		return this.createChannelNative(friendlyName, listener);
 	}
 
 	@Override
 	public Channel getChannel(String channelId) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return this.getChannelNative(channelId, nativeChannelsHandler);
 	}
 
 	@Override
