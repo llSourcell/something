@@ -2,6 +2,7 @@ package com.twilio.ipmessaging.impl;
 
 import java.util.Date;
 
+import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Message;
 
 public class MessageImpl implements Message {
@@ -10,6 +11,7 @@ public class MessageImpl implements Message {
 	private String body;
 	private String sid;
 	private long nativeMessageHandle; 
+	private Channel channel;
 
 	public MessageImpl(String author, String body, long handle) {
 		this.author = author;
@@ -57,5 +59,13 @@ public class MessageImpl implements Message {
 	public long getNativeHandle() {
 		return nativeMessageHandle;
 	}
+	
+	@Override
+	public String getChannelSid() {
+		String sid = getChannelSidNative();
+		return sid;
+	}
+	
+	public native String getChannelSidNative();
 
 }

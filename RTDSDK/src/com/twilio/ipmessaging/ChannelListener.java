@@ -23,7 +23,7 @@ public interface ChannelListener {
 	 * 
 	 * @param message The message that changed.
 	 */
-	void onMessageChang(Message message);   
+	void onMessageChange(Message message);   
 	
 	/**
 	 * Called when a Message is deleted from the channel the current user is subscribed to.

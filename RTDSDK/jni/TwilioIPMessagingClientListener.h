@@ -46,10 +46,8 @@ public:
 
 private:
     jobject j_ipmessagingclient_;
-	jmethodID j_start_listening_id_;
-	jmethodID j_stop_listening_id_;
-	jmethodID j_failed_to_start_id_;
-	jmethodID j_receive_conv_id_;
+    jobject j_ipmessagingclientListenerInternal_;
+	jmethodID j_onMessageAdd_;
 	JNIEnv* env_;
 };
 

@@ -8,17 +8,36 @@ import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 
-public class IPMessagingClientListenImpl implements IPMessagingClientListener, ChannelListener{
+public class IPMessagingClientListenerInternal implements IPMessagingClientListener, ChannelListener{
+	
+	private static final Logger logger = Logger.getLogger(IPMessagingClientListenerInternal.class);
+	
+	private long nativeIPMessagingClientListener;
+	private IPMessagingClientListener listener;
+	
+
+	public IPMessagingClientListenerInternal(IPMessagingClientListener listener) {
+		this.listener = listener;
+	}
+
 
 	@Override
 	public void onMessageAdd(Message message) {
-		// TODO Auto-generated method stub
+		logger.d("Entered onMessageAdd");
+		String body = message.getMessageBody();
+		String author = message.getAuthor();
+		String cSid = message.getChannelSid();
+		Channel channel = TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+		ChannelListener listener = channel.getListener();
+		if(listener != null ) {
+			listener.onMessageAdd(message);
+		}
+		logger.d("Leaving onMessageAdd");
 		
 	}
 
 	@Override
-	public void onMessageChang(Message message) {
-		// TODO Auto-generated method stub
+	public void onMessageChange(Message message) {
 		
 	}
 
@@ -81,5 +100,6 @@ public class IPMessagingClientListenImpl implements IPMessagingClientListener, C
 		// TODO Auto-generated method stub
 		
 	}
+	
 
 }

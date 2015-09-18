@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
@@ -25,7 +26,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,7 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
-public class MessageActivity extends Activity {
+public class MessageActivity extends Activity{
 
 	private static final Logger logger = Logger.getLogger(MessageActivity.class);
 	private ListView listView;
@@ -66,15 +66,13 @@ public class MessageActivity extends Activity {
 		listView = (ListView) findViewById(R.id.message_list_view);
 		channel = (Channel) getIntent().getExtras().get("channel");
 		setupListView(channel);
-		//adapter = new EasyAdapter<>(getBaseContext(), MessageViewHolder.class, messages);
-		adapter.registerDataSetObserver(new DataSetObserver() {
+			adapter.registerDataSetObserver(new DataSetObserver() {
 			@Override
 			public void onChanged() {
 				super.onChanged();
 				listView.setSelection(adapter.getCount() - 1);
 			}
 		});
-		//listView.setAdapter(adapter);
 		setupInput();
 	}
 	
@@ -330,5 +328,4 @@ public class MessageActivity extends Activity {
 		}
 		inputText.requestFocus();
 	}
-
 }

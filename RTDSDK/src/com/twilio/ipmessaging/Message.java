@@ -50,4 +50,6 @@ public interface Message {
 	 */
 	public void updateMessageBody(String body);
 
+	String getChannelSid();
+
 }

@@ -16,7 +16,11 @@ public class ChannelsImpl implements Channels {
 
 	@Override
 	public Channel createChannel(String friendlyName, ChannelListener listener) {	
-		return this.createChannelNative(friendlyName, listener);
+		
+		Channel channel = this.createChannelNative(friendlyName, listener);
+		String cSid = channel.getSid();
+		TwilioIPMessagingClientImpl.publicChannelMap.put(cSid, channel);
+		return channel;
 	}
 
 	@Override

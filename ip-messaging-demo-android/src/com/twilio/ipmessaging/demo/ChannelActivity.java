@@ -43,7 +43,10 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private List<Channel> channels = new ArrayList<Channel>();
 	private EasyAdapter<Channel> adapter;
 	private AlertDialog createChannelDialog;
+	private Channels channelsLocal;
+	private Channel[] channelArray;
 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,6 +124,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 									channel.join();
 								} else if (which == DESTROY) {
 									channel.destroy();
+									getChannels(null);
 								}
 							}
 						});
@@ -143,8 +147,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			toast.show(); 
 		}
 		channels.clear();
-		Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-		Channel[] channelArray = channelsLocal.getChannels();
+		channelsLocal= rtdJni.getIpMessagingClient().getChannels();
+		channelArray = channelsLocal.getChannels();
 		this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
 		adapter.notifyDataSetChanged();
 	}
@@ -152,14 +156,26 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	@Override
 	public void onMessageAdd(Message message) {
 		// TODO Auto-generated method stub
+		logger.d("Message received");
+		Channel channel = this.channelsLocal.getChannel(message.getChannelSid());
+		/*Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+		i.putExtra("channel", (Parcelable) channel);
+		startActivity(i); */
+		StringBuffer text = new StringBuffer();
+		text.append("From: " + message.getAuthor());
+		text.append("Body:" + message.getMessageBody());
+		text.append("cSid: " + message.getChannelSid());
+		
+		Toast toast= Toast.makeText(getApplicationContext(),text.toString(), Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+		LinearLayout toastLayout = (LinearLayout) toast.getView();
+		TextView toastTV = (TextView) toastLayout.getChildAt(0);
+		toastTV.setTextSize(30);
+		toast.show(); 
 		
 	}
 
-	@Override
-	public void onMessageChang(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	@Override
 	public void onMessageDelete(Message message) {
@@ -187,6 +203,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 	@Override
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMessageChange(Message arg0) {
 		// TODO Auto-generated method stub
 		
 	}

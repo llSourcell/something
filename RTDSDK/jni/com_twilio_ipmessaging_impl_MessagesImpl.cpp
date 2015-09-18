@@ -181,7 +181,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 			LOGW("Found java_message_impl_cls class" );
 		}
 
-		//jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
 		jobjectArray messagesArray = (jobjectArray) env->NewObjectArray(messageList.size(),java_message_impl_cls, 0);
 

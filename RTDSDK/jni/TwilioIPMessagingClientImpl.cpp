@@ -52,9 +52,43 @@ std::map<std::string, std::string> configMap;
 #endif
 
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    create
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_create
+  (JNIEnv *env, jobject obj) {
+
+	LOGW( "Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_init() : Initializing ssl.");
+
+	static const char *class_names[] = {
+			"com/twilio/ipmessaging/impl/MessageImpl",
+			NULL
+		};
+	static bool classes_precached = false;
+
+	if (!classes_precached) {
+		for (int i = 0; class_names[i]; ++i) {
+			tw_jni_find_class(env, class_names[i]);
+			if (env->ExceptionOccurred()) {
+				env->ExceptionClear();
+			}
+		}
+		classes_precached = true;
+	}
+
+	LOGW( "Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_init() : Initializing ssl.");
+
+
+}
+
+
 
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
   (JNIEnv *env, jobject obj, jstring token, jobject listener) {
+
+
 
 	LOGW( "Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_init() : Initializing ssl.");
 

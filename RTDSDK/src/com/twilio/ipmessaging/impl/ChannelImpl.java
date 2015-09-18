@@ -225,6 +225,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	public native void updateChannelName(long nativeClientParamHandle, String channel_sid, String name);	
 	public native Members getMembers(long nativeClientParamHandle, String channel_sid);
 	public native void updateChannelAttributes(long nativeClientParamHandle, String channel_sid, Map<String, String> attrMap);
+	
 
 
 }

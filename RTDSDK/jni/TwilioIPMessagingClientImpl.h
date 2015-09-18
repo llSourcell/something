@@ -7,6 +7,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    create
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_create
+  (JNIEnv *, jobject);
+
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
  * Method:    init

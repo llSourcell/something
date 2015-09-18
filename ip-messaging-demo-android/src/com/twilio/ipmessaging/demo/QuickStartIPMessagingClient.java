@@ -93,7 +93,7 @@ public class QuickStartIPMessagingClient implements IdentityManagerListener, IPM
 
 
 	@Override
-	public void onMessageChang(Message message) {
+	public void onMessageChange(Message message) {
 		// TODO Auto-generated method stub
 		
 	}

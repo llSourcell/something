@@ -81,6 +81,11 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
 			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
 						LOGW("Created Channel Object.");
 
+			jmethodID method = tw_jni_get_method_by_class(env, java_channel_impl_cls, "setListener", "(Lcom/twilio/ipmessaging/ChannelListener;)V");
+			LOGW("Setting channel listener.");
+
+			env->CallVoidMethod(channel, method, listener);
+
 			//Cleanup
 			LOGW("createChannelNative: release native string.");
 			env->ReleaseStringUTFChars(friendlyName, nativeNameString);

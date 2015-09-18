@@ -1,15 +1,16 @@
 package com.twilio.ipmessaging.impl;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Context;
-
-import com.twilio.common.IdentityManager;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channels;
-import com.twilio.ipmessaging.TwilioIPMessagingClient;
 import com.twilio.ipmessaging.IPMessagingClientListener;
+import com.twilio.ipmessaging.TwilioIPMessagingClient;
+
+import android.accounts.Account;
+import android.content.Context;
 
 public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	
@@ -25,7 +26,11 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	private long nativeObserverHandle;
 	private InitListener listener;
 	
-	class IPMessagingClientListenerInternal implements NativeHandleInterface {
+	final static Map<String, Channel> publicChannelMap = new HashMap<String, Channel>();
+	
+	private IPMessagingClientListenerInternal internalListener;
+	
+	/*class IPMessagingClientListenerInternal implements NativeHandleInterface {
 
 		private long nativeIPMessagingClientListener;
 
@@ -45,7 +50,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 			return nativeIPMessagingClientListener;
 		}
 
-	}
+	} */
 
 	
 	private TwilioIPMessagingClientImpl(Context context2,
@@ -58,7 +63,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 
 	
 	public TwilioIPMessagingClientImpl() {
-		
+		create();
 	}
 
 
@@ -80,12 +85,24 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		this.context = inContext;
 		this.listener = inListener;
 		//TODO:: init service 
+		
 		if(inListener != null) {
 			inListener.onInitialized();
 		}
 	}
 
 	
+	private void initChannelMap() {
+		// TODO Auto-generated method stub
+		Channels channels = this.getChannels();
+		Channel[] channelArray = channels.getChannels();
+		
+		for(int i=0; i<channelArray.length; i++) {
+			this.publicChannelMap.put(channelArray[i].getSid(), channelArray[i]);
+		}
+	}
+
+
 	public TwilioIPMessagingClient initMessagingClientWithToken(String accessToken,
 			Map<String, String> attributes, IPMessagingClientListener listener) {
 		// TODO Auto-generated method stub
@@ -123,11 +140,8 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	}
 
 	@Override
-	public Channels getChannels() {
-		
+	public Channels getChannels() {		
 		return getChannelsNative();
-		
-		//return null;
 	}
 
 
@@ -147,13 +161,17 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 
 		if (getInstance() == null) {
 			TwilioIPMessagingClientImpl.instance = new TwilioIPMessagingClientImpl(context, listener);
-			nativeObserverHandle = instance.getIPMessagingClientListenerHandle();
-			if (nativeObserverHandle == 0) {
-				return null;
-			}			
+			//nativeObserverHandle = instance.getIPMessagingClientListenerHandle();
+			//if (nativeObserverHandle == 0) {
+			//	return null;
+			//}			
 		}
-		nativeClientParam = initNative(token, listener);
+		this.ipMessagingListener = listener;
+		this.internalListener = new IPMessagingClientListenerInternal(listener);
+		nativeClientParam = initNative(token, internalListener);
 		long status = createMessagingClient(token);
+		
+		initChannelMap();
 
 		return instance;
 	}
@@ -176,11 +194,12 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		return null;
 	}
 	
-	long getIPMessagingClientListenerHandle() {
+	/*long getIPMessagingClientListenerHandle() {
 		return this.ipMessagingClientListenerInternal.getNativeHandle();
-	}
+	} */
 	
-	public native long initNative(String token, IPMessagingClientListener listener);
+	private native void create();
+	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token);
 	private native Channels getChannelsNative();
 	
