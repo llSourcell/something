@@ -136,6 +136,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	}
 
 	private void getChannels(String channelId) {
+		//TODO: This does not work, because channel sid is still not available at this point.
 		if(channelId != null && !channelId.isEmpty()) {
 			Channel newChannel = rtdJni.getIpMessagingClient().getChannels().getChannel(channelId);
 			String newChannelAdded = newChannel.getFriendlyName() + "Added with channel Sid: " + newChannel.getSid();
