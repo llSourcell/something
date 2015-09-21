@@ -10,19 +10,16 @@ public class DemoChannelListener implements ChannelListener {
 	
 	@Override
 	public void onMessageAdd(Message message) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onMessageChange(Message message) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onMessageDelete(Message message) {
-		// TODO Auto-generated method stub
 		
 	}
 
