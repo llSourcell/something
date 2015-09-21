@@ -40,7 +40,6 @@ public class DemoChannelListener implements ChannelListener {
 
 	@Override
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
-		// TODO Auto-generated method stub
 		
 	}
 
