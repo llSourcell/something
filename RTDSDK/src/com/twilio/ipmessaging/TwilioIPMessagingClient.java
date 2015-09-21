@@ -1,9 +1,6 @@
 package com.twilio.ipmessaging;
 
 import java.util.Map;
-import java.util.Set;
-
-import com.twilio.common.IdentityManager;
 import com.twilio.ipmessaging.impl.TwilioIPMessagingClientImpl;
 
 import android.content.Context;
