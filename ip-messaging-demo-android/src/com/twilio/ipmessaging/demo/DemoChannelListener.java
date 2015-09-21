@@ -25,19 +25,16 @@ public class DemoChannelListener implements ChannelListener {
 
 	@Override
 	public void onMemberJoin(Member member) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onMemberChange(Member member) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onMemberDelete(Member member) {
-		// TODO Auto-generated method stub
 		
 	}
 
