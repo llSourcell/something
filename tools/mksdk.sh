@@ -15,8 +15,8 @@ Members.java
 Message.java
 Messages.java
 TwilioIPMessagingClient.java"
-#TWILIO_HOWTOS="
-#    QuickStart"
+TWILIO_HOWTOS="
+android-ip-messaging-demo-android"
 #TWILIO_HELPER_LIBS="
 #    twilio-java:java
 #    twilio-php:php
@@ -64,7 +64,7 @@ function main {
     copy_javadocs
     #copy_docs
     #copy_files
-    #setup_examples
+    setup_examples
     #pull_helper_lib
     #pull_server_code
     archive
@@ -216,19 +216,21 @@ function copy_docs {
 }
 
 function setup_examples {
-    pushd "${twsdkroot}/howtos"
-    for howto in ${TWILIO_HOWTOS}; do
-    cp -a "${howto}" "${tarroot}"
-    pushd "${tarroot}/${howto}"
+    example_dest="$twsdkroot/output/$SDK_NAME_STEM/ip-messaging-demo-android"
+    example_source="${twsdkroot}/ip-messaging-demo-android"
+    rm -rf ${example_dest}
+
+    pushd "${twsdkroot}/ip-messaging-demo-android"
+
+    cp -a "${example_source}" "${example_dest}"
+    pushd "${example_dest}"
     rm -rf bin gen libs
     mkdir gen
     ln -sfn ../libs libs
-
     # original project depends on "sdk" library project, while copied should depend on "sdk.jar" instead
     sed -i '' -e '/android.library.reference.1=.*/d' ./project.properties
 
     popd
-    done
     popd
 }
 
