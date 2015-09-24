@@ -1,16 +1,16 @@
 package com.twilio.ipmessaging.demo;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import com.twilio.ipmessaging.Channel;
-import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 
 public class BasicIPMessagingClient implements IPMessagingClientListener {
 
@@ -61,6 +61,9 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
             public void onInitialized()
             {
             	ipMessagingClient = TwilioIPMessagingClient.init(capabilityToken, BasicIPMessagingClient.this);
+            	Intent intent = new Intent(context,ChannelActivity.class);
+            	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            	ipMessagingClient.setIncomingIntent(pendingIntent);
             	if(listener != null) {
 					listener.onLoginFinished();
             	}

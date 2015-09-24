@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
-import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
@@ -16,9 +15,12 @@ import com.twilio.ipmessaging.Messages;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.text.style.SuperscriptSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -61,12 +63,42 @@ public class MessageActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		createUI();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Intent intent = getIntent();
+		if (intent != null) {
+			//finish();
+			Message inMessage = intent.getParcelableExtra(Channel.EXTRA_MESSAGE);
+			Channel channel = intent.getParcelableExtra(Channel.EXTRA_CHANNEL);
+			if(channel != null) {
+				setupListView(channel);
+			}
+			/*if(inMessage != null) {
+				messages.add(inMessage);
+				adapter.notifyDataSetChanged();
+			} */
+		}
+	}
+	
+	private void createUI() {
 		setContentView(R.layout.activity_message);
 		rtdJni = TwilioApplication.get().getRtdJni();
 		listView = (ListView) findViewById(R.id.message_list_view);
-		channel = (Channel) getIntent().getExtras().get("channel");
+		if(getIntent() != null) {
+			channel = (Channel) getIntent().getParcelableExtra(Channel.EXTRA_CHANNEL);
+			if(channel != null) {
+				Intent intent = new Intent(this, MessageActivity.class);
+				PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+				channel.setIncomingIntent(pendingIntent);
+			}
+		}
+	
 		setupListView(channel);
-			adapter.registerDataSetObserver(new DataSetObserver() {
+		adapter.registerDataSetObserver(new DataSetObserver() {
 			@Override
 			public void onChanged() {
 				super.onChanged();
@@ -75,7 +107,7 @@ public class MessageActivity extends Activity{
 		});
 		setupInput();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.message, menu);
@@ -310,7 +342,8 @@ public class MessageActivity extends Activity{
 		listView.setAdapter(adapter);
 		adapter.notifyDataSetChanged(); 
 	}
-	
+
+
 	private void sendMessage() {
 		inputText = (EditText) findViewById(R.id.messageInput);
 		String input = inputText.getText().toString();

@@ -1,8 +1,11 @@
 package com.twilio.ipmessaging;
 
 import java.util.Map;
+
+import com.twilio.ipmessaging.TwilioIPMessagingClient.InitListener;
 import com.twilio.ipmessaging.impl.TwilioIPMessagingClientImpl;
 
+import android.app.PendingIntent;
 import android.content.Context;
 
 /**
@@ -149,6 +152,13 @@ public class TwilioIPMessagingClient {
 	}
 	
 	
-	
+	/**
+	 * Sets a {@link PendingIntent} that will be sent when an incoming message is received.
+	 * 
+	*/
+	public void setIncomingIntent(PendingIntent inIntent) {
+		TwilioIPMessagingClientImpl.getInstance().setIncomingIntent(inIntent);
+	}
+
 	
 }

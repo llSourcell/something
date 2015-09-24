@@ -64,6 +64,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 
 	static const char *class_names[] = {
 			"com/twilio/ipmessaging/impl/MessageImpl",
+			"com/twilio/ipmessaging/impl/ChannelImpl",
 			NULL
 		};
 	static bool classes_precached = false;
@@ -79,7 +80,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 	}
 
 	LOGW( "Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_init() : Initializing ssl.");
-
 
 }
 

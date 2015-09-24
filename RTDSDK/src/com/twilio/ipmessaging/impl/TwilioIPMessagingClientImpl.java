@@ -9,8 +9,10 @@ import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
-import android.accounts.Account;
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.content.Context;
+import android.content.Intent;
 
 public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	
@@ -18,39 +20,21 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		System.loadLibrary("twilio-rtd-native"); 
 	}
 	
+	private static final Logger logger = Logger.getLogger(TwilioIPMessagingClientImpl.class);
+	
 	private static TwilioIPMessagingClientImpl instance = null;
-	protected Context context;
+	private static Context context;
+	
 	private IPMessagingClientListener ipMessagingListener;
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
 	private long nativeClientParam;
 	private long nativeObserverHandle;
 	private InitListener listener;
 	
-	final static Map<String, Channel> publicChannelMap = new HashMap<String, Channel>();
+	final static Map<String, ChannelImpl> publicChannelMap = new HashMap<String, ChannelImpl>();
 	
 	private IPMessagingClientListenerInternal internalListener;
-	
-	/*class IPMessagingClientListenerInternal implements NativeHandleInterface {
-
-		private long nativeIPMessagingClientListener;
-
-		public IPMessagingClientListenerInternal(IPMessagingClientListener listener) {
-			// this.listener = listener;
-			this.nativeIPMessagingClientListener = wrapNativeObserver(listener, TwilioIPMessagingClientImpl.this);
-		}
-
-		private native long wrapNativeObserver(IPMessagingClientListener listener,
-				TwilioIPMessagingClient client);
-
-		// ::TODO figure out when to call this - may be Endpoint.release() ??
-		private native void freeNativeObserver(long nativeEndpointObserver);
-
-		@Override
-		public long getNativeHandle() {
-			return nativeIPMessagingClientListener;
-		}
-
-	} */
+	private PendingIntent incomingIntent;
 
 	
 	private TwilioIPMessagingClientImpl(Context context2,
@@ -88,17 +72,6 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		
 		if(inListener != null) {
 			inListener.onInitialized();
-		}
-	}
-
-	
-	private void initChannelMap() {
-		// TODO Auto-generated method stub
-		Channels channels = this.getChannels();
-		Channel[] channelArray = channels.getChannels();
-		
-		for(int i=0; i<channelArray.length; i++) {
-			this.publicChannelMap.put(channelArray[i].getSid(), channelArray[i]);
 		}
 	}
 
@@ -160,18 +133,12 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	public TwilioIPMessagingClient initClient(String token, IPMessagingClientListener listener) {
 
 		if (getInstance() == null) {
-			TwilioIPMessagingClientImpl.instance = new TwilioIPMessagingClientImpl(context, listener);
-			//nativeObserverHandle = instance.getIPMessagingClientListenerHandle();
-			//if (nativeObserverHandle == 0) {
-			//	return null;
-			//}			
+			TwilioIPMessagingClientImpl.instance = new TwilioIPMessagingClientImpl(context, listener);	
 		}
 		this.ipMessagingListener = listener;
 		this.internalListener = new IPMessagingClientListenerInternal(listener);
 		nativeClientParam = initNative(token, internalListener);
 		long status = createMessagingClient(token);
-		
-		initChannelMap();
 
 		return instance;
 	}
@@ -194,13 +161,31 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		return null;
 	}
 	
-	/*long getIPMessagingClientListenerHandle() {
-		return this.ipMessagingClientListenerInternal.getNativeHandle();
-	} */
+	public static Context getContext() {
+		return context;
+	}
+	
+	public void setIncomingIntent(PendingIntent intent) {
+		this.incomingIntent = intent;
+	}
+	
+	public void handleIncomingInvite(Channel channel) {
+		if (this.incomingIntent != null) {
+			Intent intent = new Intent();
+			intent.putExtra(Channel.EXTRA_CHANNEL, (ChannelImpl)channel);
+			intent.putExtra(Channel.EXTRA_ACTION, Channel.EXTRA_ACTION_INVITE);
+			try {
+				this.incomingIntent.send(TwilioIPMessagingClientImpl.getContext(), 0, intent);
+			} catch (final CanceledException e) {
+				logger.e(
+						"Unable to send PendingIntent for incoming connection", e);
+			}
+		}
+	}
 	
 	private native void create();
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token);
-	private native Channels getChannelsNative();
+	private native ChannelsImpl getChannelsNative();
 	
 }

@@ -50,6 +50,11 @@ public interface Message {
 	 */
 	public void updateMessageBody(String body);
 
-	String getChannelSid();
+	/** Returns the Channel Sid of the channel this message belongs to.
+	 * 
+	 * @return Channel Sid.
+	 *  
+	 */
+	public String getChannelSid();
 
 }

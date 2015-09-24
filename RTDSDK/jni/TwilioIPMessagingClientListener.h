@@ -48,6 +48,7 @@ private:
     jobject j_ipmessagingclient_;
     jobject j_ipmessagingclientListenerInternal_;
 	jmethodID j_onMessageAdd_;
+	jmethodID j_onChannelInvite_;
 	JNIEnv* env_;
 };
 
