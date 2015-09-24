@@ -106,15 +106,17 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 		const char* author = messageContext_->message->getAuthor().c_str();
 		const char* body = messageContext_->message->getBody().c_str();
+		const char* timestamp = messageContext_->message->getTimestamp().c_str();
 
 		LOGW("author Name  : %s.", author );
 		LOGW("body is %s", body);
 
 		jstring authorString = env->NewStringUTF(author);
 		jstring bodyString = env->NewStringUTF(body);
+		jstring timestampString = env->NewStringUTF(timestamp);
 
-		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-		message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, messageContextHandle);
+		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
+		message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timestampString, messageContextHandle);
 		LOGW("Created Message Object.");
 
 		return message;
@@ -181,7 +183,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 			LOGW("Found java_message_impl_cls class" );
 		}
 
-		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
+		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 		jobjectArray messagesArray = (jobjectArray) env->NewObjectArray(messageList.size(),java_message_impl_cls, 0);
 
 		for (int i= 0; i< messageList.size() ; i++ ) {
@@ -193,14 +195,16 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 
 			const char* author = messagePtr->getAuthor().c_str();
 			const char* body = messagePtr->getBody().c_str();
+			const char* timestamp = messagePtr->getTimestamp().c_str();
 
 			LOGW("author Name  : %s.", author );
 			LOGW("body is %s", body);
 
 			jstring authorString = env->NewStringUTF(author);
 			jstring bodyString = env->NewStringUTF(body);
+			jstring timeStampString  = env->NewStringUTF(timestamp);
 
-			message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, messageContextHandle );
+			message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle );
 			LOGW("Created Message Object.");
 			env->SetObjectArrayElement(messagesArray, i, message);
 			LOGW("Added object to array");

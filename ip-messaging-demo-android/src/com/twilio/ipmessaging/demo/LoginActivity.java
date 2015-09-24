@@ -28,6 +28,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private EditText clientNameTextBox;
 	private BasicIPMessagingClient rtdJni;
 	private String endpoint_id = "";
+	public static String local_author = DEFAULT_CLIENT_NAME;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

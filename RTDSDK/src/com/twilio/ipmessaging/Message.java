@@ -30,10 +30,10 @@ public interface Message {
 	/** 
 	 * The last updated timestamp for this message. 
 	 * 
-	 * @return The date this message was last updated.
+	 * @return The time stamp this message was last updated.
 	 *
 	 */
-	public Date getDateUpdated();
+	public String getDateUpdated();
 	
 	/** 
 	 * The body for this message. 
