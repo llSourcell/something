@@ -159,6 +159,7 @@ public class MessageActivity extends Activity{
 					showAddMemberDialog();
 				} else if (which == LEAVE) {
 					channel.leave();
+					finish();
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
 				}  //REMOVE_MEMBER

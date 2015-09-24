@@ -26,7 +26,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private Button logout;
 	private String capabilityToken = null;
 	private EditText clientNameTextBox;
-	private BasicIPMessagingClient rtdJni;
+	private BasicIPMessagingClient chatClient;
 	private String endpoint_id = "";
 	public static String local_author = DEFAULT_CLIENT_NAME;
 
@@ -56,11 +56,11 @@ public class LoginActivity extends Activity implements LoginListener {
 		this.logout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				rtdJni.cleanupTest();
+				chatClient.cleanupTest();
 			}
 		});
 
-		rtdJni = TwilioApplication.get().getRtdJni();
+		chatClient = TwilioApplication.get().getRtdJni();
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class LoginActivity extends Activity implements LoginListener {
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			LoginActivity.this.rtdJni.doTest(capabilityToken, LoginActivity.this);
+			LoginActivity.this.chatClient.doLogin(capabilityToken, LoginActivity.this);
 		}
 
 		@Override
@@ -99,7 +99,7 @@ public class LoginActivity extends Activity implements LoginListener {
 			try {
 				capabilityToken = HttpHelper.httpGet(params[0]);
 				logger.e("capabilityToken string : " + capabilityToken);
-				rtdJni.setCapabilityToken(capabilityToken);
+				chatClient.setCapabilityToken(capabilityToken);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

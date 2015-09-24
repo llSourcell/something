@@ -53,7 +53,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 	
 	
-	public void doTest(final String capabilityToken, final LoginListener listener) {
+	public void doLogin(final String capabilityToken, final LoginListener listener) {
 		
 		TwilioIPMessagingClient.initializeSDK(context, new TwilioIPMessagingClient.InitListener()
         {

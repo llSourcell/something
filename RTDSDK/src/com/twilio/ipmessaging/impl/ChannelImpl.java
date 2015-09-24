@@ -88,14 +88,12 @@ public class ChannelImpl implements Channel, Parcelable{
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
 		int status = getStatus(nativeClientHandle, this.getSid());
 		switch (status) {
-		case 0:
-			return Channel.ChannelStatus.INVITED;
-
-		case 1:
-			return Channel.ChannelStatus.JOINED;
-
-		case 2:
-			return Channel.ChannelStatus.NOT_PARTICIATING;
+			case 0:
+				return Channel.ChannelStatus.INVITED;
+			case 1:
+				return Channel.ChannelStatus.JOINED;
+			case 2:
+				return Channel.ChannelStatus.NOT_PARTICIATING;
 		}
 		return null;
 	}
