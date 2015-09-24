@@ -10,15 +10,16 @@ import android.os.Parcelable;
 
 public class MessageImpl implements Message, Parcelable {
 	private String author;
-	private Date date;
+	private String date;
 	private String body;
 	private String sid;
 	private long nativeMessageHandle; 
 	private Channel channel;
 
-	public MessageImpl(String author, String body, long handle) {
+	public MessageImpl(String author, String body, String timeStamp, long handle) {
 		this.author = author;
 		this.body = body;
+		this.date = timeStamp;
 		this.nativeMessageHandle = handle;
 	}
 	
@@ -43,7 +44,7 @@ public class MessageImpl implements Message, Parcelable {
 	}
 
 	@Override
-	public Date getDateUpdated() {
+	public String getDateUpdated() {
 		return this.date;
 	}
 

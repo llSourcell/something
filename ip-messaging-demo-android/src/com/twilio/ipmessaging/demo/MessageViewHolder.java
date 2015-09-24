@@ -4,7 +4,9 @@ import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Message;
 
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import uk.co.ribot.easyadapter.ItemViewHolder;
 import uk.co.ribot.easyadapter.PositionInfo;
@@ -14,14 +16,20 @@ import uk.co.ribot.easyadapter.annotations.ViewId;
 @LayoutId(R.layout.message_item_layout)
 public class MessageViewHolder extends ItemViewHolder<Message> {
 
-	@ViewId(R.id.author)
+	/*@ViewId(R.id.author)
 	TextView author;
 
 	@ViewId(R.id.date)
-	TextView date;
+	TextView date; */
 
 	@ViewId(R.id.body)
 	TextView body;
+	
+	@ViewId(R.id.txtInfo)
+	TextView txtInfo;
+	
+	@ViewId(R.id.singleMessageContainer)
+	LinearLayout singleMessageContainer;
 
 	View view;
 
@@ -32,10 +40,20 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 
 	@Override
 	public void onSetValues(Message message, PositionInfo pos) {
-		author.setText(message.getAuthor());
-		//TODO:
-//		date.setText(message.getDateUpdated().toString());
+		StringBuffer textInfo = new StringBuffer();
+		String dateString = message.getDateUpdated();
+		if(dateString != null) {
+			textInfo.append(message.getAuthor()).append(":").append(dateString);
+		} else {
+			textInfo.append(message.getAuthor());
+		}
+		txtInfo.setText(textInfo.toString());
 		body.setText(message.getMessageBody());
+		
+		boolean left = (message.getAuthor().compareTo(LoginActivity.local_author) ==0)? true:false;
+		body.setBackgroundResource(left ? R.drawable.bubble_a : R.drawable.bubble_b);
+		singleMessageContainer.setGravity(left ? Gravity.LEFT : Gravity.RIGHT);
+		
 	}
 	
 	public interface OnMessageClickListener {
