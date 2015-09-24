@@ -6,9 +6,9 @@
     <string name="login">Log In</string>
     <string name="logout">Log Out</string>
     <string name="invite_participant">Invite Participant</string>
-    <string name="incoming_call_message">You have a new incoming call. Answer it?</string>
-    <string name="accept">Accept</string>
-    <string name="reject">Reject</string>
+    <string name="incoming_call_message">You got a Channel Invite. Join it?</string>
+    <string name="join">Join</string>
+    <string name="decline">Decline</string>
     <string name="incoming_call">Incoming Call</string>
     <string name="conversation">Conversation</string>
     <string name="hello_world">Hello world!</string>
@@ -21,5 +21,6 @@
     <string name="title_invite_member">Invite member</string>
     <string name="title_add_member">Add member</string>
     <string name="title_remove_member">Remove member</string>
+    
 
 </resources>

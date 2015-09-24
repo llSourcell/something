@@ -1,7 +1,8 @@
 package com.twilio.ipmessaging;
 
 import java.util.Map;
-import java.util.Set;
+
+import android.app.PendingIntent;
 
 /**
  *  Container for channels.
@@ -12,6 +13,26 @@ import java.util.Set;
 
 
 public interface Channel {
+	
+	/**
+	 * Key into an Intent's extras data that points to a {@link Channel} object.
+	 */
+	public static final String EXTRA_CHANNEL = "com.twilio.ipmessaging.Channel";
+	
+	/**
+	 * Key into an Intent's extras data that points to a {@link Message} object.
+	 */
+	public static final String EXTRA_MESSAGE = "com.twilio.ipmessaging.Message";
+	
+	/**
+	 * Key into an Intent's extras data that points to a {@link Message} object.
+	 */
+	public static final String EXTRA_ACTION = "channel.action";
+	
+	/**
+	 * Key into an Intent's extras data that points to a {@link Message} object.
+	 */
+	public static final String EXTRA_ACTION_INVITE = "channel.action.invite";
 	
 	
 	/** 
@@ -154,6 +175,18 @@ public interface Channel {
 	 * 
 	 */
 	public void destroy();	
+
+	/**
+	 * Destroys the current channel.
+	 * 
+	 */
+	public void declineInvitation();
+	
+	/**
+	 * Sets a {@link PendingIntent} that will be sent when an incoming message is received.
+	 * 
+	*/
+	public void setIncomingIntent(PendingIntent inIntent);
 
 }
 

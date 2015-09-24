@@ -5,7 +5,10 @@ import java.util.Date;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Message;
 
-public class MessageImpl implements Message {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class MessageImpl implements Message, Parcelable {
 	private String author;
 	private Date date;
 	private String body;
@@ -20,6 +23,11 @@ public class MessageImpl implements Message {
 	}
 	
 	public MessageImpl(String author, String body) {
+		this.author = author;
+		this.body = body;
+	}
+	
+	public MessageImpl(String sid, String author, String body) {
 		this.author = author;
 		this.body = body;
 	}
@@ -67,5 +75,39 @@ public class MessageImpl implements Message {
 	}
 	
 	public native String getChannelSidNative();
+
+	@Override
+	public int describeContents() {
+			return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		 dest.writeString(this.sid);
+		 dest.writeString(this.author);
+		 dest.writeString(this.body);		
+	}
+	
+	/* Parcelable */
+    public static final Parcelable.Creator<MessageImpl> CREATOR = new Parcelable.Creator<MessageImpl>()
+    
+    {
+    	@Override
+        public MessageImpl createFromParcel(Parcel in)
+        {
+            String sid = in.readString();
+            String author = in.readString();
+            String body = in.readString();
+            
+            MessageImpl msgImpl = new MessageImpl(sid, author, body);
+            return msgImpl;
+        }
+
+		@Override
+		public MessageImpl[] newArray(int size) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+    };
 
 }

@@ -8,11 +8,13 @@ import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 
-public class IPMessagingClientListenerInternal implements IPMessagingClientListener, ChannelListener{
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
+import android.content.Intent;
+
+public class IPMessagingClientListenerInternal {
 	
 	private static final Logger logger = Logger.getLogger(IPMessagingClientListenerInternal.class);
-	
-	private long nativeIPMessagingClientListener;
 	private IPMessagingClientListener listener;
 	
 
@@ -20,82 +22,79 @@ public class IPMessagingClientListenerInternal implements IPMessagingClientListe
 		this.listener = listener;
 	}
 
-
-	@Override
-	public void onMessageAdd(Message message) {
+	public void onMessageAdd(final Message message) {
 		logger.d("Entered onMessageAdd");
-		String body = message.getMessageBody();
-		String author = message.getAuthor();
 		String cSid = message.getChannelSid();
-		Channel channel = TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
-		ChannelListener listener = channel.getListener();
-		if(listener != null ) {
-			listener.onMessageAdd(message);
-		}
-		logger.d("Leaving onMessageAdd");
-		
+		ChannelImpl channel = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+		channel.handleIncomingMessage((MessageImpl) message);
 	}
 
-	@Override
+	
 	public void onMessageChange(Message message) {
 		
 	}
 
-	@Override
+	
 	public void onMessageDelete(Message message) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void onMemberJoin(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void onMemberChange(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void onMemberDelete(Member member) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void onChannelAdd(Channel channel) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void onChannelInvite(Channel channel) {
+		logger.d("Entered onChannelInvite");
+		TwilioIPMessagingClientImpl.getInstance().handleIncomingInvite(channel);
+		
+	}
 
-	@Override
+	
 	public void onChannelChange(Channel channel) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void onChannelDelete(Channel channel) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void onError(int errorCode, String errorText) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void onAttributesChange(String attributes) {
 		// TODO Auto-generated method stub
 		

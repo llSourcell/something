@@ -307,3 +307,37 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring channel_sid, jobject attributes) {
 
 }
+
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    declineChannelInvite
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChannelInvite
+(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring channel_sid) {
+
+	LOGW("declineChannelInvite app: Entered ");
+
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
+
+	if(clientParamsRecreate != nullptr) {
+		ITMChannelsPtr channels = clientParamsRecreate->channels;
+		if(channels != NULL) {
+			ITMChannelPtr channel = clientParamsRecreate->channels->getChannel(nativeString);
+
+			if(channel != nullptr) {
+				LOGW("Joining channel with sid : %s ", nativeString);
+				channel->declineInvitation(nullptr);
+			} else {
+				LOGW("declineChannelInvite ELEMENT NOT found");
+				}
+		} else {
+			LOGW("declineChannelInvite: channels is null");
+		}
+	}
+
+	env->ReleaseStringUTFChars(channel_sid, nativeString);
+}

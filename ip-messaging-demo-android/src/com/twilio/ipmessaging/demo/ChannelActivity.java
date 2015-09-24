@@ -2,6 +2,7 @@ package com.twilio.ipmessaging.demo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,11 @@ import com.twilio.ipmessaging.Message;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,6 +48,9 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private AlertDialog createChannelDialog;
 	private Channels channelsLocal;
 	private Channel[] channelArray;
+	
+	private static final Handler handler = new Handler();
+	private AlertDialog incoingChannelInvite;
 
 	
 	@Override
@@ -73,8 +79,24 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 	@Override
 	protected void onResume() {
-		super.onResume();
+		super.onResume();		
+		handleIncomingIntent(getIntent());
 		getChannels(null);
+	}
+
+	private boolean handleIncomingIntent(Intent intent) {
+		if(intent != null) {
+			Channel channel = intent.getParcelableExtra(Channel.EXTRA_CHANNEL);
+			String action = intent.getStringExtra(Channel.EXTRA_ACTION);
+			intent.removeExtra(Channel.EXTRA_CHANNEL);
+		    intent.removeExtra(Channel.EXTRA_ACTION);
+			if(action != null) {
+				if(action.compareTo(Channel.EXTRA_ACTION_INVITE) == 0 ) {
+					this.showIncomingInvite(channel);
+				}
+			}
+		}
+		return false;
 	}
 
 	private void showCreateChannelDialog() {
@@ -112,7 +134,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 					public void onChannelClicked(final Channel channel) {
 						if (channel.getStatus() == Channel.ChannelStatus.JOINED) {
 							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
-							i.putExtra("channel", (Parcelable) channel);
+							i.putExtra(Channel.EXTRA_CHANNEL, (Parcelable) channel);
 							startActivity(i);
 							return;
 						} 
@@ -136,32 +158,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	}
 
 	private void getChannels(String channelId) {
-		//TODO: This does not work, because channel sid is still not available at this point.
-		if(channelId != null && !channelId.isEmpty()) {
-			Channel newChannel = rtdJni.getIpMessagingClient().getChannels().getChannel(channelId);
-			String newChannelAdded = newChannel.getFriendlyName() + "Added with channel Sid: " + newChannel.getSid();
-			Toast toast= Toast.makeText(getApplicationContext(), newChannelAdded, Toast.LENGTH_LONG);
-			toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
-			LinearLayout toastLayout = (LinearLayout) toast.getView();
-			TextView toastTV = (TextView) toastLayout.getChildAt(0);
-			toastTV.setTextSize(30);
-			toast.show(); 
+		if (this.channels != null) {
+			this.channels.clear();
+			channelsLocal= rtdJni.getIpMessagingClient().getChannels();
+			channelArray = channelsLocal.getChannels();
+			this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+			adapter.notifyDataSetChanged();
 		}
-		channels.clear();
-		channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-		channelArray = channelsLocal.getChannels();
-		this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onMessageAdd(Message message) {
-		// TODO Auto-generated method stub
 		logger.d("Message received");
-		Channel channel = this.channelsLocal.getChannel(message.getChannelSid());
-		/*Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
-		i.putExtra("channel", (Parcelable) channel);
-		startActivity(i); */
+		//Channel channel = this.channelsLocal.getChannel(message.getChannelSid());
 		StringBuffer text = new StringBuffer();
 		text.append("From: " + message.getAuthor());
 		text.append("Body:" + message.getMessageBody());
@@ -212,4 +221,40 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private void showIncomingInvite(final Channel channel)
+    {
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (incoingChannelInvite == null) {
+                    incoingChannelInvite = new AlertDialog.Builder(ChannelActivity.this)
+                        .setTitle(R.string.incoming_call)
+                        .setMessage(R.string.incoming_call_message)
+                        .setPositiveButton(R.string.join, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                            	channel.join();
+                                incoingChannelInvite = null;
+                            }
+                        })
+                        .setNegativeButton(R.string.decline, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                               channel.declineInvitation();
+                               incoingChannelInvite = null;
+                            }
+                        })
+                        .create();
+                    incoingChannelInvite.show();
+                }
+            }
+        });
+    }
 }
