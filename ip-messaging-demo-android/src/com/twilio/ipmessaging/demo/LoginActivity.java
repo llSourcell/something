@@ -16,8 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.UpdateManager;
 
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
@@ -33,7 +31,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private String endpoint_id = "";
 	public static String local_author = DEFAULT_CLIENT_NAME;
 	
-	String APP_ID = "932b7403a4d2173b9898cb55d5d71bab";
+	//String APP_ID = "932b7403a4d2173b9898cb55d5d71bab";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +65,7 @@ public class LoginActivity extends Activity implements LoginListener {
 
 		chatClient = TwilioApplication.get().getRtdJni();
 		
-		checkForUpdates();
+		//checkForUpdates();
 	}
 
 	@Override
@@ -139,10 +137,10 @@ public class LoginActivity extends Activity implements LoginListener {
 
 	}
 	
-	 private void checkForUpdates() {
+	/* private void checkForUpdates() {
          // Remove this for store builds!
          UpdateManager.register(this, APP_ID);
-       }
+       }*/
 
 
 }

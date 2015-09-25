@@ -14,10 +14,13 @@ RTDSDK/gen
 RTDSDK/IPMessagingLib
 RTDSDK/obj
 RTDSDK/target
+RTDSDK/libs
+RTDSDK/build.xml
 
 # Gradle files
 .gradle/
 build/
+output/
 
 # Local configuration file (sdk path, etc)
 local.properties
