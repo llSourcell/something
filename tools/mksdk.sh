@@ -260,7 +260,7 @@ function pull_server_code {
 function archive {
 
     pushd "${twsdkroot}"
-
+    pwd
     SDK_VERSION=$(sed -n '/android:versionName=/s/.*"\(.*\)"[^"]*/\1/p' RTDSDK/AndroidManifest.xml)
     GIT_COMMIT=$(git rev-parse --short=7 HEAD)
 

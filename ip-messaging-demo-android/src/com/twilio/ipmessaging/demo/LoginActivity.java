@@ -16,10 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC522a45bc9300658950cebbac64f2bf78&auth_token=3e9b9f7d914c4b8e1e59ff29331d86df&service_sid=ISf24591d8f4a84fc7b0c99dff0ee3124b&identity=";
-	private static final String DEFAULT_CLIENT_NAME = "Bagchi";
+	private static final String DEFAULT_CLIENT_NAME = "Kumkum";
 
 	private ProgressDialog progressDialog;
 	private Button login;
@@ -29,6 +32,8 @@ public class LoginActivity extends Activity implements LoginListener {
 	private BasicIPMessagingClient chatClient;
 	private String endpoint_id = "";
 	public static String local_author = DEFAULT_CLIENT_NAME;
+	
+	String APP_ID = "932b7403a4d2173b9898cb55d5d71bab";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,8 @@ public class LoginActivity extends Activity implements LoginListener {
 		});
 
 		chatClient = TwilioApplication.get().getRtdJni();
+		
+		checkForUpdates();
 	}
 
 	@Override
@@ -131,5 +138,11 @@ public class LoginActivity extends Activity implements LoginListener {
 		// TODO Auto-generated method stub
 
 	}
+	
+	 private void checkForUpdates() {
+         // Remove this for store builds!
+         UpdateManager.register(this, APP_ID);
+       }
+
 
 }
