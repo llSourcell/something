@@ -16,12 +16,6 @@ import uk.co.ribot.easyadapter.annotations.ViewId;
 @LayoutId(R.layout.message_item_layout)
 public class MessageViewHolder extends ItemViewHolder<Message> {
 
-	/*@ViewId(R.id.author)
-	TextView author;
-
-	@ViewId(R.id.date)
-	TextView date; */
-
 	@ViewId(R.id.body)
 	TextView body;
 	
@@ -41,7 +35,7 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 	@Override
 	public void onSetValues(Message message, PositionInfo pos) {
 		StringBuffer textInfo = new StringBuffer();
-		String dateString = message.getDateUpdated();
+		String dateString = message.getTimeStamp();
 		if(dateString != null) {
 			textInfo.append(message.getAuthor()).append(":").append(dateString);
 		} else {
@@ -49,6 +43,8 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 		}
 		txtInfo.setText(textInfo.toString());
 		body.setText(message.getMessageBody());
+		
+		//singleMessageContainer.setGravity(Gravity.RIGHT);
 		
 		boolean left = (message.getAuthor().compareTo(LoginActivity.local_author) ==0)? true:false;
 		body.setBackgroundResource(left ? R.drawable.bubble_a : R.drawable.bubble_b);

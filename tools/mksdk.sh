@@ -227,7 +227,9 @@ function setup_examples {
     rm -rf bin gen libs
     mkdir gen
     ln -sfn ../libs libs
-    # original project depends on "sdk" library project, while copied should depend on "sdk.jar" instead
+    cp thirdparty/*.jar libs
+    #ln -sfn thirdparty libs
+    # original project depends on "RTDSDK" library project, while copied should depend on "twilio-ip-messaging-android.jar" instead
     sed -i '' -e '/android.library.reference.1=.*/d' ./project.properties
 
     popd

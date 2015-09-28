@@ -35,13 +35,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 		public void onLogoutFinished();
 	}
-	
-	private class CustomComparator implements Comparator<Channel> {
-		@Override
-		public int compare(Channel lhs, Channel rhs) {
-			return lhs.getFriendlyName().compareTo(rhs.getFriendlyName());		
-		}
-	}
 
 	public String getCapabilityToken() {
 		return capabilityToken;
@@ -60,7 +53,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
             @Override
             public void onInitialized()
             {
-            	ipMessagingClient = TwilioIPMessagingClient.init(capabilityToken, BasicIPMessagingClient.this);
+            	ipMessagingClient = TwilioIPMessagingClient.initIPMessagingClientWithToken(capabilityToken, BasicIPMessagingClient.this);
             	Intent intent = new Intent(context,ChannelActivity.class);
             	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             	ipMessagingClient.setIncomingIntent(pendingIntent);

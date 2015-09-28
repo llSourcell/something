@@ -20,20 +20,12 @@ public interface Message {
 	public String getAuthor();
 	
 	/** 
-	 * The created timestamp for this message.
-	 * 
-	 * @return The date this message was created.
-	 * 
-	 */
-	public Date getDateCreated();
-	
-	/** 
 	 * The last updated timestamp for this message. 
 	 * 
 	 * @return The time stamp this message was last updated.
 	 *
 	 */
-	public String getDateUpdated();
+	public String getTimeStamp();
 	
 	/** 
 	 * The body for this message. 
