@@ -43,6 +43,7 @@ public:
     void onToastNotification(const std::string& channelId, const std::string& messageId);
     void onToastSubscribed();
     void onToastFailed(TNError code);
+    void onTyping(TMTypingAction action, ITMChannelPtr channel, ITMMemberPtr member);
 
 private:
     jobject j_ipmessagingclient_;

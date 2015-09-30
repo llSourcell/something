@@ -68,6 +68,11 @@ public:
     	LOGW("onToastFailed TwilioIPMessagingClientListenerInternalWrapper");
     };
 
+    void onTyping(TMTypingAction action, ITMChannelPtr channel, ITMMemberPtr member){
+    	LOGW("onTyping TwilioIPMessagingClientListenerInternalWrapper");
+    };
+
+
 private:
 
     jstring stringToJString(JNIEnv * env, const std::string & nativeString) {

@@ -192,5 +192,10 @@ void TwilioIPMessagingClientListener::onToastFailed(TNError code)
 	LOGW("TwilioIPMessagingClientListener::onToastFailed");
 }
 
+void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannelPtr channel, ITMMemberPtr member)
+{
+    LOGW("onTyping TwilioIPMessagingClientListenerInternalWrapper");
+}
+
 
 
