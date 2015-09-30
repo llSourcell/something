@@ -44,7 +44,7 @@ public class MessageImpl implements Message, Parcelable {
 	}
 
 	@Override
-	public String getDateUpdated() {
+	public String getTimeStamp() {
 		return this.date;
 	}
 
@@ -57,12 +57,6 @@ public class MessageImpl implements Message, Parcelable {
 	public void updateMessageBody(String body) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public Date getDateCreated() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public long getNativeHandle() {

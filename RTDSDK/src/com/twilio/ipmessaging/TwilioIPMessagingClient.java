@@ -58,12 +58,11 @@ public class TwilioIPMessagingClient {
 	/**
 	 * Initialize a new IP Messaging client instance with a token manager.
 	 * 
-	 * @param tokenManager	an AccessTokenManager instance to be used for authentication.
 	 * @param listener		the listener for thisIP MessagingClient.
 	 * @return The newly initialized IPMessagingClient.
 	 */
-	public static TwilioIPMessagingClient init(String token, IPMessagingClientListener listener) {
-		return TwilioIPMessagingClientImpl.getInstance().initClient(token, listener);
+	public static TwilioIPMessagingClient initIPMessagingClientWithToken(String token, IPMessagingClientListener listener) {
+		return TwilioIPMessagingClientImpl.getInstance().initClientWithToken(token, listener);
 	}
 	
 	/**

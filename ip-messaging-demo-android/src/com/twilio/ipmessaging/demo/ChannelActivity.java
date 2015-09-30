@@ -2,6 +2,8 @@ package com.twilio.ipmessaging.demo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -161,8 +163,9 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		if (this.channels != null) {
 			this.channels.clear();
 			channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-			channelArray = channelsLocal.getChannels();
+			channelArray = channelsLocal.getChannels();	
 			this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+			Collections.sort(this.channels, new CustomChannelComparator());
 			adapter.notifyDataSetChanged();
 		}
 	}
@@ -170,7 +173,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	@Override
 	public void onMessageAdd(Message message) {
 		logger.d("Message received");
-		//Channel channel = this.channelsLocal.getChannel(message.getChannelSid());
 		StringBuffer text = new StringBuffer();
 		text.append("From: " + message.getAuthor());
 		text.append("Body:" + message.getMessageBody());
@@ -257,4 +259,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
             }
         });
     }
+	
+	private class CustomChannelComparator implements Comparator<Channel> {
+		@Override
+		public int compare(Channel lhs, Channel rhs) {
+			return lhs.getFriendlyName().compareTo(rhs.getFriendlyName());		
+		}
+	}
 }

@@ -22,6 +22,7 @@
     <string name="title_add_member">Add member</string>
     <string name="title_remove_member">Remove member</string>
     <string name="type_message">Type message</string>
+     <string name="OK">OK</string>
     
 
 </resources>

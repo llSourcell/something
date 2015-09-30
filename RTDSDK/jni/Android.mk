@@ -122,13 +122,13 @@ LOCAL_SRC_FILES := \
 	TwilioIPMessagingConfigurationProvider.cpp \
 	TwilioIPMessagingNotificationClientListener.cpp \
 	TwilioIPMessagingClientListener.cpp \
-	com_twilio_ipmessaging_impl_MessagesImpl.cpp \
 	IPMessagingClientListener_Internal.cpp \
-	TwilioIPMessagingClientImpl.cpp \
-	com_twilio_ipmessaging_impl_ChannelsImpl.cpp \
-	com_twilio_ipmessaging_impl_ChannelImpl.cpp \
-	com_twilio_ipmessaging_impl_MembersImpl.cpp \
-	com_twilio_ipmessaging_impl_MessageImpl.cpp
+	IPMessagingClientImpl.cpp \
+	MessagesImpl.cpp \
+	ChannelsImpl.cpp \
+	ChannelImpl.cpp \
+	MembersImpl.cpp \
+	MessageImpl.cpp
 	
 	
 #TestRTDJNI.cpp \

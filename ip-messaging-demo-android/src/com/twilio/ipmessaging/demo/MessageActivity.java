@@ -2,6 +2,8 @@ package com.twilio.ipmessaging.demo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +40,12 @@ import uk.co.ribot.easyadapter.EasyAdapter;
 public class MessageActivity extends Activity{
 
 	private static final Logger logger = Logger.getLogger(MessageActivity.class);
-	private ListView listView;
+	private ListView messageListView;
 	private EditText inputText;
 	private EasyAdapter<Message> adapter;
 	
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
-	private BasicIPMessagingClient rtdJni;
 	private Channel channel;
 	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave" };
 	
@@ -57,7 +58,7 @@ public class MessageActivity extends Activity{
 	private static final int LEAVE = 6;
 	
 	private AlertDialog editTextDialog;
-
+	private AlertDialog memberListDialog;
 	
 	
 	@Override
@@ -71,23 +72,16 @@ public class MessageActivity extends Activity{
 		super.onResume();
 		Intent intent = getIntent();
 		if (intent != null) {
-			//finish();
-			Message inMessage = intent.getParcelableExtra(Channel.EXTRA_MESSAGE);
 			Channel channel = intent.getParcelableExtra(Channel.EXTRA_CHANNEL);
 			if(channel != null) {
 				setupListView(channel);
 			}
-			/*if(inMessage != null) {
-				messages.add(inMessage);
-				adapter.notifyDataSetChanged();
-			} */
 		}
 	}
 	
 	private void createUI() {
 		setContentView(R.layout.activity_message);
-		rtdJni = TwilioApplication.get().getRtdJni();
-		listView = (ListView) findViewById(R.id.message_list_view);
+		messageListView = (ListView) findViewById(R.id.message_list_view);
 		if(getIntent() != null) {
 			channel = (Channel) getIntent().getParcelableExtra(Channel.EXTRA_CHANNEL);
 			if(channel != null) {
@@ -98,11 +92,14 @@ public class MessageActivity extends Activity{
 		}
 	
 		setupListView(channel);
+		this.setTitle("Channel: "+channel.getFriendlyName());
+		messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+		messageListView.setStackFromBottom(true);
 		adapter.registerDataSetObserver(new DataSetObserver() {
 			@Override
 			public void onChanged() {
 				super.onChanged();
-				listView.setSelection(adapter.getCount() - 1);
+				messageListView.setSelection(adapter.getCount() - 1);
 			}
 		});
 		setupInput();
@@ -162,7 +159,7 @@ public class MessageActivity extends Activity{
 					finish();
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
-				}  //REMOVE_MEMBER
+				}  
 			}
 		});
 		
@@ -281,23 +278,25 @@ public class MessageActivity extends Activity{
 		if(membersArray.length > 0 ) {
 			members = new ArrayList<Member>(Arrays.asList(membersArray));
 		}
-	    
+		
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(MessageActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        View convertView = (View) inflater.inflate(R.layout.custom, null);
+        View convertView = (View) inflater.inflate(R.layout.member_list, null);
         alertDialog.setView(convertView);
         alertDialog.setTitle("List");
         ListView lv = (ListView) convertView.findViewById(R.id.listView1);
 		EasyAdapter<Member> adapterMember = new EasyAdapter<Member>(this, MemberViewHolder.class, members,
 				new MemberViewHolder.OnMemberClickListener() {
-					
 					@Override
 					public void onMemberClicked(Member member) {
 						membersObject.removeMember(member);
+						memberListDialog.dismiss();
 					}
 				});
 		lv.setAdapter(adapterMember);
-        alertDialog.show();
+		memberListDialog = alertDialog.create();
+		memberListDialog.show();
+		memberListDialog.getWindow().setLayout(800, 600);
 	}
 	
 
@@ -326,12 +325,12 @@ public class MessageActivity extends Activity{
 
 
 	private void setupListView(Channel channel) {
-		listView = (ListView) findViewById(R.id.message_list_view);
-		//Message[] messagesArray = channel.getMessages();
+		messageListView = (ListView) findViewById(R.id.message_list_view);
 		Messages messagesObject = channel.getMessages(50);
 		Message[] messagesArray = messagesObject.getMessages();
 		if(messagesArray.length > 0 ) {
-			messages = new ArrayList<Message>(Arrays.asList(messagesArray));//Arrays.asList();
+			messages = new ArrayList<Message>(Arrays.asList(messagesArray));
+			Collections.sort(messages, new CustomMessageComparator());
 		}
 		adapter = new EasyAdapter<Message>(this, MessageViewHolder.class, messages,
 				new MessageViewHolder.OnMessageClickListener() {
@@ -340,7 +339,7 @@ public class MessageActivity extends Activity{
 						
 					}
 				});
-		listView.setAdapter(adapter);
+		messageListView.setAdapter(adapter);
 		adapter.notifyDataSetChanged(); 
 	}
 
@@ -354,12 +353,17 @@ public class MessageActivity extends Activity{
 			Message message = messagesObject.createMessage(input);
 			messagesObject.sendMessage(message);
 		
-			/*MessageImpl msg = new MessageImpl("kumkum", input); */
 			messages.add(message);
 			adapter.notifyDataSetChanged();
-			//pushNewMessage(input);
 			inputText.setText("");
 		}
 		inputText.requestFocus();
+	}
+	
+	private class CustomMessageComparator implements Comparator<Message> {
+		@Override
+		public int compare(Message lhs, Message rhs) {
+			return lhs.getTimeStamp().compareTo(rhs.getTimeStamp());		
+		}
 	}
 }
