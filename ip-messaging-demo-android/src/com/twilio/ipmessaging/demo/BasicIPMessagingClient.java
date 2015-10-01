@@ -11,10 +11,12 @@ import com.twilio.ipmessaging.TwilioIPMessagingClient;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 
+	private static final String TAG = "BasicIPMessagingClient";
 	private String capabilityToken;
 	private long nativeClientParam;
 	private TwilioIPMessagingClient ipMessagingClient;
@@ -44,7 +46,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 		this.capabilityToken = capabilityToken;
 	}
 
-	
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
 		
@@ -95,32 +96,27 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 	@Override
 	public void onChannelAdd(Channel channel) {
-		// TODO Auto-generated method stub
-		
+		Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got added");		
 	}
 
 	@Override
 	public void onChannelChange(Channel channel) {
-		// TODO Auto-generated method stub
-		
+		Log.i(TAG, "Channel Name : "+ channel.getFriendlyName() + " got Changed");	
 	}
 
 	@Override
 	public void onChannelDelete(Channel channel) {
-		// TODO Auto-generated method stub
-		
+		Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got deleted");		
 	}
 
 	@Override
 	public void onError(int errorCode, String errorText) {
-		// TODO Auto-generated method stub
-		
+		Log.i(TAG, "onError called");	
 	}
 
 	@Override
 	public void onAttributesChange(String attributes) {
-		// TODO Auto-generated method stub
-		
+		Log.i(TAG, "Channel's attribute changed");	
 	}
 	
 	public TwilioIPMessagingClient getIpMessagingClient() {

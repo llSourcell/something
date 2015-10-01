@@ -14,6 +14,7 @@ import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
+import com.twilio.ipmessaging.Messages;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

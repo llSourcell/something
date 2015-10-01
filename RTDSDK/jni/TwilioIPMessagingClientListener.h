@@ -50,6 +50,11 @@ private:
     jobject j_ipmessagingclientListenerInternal_;
 	jmethodID j_onMessageAdd_;
 	jmethodID j_onChannelInvite_;
+	jmethodID j_onChannelAdd_;
+	jmethodID j_onChannelChanged_;
+	jmethodID j_onChannelDeleted_;
+	jmethodID j_onAttributesChange_;
+	jmethodID j_onError_;
 	JNIEnv* env_;
 };
 

@@ -66,26 +66,24 @@ public class IPMessagingClientListenerInternal {
 
 
 	public void onChannelAdd(Channel channel) {
-		// TODO Auto-generated method stub
-		
+		TwilioIPMessagingClientImpl.getInstance().handleChannelAddEvent(channel);
 	}
 	
 	public void onChannelInvite(Channel channel) {
 		logger.d("Entered onChannelInvite");
-		TwilioIPMessagingClientImpl.getInstance().handleIncomingInvite(channel);
-		
+		TwilioIPMessagingClientImpl.getInstance().handleIncomingInvite(channel);		
 	}
 
 	
 	public void onChannelChange(Channel channel) {
-		// TODO Auto-generated method stub
-		
+		logger.d("Entered onChannelChange");
+		TwilioIPMessagingClientImpl.getInstance().handleChannelChanged(channel);	
 	}
 
 
 	public void onChannelDelete(Channel channel) {
-		// TODO Auto-generated method stub
-		
+		logger.d("Entered onChannelChange");
+		TwilioIPMessagingClientImpl.getInstance().handleChannelDeleted(channel);
 	}
 
 
@@ -95,9 +93,9 @@ public class IPMessagingClientListenerInternal {
 	}
 
 	
-	public void onAttributesChange(String attributes) {
-		// TODO Auto-generated method stub
-		
+	public void onAttributesChange(String attribute) {
+		logger.d("Entered onChannelChange");
+		TwilioIPMessagingClientImpl.getInstance().handleChannelAttributeChange(attribute);
 	}
 	
 

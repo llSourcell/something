@@ -316,9 +316,32 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		}
 	}
 	
+	public void handleChannelAddEvent(Channel channel) {
+		if(this.ipMessagingListener != null) {
+			this.ipMessagingListener.onChannelAdd(channel);
+		}
+	}
+	
+	public void handleChannelChanged(Channel channel) {
+		if(this.ipMessagingListener != null) {
+			this.ipMessagingListener.onChannelChange(channel);
+		}
+	}
+	
+	public void handleChannelDeleted(Channel channel) {
+		if(this.ipMessagingListener != null) {
+			this.ipMessagingListener.onChannelDelete(channel);
+		}
+	}
+	
+	public void handleChannelAttributeChange(String attribute) {
+		if(this.ipMessagingListener != null) {
+			this.ipMessagingListener.onAttributesChange(attribute);
+		}
+	}
+	
 	private native void create();
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token);
 	private native ChannelsImpl getChannelsNative();
-	
 }
