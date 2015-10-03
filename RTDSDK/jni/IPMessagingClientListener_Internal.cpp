@@ -68,9 +68,9 @@ public:
     	LOGW("onToastFailed TwilioIPMessagingClientListenerInternalWrapper");
     };
 
-    void onTyping(TMTypingAction action, ITMChannelPtr channel, ITMMemberPtr member){
+   /* void onTyping(TMTypingAction action, ITMChannelPtr channel, ITMMemberPtr member){
     	LOGW("onTyping TwilioIPMessagingClientListenerInternalWrapper");
-    };
+    };*/
 
 
 private:
