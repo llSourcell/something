@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging.impl;
 
+import java.io.UnsupportedEncodingException;
+
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
 
@@ -17,8 +19,17 @@ public class MessagesImpl implements Messages , Parcelable{
 
 	@Override
 	public Message createMessage(String message) {
-		
-		return createMessageNative(message);
+		byte[] utf8;
+		String stringMod = null;
+		try {
+			utf8 = message.getBytes("UTF-8");
+			stringMod = new String(utf8, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		return createMessageNativeBuffer(message.getBytes());//createMessageNative(stringMod);
 	}
 
 	@Override
@@ -32,6 +43,7 @@ public class MessagesImpl implements Messages , Parcelable{
 	}
 	
 	private native Message createMessageNative(String message);
+	private native Message createMessageNativeBuffer(byte[] message);
 	private native void sendMessageNative(Message message);
 	private native Message[] getMessagesNative(long handle);
 

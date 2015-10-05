@@ -9,7 +9,6 @@
 #include "TwilioIPMessagingConfigurationProvider.h"
 #include "TwilioIPMessagingNotificationClientListener.h"
 #include "TwilioIPMessagingClientListener.h"
-#include "IPMessagingClientListener_Internal.h"
 
 using namespace rtd;
 
