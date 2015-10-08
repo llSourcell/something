@@ -31,6 +31,14 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessageNative
   (JNIEnv *, jobject, jobject);
 
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_MessagesImpl
+ * Method:    removeMessageNative
+ * Signature: (Lcom/twilio/ipmessaging/Message;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessageNative
+  (JNIEnv *, jobject, jobject);
 /*
  * Class:     com_twilio_ipmessaging_impl_MessagesImpl
  * Method:    getMessagesNative

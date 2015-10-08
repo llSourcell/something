@@ -47,7 +47,7 @@ public class MessageActivity extends Activity{
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
 	private Channel channel;
-	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave" };
+	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType" };
 	
 	private static final int NAME_CHANGE = 0;
 	private static final int TOPIC_CHANGE = 1;
@@ -56,6 +56,7 @@ public class MessageActivity extends Activity{
 	private static final int ADD_MEMBER = 4;
 	private static final int REMOVE_MEMBER = 5;
 	private static final int LEAVE = 6;
+	private static final int CHANNEL_TYPE = 7;
 	
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
@@ -133,7 +134,7 @@ public class MessageActivity extends Activity{
 				} else if (which == TOPIC_CHANGE) {
 					channel.leave();
 				} else if (which == LIST_MEMBERS) {
-					Members membersObject = channel.getMemberArray();
+					Members membersObject = channel.getMembers();
 					Member[] members = membersObject.getMembers();
 					
 					logger.d("member retrieved");
@@ -180,7 +181,7 @@ public class MessageActivity extends Activity{
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
-						channel.updateFriendlyName(friendlyName);
+						channel.setFriendlyName(friendlyName);
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -207,7 +208,7 @@ public class MessageActivity extends Activity{
 						logger.e(topic);
 						Map attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
-						channel.updateAttributes(attrMap);
+						channel.setAttributes(attrMap);
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -233,7 +234,7 @@ public class MessageActivity extends Activity{
 								.toString();
 						logger.e(memberName);
 						
-						Members membersObject = channel.getMemberArray();
+						Members membersObject = channel.getMembers();
 						membersObject.inviteByIdentity(memberName);
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -260,7 +261,7 @@ public class MessageActivity extends Activity{
 								.toString();
 						logger.e(memberName);
 						
-						Members membersObject = channel.getMemberArray();
+						Members membersObject = channel.getMembers();
 						membersObject.addByIdentity(memberName);
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -273,7 +274,7 @@ public class MessageActivity extends Activity{
 	}
 	
 	private void showRemoveMemberDialog() {
-		final Members membersObject = channel.getMemberArray();
+		final Members membersObject = channel.getMembers();
 		Member[] membersArray= membersObject.getMembers();
 		if(membersArray.length > 0 ) {
 			members = new ArrayList<Member>(Arrays.asList(membersArray));

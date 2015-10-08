@@ -2,7 +2,9 @@ package com.twilio.ipmessaging.demo;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelStatus;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 import uk.co.ribot.easyadapter.ItemViewHolder;
@@ -43,6 +45,8 @@ public class ChannelViewHolder extends ItemViewHolder<Channel> {
 	public void onSetValues(Channel channel, PositionInfo arg1) {
 		friendlyName.setText(channel.getFriendlyName());
 		channelSid.setText(channel.getSid());
+		boolean chStatus = (channel.getStatus()  == ChannelStatus.JOINED);
+		view.setBackgroundColor(chStatus ? Color.WHITE : Color.GRAY);
 	}
 
 	public interface OnChannelClickListener {

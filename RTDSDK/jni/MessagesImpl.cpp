@@ -4,13 +4,7 @@
 #include <twilio-jni/twilio-jni.h>
 #include <android/log.h>
 
-
-#define TAG  "RTD_TESTS"
-
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
-
+#define TAG  "MessagesImpl(native)"
 
 jstring str2jstring(JNIEnv* env, const char* pat) {
 	jclass strClass = (env)->FindClass("java/lang/String");
@@ -77,24 +71,22 @@ ITMessagesPtr getMessagesPtrFromNativeHandle(JNIEnv *env, jobject obj) {
 
 	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesHandler");
 
-	LOGW( "getMessagesPtrFromNativeHandle : Checking nativeMessagesContext.");
+	LOGD(TAG,"getMessagesPtrFromNativeHandle : Checking nativeMessagesContext.");
 
 	if (nativeMessagesContext == 0) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "nativeMessagesContext is null");
+			LOGW(TAG, "nativeMessagesContext is null");
 			return nullptr;
 	} else {
 
 		MessagesContext *messagesContextRecreate = reinterpret_cast<MessagesContext *>(nativeMessagesContext);
-
-		__android_log_print(ANDROID_LOG_ERROR, TAG, "nativeMessagesContext context is recreated.");
-
+		LOGD(TAG, "nativeMessagesContext context is recreated.");
 		if(messagesContextRecreate == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
 			return 0;
 		}
 
 		if(messagesContextRecreate->messages == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
 			return 0;
 		}
 
@@ -110,27 +102,22 @@ ITMessagePtr getMessagePtrFromNativeHandle(JNIEnv *env, jobject obj) {
 
 	jlong nativeMessageContext = tw_jni_fetch_long(env, obj, "nativeMessageHandle");
 
-	LOGW( "getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
+	LOGD(TAG,"getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
 
 	if (nativeMessageContext == 0) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "nativeMessageContext is null");
+			LOGW(TAG, "nativeMessageContext is null");
 			return nullptr;
 	} else {
-
 		MessageContext *messageContextRecreate = reinterpret_cast<MessageContext *>(nativeMessageContext);
-
-		__android_log_print(ANDROID_LOG_ERROR, TAG, "nativeMessageContext is recreated.");
-
+		LOGD(TAG, "nativeMessageContext is recreated.");
 		if(messageContextRecreate == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
 			return 0;
 		}
-
 		if(messageContextRecreate->message == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
+			LOGW(TAG, "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
 			return 0;
 		}
-
 		message = messageContextRecreate->message;
 	}
 
@@ -151,14 +138,15 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 	if(messages != nullptr) {
 		ITMessagePtr messageLocal = messages->createMessage();
-		const char *msgTextStr = jstring2str(env, msgText).c_str();
+
+		 const char *msgTextStr = jstring2str(env, msgText).c_str();
 		//const char *msgTextStr = env->GetStringUTFChars(msgText, 0);
 
-		messageLocal->setBody(msgTextStr, [](TMResult result) {});
+		messageLocal->setBody(msgTextStr, [](TMResult result) {LOGD(TAG,"Message setBody command processed");});
 
 		jclass java_message_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessageImpl");
 		if(java_message_impl_cls != NULL) {
-			LOGW("Found java_message_impl_cls class" );
+			LOGW(TAG,"Found java_message_impl_cls class" );
 		}
 
 		MessageContext* messageContext_ = new MessageContext();
@@ -169,8 +157,8 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 		const char* body = messageContext_->message->getBody().c_str();
 		const char* timestamp = messageContext_->message->getTimestamp().c_str();
 
-		LOGW("author Name  : %s.", author );
-		LOGW("body is %s", body);
+		LOGW(TAG,"author Name  : %s.", author );
+		LOGW(TAG,"body is %s", body);
 
 		jstring authorString = env->NewStringUTF(author);
 		jstring bodyString = env->NewStringUTF(body);
@@ -178,7 +166,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 		message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timestampString, messageContextHandle);
-		LOGW("Created Message Object.");
+		LOGW(TAG,"Created Message Object.");
 
 		return message;
 	}
@@ -214,7 +202,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 		jclass java_message_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessageImpl");
 		if(java_message_impl_cls != NULL) {
-			LOGW("Found java_message_impl_cls class" );
+			LOGW(TAG,"Found java_message_impl_cls class" );
 		}
 
 		MessageContext* messageContext_ = new MessageContext();
@@ -225,8 +213,8 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 		const char* body = messageContext_->message->getBody().c_str();
 		const char* timestamp = messageContext_->message->getTimestamp().c_str();
 
-		LOGW("author Name  : %s.", author );
-		LOGW("body is %s", body);
+		LOGD(TAG,"author Name  : %s.", author );
+		LOGD(TAG,"body is %s", body);
 
 		jstring authorString = env->NewStringUTF(author);
 		jstring bodyString = env->NewStringUTF(body);
@@ -234,7 +222,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 		message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timestampString, messageContextHandle);
-		LOGW("Created Message Object.");
+		LOGD(TAG,"Created Message Object.");
 
 		return message;
 	}
@@ -253,7 +241,24 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
 	if(messages != nullptr) {
 		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
 		if(message != nullptr) {
-			 messages->send(message, nullptr);
+			 messages->send(message, [](TMResult result) {LOGD(TAG,"Messages send command processed");});
+		}
+	}
+}
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_MessagesImpl
+ * Method:    removeMessageNative
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessageNative
+  (JNIEnv *env, jobject obj, jobject messageObj) {
+
+	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
+	if(messages != nullptr) {
+		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
+		if(message != nullptr) {
+			 messages->remove(message, [](TMResult result) {LOGD(TAG,"Messages remove command processed");});
 		}
 	}
 }
@@ -269,24 +274,24 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 
 	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesHandler");
 
-	LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : Checking nativeMessagesContext.");
+	LOGD(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : Checking nativeMessagesContext.");
 
 	if (nativeMessagesContext == 0) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "client context is null");
+			LOGW(TAG, "client context is null");
 			return nullptr;
 	} else {
 
 		MessagesContext *MessagesContextRecreate = reinterpret_cast<MessagesContext *>(nativeMessagesContext);
 
-		__android_log_print(ANDROID_LOG_ERROR, TAG, "client context is recreated.");
+		LOGD(TAG, "client context is recreated.");
 
 		if(MessagesContextRecreate == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
 			return 0;
 		}
 
 		if(MessagesContextRecreate->messages == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
 			return 0;
 		}
 
@@ -297,7 +302,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 
 		jclass java_message_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessageImpl");
 		if(java_message_impl_cls != NULL) {
-			LOGW("Found java_message_impl_cls class" );
+			LOGW(TAG, "Found java_message_impl_cls class" );
 		}
 
 		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
@@ -314,8 +319,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 			const char* body = messagePtr->getBody().c_str();
 			const char* timestamp = messagePtr->getTimestamp().c_str();
 
-			LOGW("author Name  : %s.", author );
-			LOGW("body is %s", body);
+			LOGW(TAG, "author Name  : %s.", author );
+			LOGW(TAG, "body is %s", body);
 
 			jstring authorString = env->NewStringUTF(author);
 			//jstring bodyString = env->NewStringUTF(body);
@@ -323,15 +328,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 			jstring timeStampString  = env->NewStringUTF(timestamp);
 
 			message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle );
-			LOGW("Created Message Object.");
+			LOGD(TAG,"Created Message Object.");
 			env->SetObjectArrayElement(messagesArray, i, message);
-			LOGW("Added object to array");
-		}
-
-		if(messagesArray != NULL) {
-			LOGW("messagesArray is NOT NULL ");
-		} else {
-			LOGW("messagesArray is  NULL *********");
+			LOGD(TAG, "Added object to array");
 		}
 
 		return messagesArray;

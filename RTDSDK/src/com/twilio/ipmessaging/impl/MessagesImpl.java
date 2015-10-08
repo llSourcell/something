@@ -1,6 +1,8 @@
 package com.twilio.ipmessaging.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Formatter;
 
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
@@ -19,17 +21,10 @@ public class MessagesImpl implements Messages , Parcelable{
 
 	@Override
 	public Message createMessage(String message) {
-		byte[] utf8;
 		String stringMod = null;
-		try {
-			utf8 = message.getBytes("UTF-8");
-			stringMod = new String(utf8, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-		return createMessageNativeBuffer(message.getBytes());//createMessageNative(stringMod);
+		String unicodedString = escapeUnicode(message);
+		stringMod = new String(unicodedString.getBytes(Charset.forName("UTF-8")));
+		return createMessageNativeBuffer(stringMod.getBytes());
 	}
 
 	@Override
@@ -42,11 +37,6 @@ public class MessagesImpl implements Messages , Parcelable{
 		return this.getMessagesNative(this.nativeMessagesHandler);
 	}
 	
-	private native Message createMessageNative(String message);
-	private native Message createMessageNativeBuffer(byte[] message);
-	private native void sendMessageNative(Message message);
-	private native Message[] getMessagesNative(long handle);
-
 	//parcel
 	@Override
 	public int describeContents() {
@@ -59,5 +49,25 @@ public class MessagesImpl implements Messages , Parcelable{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String escapeUnicode(String input) {
+		StringBuilder b = new StringBuilder(input.length());
+		Formatter f = new Formatter(b);
+		for (char c : input.toCharArray()) {
+			if (c < 128) {
+				b.append(c);
+			} else {
+				f.format("\\u%04x", (int) c);
+			}
+		}
+		return b.toString();
+	}
+	
+	private native Message createMessageNative(String message);
+	private native Message createMessageNativeBuffer(byte[] message);
+	private native void sendMessageNative(Message message);
+	private native void removeMessageNative(Message message);
+	private native Message[] getMessagesNative(long handle);
+
 
 }

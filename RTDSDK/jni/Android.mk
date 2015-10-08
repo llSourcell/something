@@ -4,6 +4,7 @@ include $(TWSDK_JNI_PATH)/../external/twilio-jni/Android.mk
 
 LOCAL_PATH := $(TWSDK_JNI_PATH)
 LOCAL_PREBUILT_ROOT = $(TWSDK_JNI_PATH)/../target/android
+TOOLCHAIN_PLAT = darwin-x86_64
 
 # OpenSSL
 include $(CLEAR_VARS)
@@ -107,16 +108,16 @@ LOCAL_EXPORT_C_INCLUDES := \
 
 include $(PREBUILT_STATIC_LIBRARY)
 
+
 # twilio-rtd-native
 
 include $(CLEAR_VARS)
+
 
 LOCAL_MODULE := twilio-rtd-native	
 LOCAL_CPPFLAGS := -std=gnu++11 -frtti
 	
 LOCAL_LDLIBS    := -llog 
-#-L$(LOCAL_PATH)/poco/include/Poco/
-#-ld -l$(MY_STATIC_LIBS)
 				
 LOCAL_SRC_FILES := \
 	TwilioIPMessagingConfigurationProvider.cpp \
@@ -127,11 +128,7 @@ LOCAL_SRC_FILES := \
 	ChannelsImpl.cpp \
 	ChannelImpl.cpp \
 	MembersImpl.cpp \
-	MessageImpl.cpp
-	
-	
-#TestRTDJNI.cpp \
-	
+	MessageImpl.cpp 
 	
 LOCAL_STATIC_LIBRARIES := \
     RTDMessaging \
@@ -146,7 +143,8 @@ LOCAL_STATIC_LIBRARIES := \
 	PocoFoundation \
 	OpenSSL \
 	OpenSSLCrypto \
-	twilio-jni
+	twilio-jni 
+	
 	
 	
 include $(BUILD_SHARED_LIBRARY)

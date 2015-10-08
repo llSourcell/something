@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
@@ -117,7 +118,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								.toString();
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-						Channel newChannel = channelsLocal.createChannel(channelName, ChannelActivity.this);
+						Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PRIVATE, ChannelActivity.this);
 						getChannels(newChannel.getSid());
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -10,7 +10,7 @@
 
 #include <Poco/Foundation.h>
 
-#include <Common/TLLogger.h>
+//#include <Common/TLLogger.h>
 
 #include <android/log.h>
 
@@ -21,12 +21,6 @@
 #include "ITMessage.h"
 
 using namespace rtd;
-
-#define TAG  "RTD_TESTS"
-
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
 
 
 class TwilioIPMessagingClientListener : public ITMClientListener

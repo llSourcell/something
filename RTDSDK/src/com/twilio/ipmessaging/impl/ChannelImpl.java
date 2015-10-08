@@ -65,6 +65,26 @@ public class ChannelImpl implements Channel, Parcelable{
 		this.sid = sid;
 		this.nativeChannelHandle = nativeHandle;
 	}
+	
+	public ChannelImpl(String friendlyName, String sid, long nativeHandle, int status) {
+		super();
+		this.friendlyName = friendlyName;
+		this.sid = sid;
+		this.nativeChannelHandle = nativeHandle;
+		switch (status) {
+			case 0:
+				this.status = Channel.ChannelStatus.INVITED;
+				break;
+			case 1:
+				this.status =Channel.ChannelStatus.JOINED;
+				break;
+			case 2:
+				this.status = Channel.ChannelStatus.NOT_PARTICIATING;
+				return;
+			default:
+				break;
+		}	
+	}
 
 	@Override
 	public String getSid() {
@@ -111,24 +131,33 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public Members getMembers() {
 		
-		return null;
-	}
-	
-	@Override
-	public Members getMemberArray() {
-		
 		return getMembers(this.getNativeClientContextHandle(), this.sid);
 	}
 
 	@Override
-	public void updateAttributes(Map<String, String> updatedAttributes) {
+	public void setAttributes(Map<String, String> updatedAttributes) {
 		this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), updatedAttributes);
 	}
 
 	@Override
-	public void updateFriendlyName(String friendlyName) {
+	public void setFriendlyName(String friendlyName) {
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
 		updateChannelName(nativeClientHandle, this.getSid(), friendlyName);
+	}
+	
+	@Override
+	public void setType(ChannelType type) {
+		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
+		int channelType = 0;
+		switch (type) {
+		case CHANNEL_TYPE_PUBLIC:
+			channelType = 0;
+			break;
+		case CHANNEL_TYPE_PRIVATE:
+			channelType = 1;
+			break;
+		}
+		updateChannelType(nativeClientHandle, this.getSid(), channelType);
 	}
 
 	@Override
@@ -160,36 +189,15 @@ public class ChannelImpl implements Channel, Parcelable{
 		
 	}
 
-
-	@Override
-	public void removeMember(Member member) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public Messages getMessages(int count) {
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
 		return getMessagesObject(nativeClientHandle, this.sid);
 	}
 	
-
-	@Override
-	public void addByIdentity(String identity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void inviteByIdentity(String identity) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public long getNativeHandle() {
 		return this.nativeChannelHandle;
 	}
-	
 	
 	@Override
 	public int describeContents() {
@@ -262,7 +270,8 @@ public class ChannelImpl implements Channel, Parcelable{
     public native void joinChannel(long nativeClientParamHandle, String channel_sid);
 	public native void leaveChannel(long nativeClientParamHandle, String channel_sid);
 	public native void destroyChannel(long nativeClientParamHandle, String channel_sid);
-	public native void updateChannelName(long nativeClientParamHandle, String channel_sid, String name);	
+	public native void updateChannelName(long nativeClientParamHandle, String channel_sid, String name);
+	private native void updateChannelType(long nativeClientHandle, String channel_sid, int channelType);
 	public native Members getMembers(long nativeClientParamHandle, String channel_sid);
 	public native void updateChannelAttributes(long nativeClientParamHandle, String channel_sid, Map<String, String> attrMap);
 	public native void declineChannelInvite(long nativeClientParamHandle, String channel_sid);

@@ -1,6 +1,7 @@
 package com.twilio.ipmessaging.impl;
 
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 
@@ -15,9 +16,18 @@ public class ChannelsImpl implements Channels {
 	}
 
 	@Override
-	public Channel createChannel(String friendlyName, ChannelListener listener) {	
-		
-		ChannelImpl channel = this.createChannelNative(friendlyName, listener);
+	public Channel createChannel(String friendlyName, ChannelType type, ChannelListener listener) {	
+		int nativeType = 0;
+		switch (type) {
+		case CHANNEL_TYPE_PUBLIC:
+			nativeType = 0;
+			break;
+		case CHANNEL_TYPE_PRIVATE:
+			nativeType = 1;
+			break;
+		}
+	
+		ChannelImpl channel = this.createChannelNativeWithType(friendlyName, nativeType, listener);
 		String cSid = channel.getSid();
 		TwilioIPMessagingClientImpl.publicChannelMap.put(cSid, channel);
 		return channel;
@@ -41,7 +51,9 @@ public class ChannelsImpl implements Channels {
 	}
 	
 	private native ChannelImpl createChannelNative(String friendlyName, ChannelListener listener);
+	private native ChannelImpl createChannelNativeWithType(String friendlyName, int type, ChannelListener listener);
 	private native ChannelImpl getChannelNative(String channelId, long handle);
 	private native ChannelImpl[] getChannelsNative(long handle);
+	private native ChannelImpl[] getMyChannelsNative(long handle);
 
 }

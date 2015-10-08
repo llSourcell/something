@@ -5,7 +5,7 @@ import java.util.Map;
 import android.app.PendingIntent;
 
 /**
- *  Container for channels.
+ *  Container for channel object.
  * 
  * @author kbagchi
  *
@@ -117,47 +117,25 @@ public interface Channel {
 	public Members getMembers();
 	
 	/**
-	 * Method to get the channel members.
-	 * 
-	 * @return Members objects.
-	 */
-	public Members getMemberArray();
-	
-	
-	/**
 	 * Updates the attribute data for this channel.
 	 * 
 	 * @param updatedAttributes
 	 */
-	public void updateAttributes(Map<String, String> updatedAttributes);
+	public void setAttributes(Map<String, String> updatedAttributes);
 	
 	/**
 	 * Updates the friendly name for this channel.
 	 * 
 	 * @param friendlyName updated friendly name.
 	 */
-	public void updateFriendlyName(String friendlyName);	
+	public void setFriendlyName(String friendlyName);
 	
 	/**
-	 * Add specified identity to this channel without inviting them.
+	 * Updates the channel type for this channel.
 	 * 
-	 * @param identity	The identity to add to this channel.
+	 * @param type updated channel type.
 	 */
-	public void addByIdentity(String identity);
-		
-	/**
-	 * Invite a user to this Channel.
-	 * 
-	 * @param identity The identity to add to this channel. 
-	 */
-	public void inviteByIdentity(String identity);
-	
-	/**
-	 * Remove the specified member.
-	 * 
-	 * @param member
-	 */
-	public void removeMember(Member member);
+	public void setType(ChannelType type);
 	
 	/**
 	 * Joins the current user to the channel.

@@ -55,6 +55,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelName
   (JNIEnv *, jobject, jlong, jstring, jstring);
 
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    updateChannelName
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelType
+(JNIEnv *, jobject, jlong, jstring, int type);
+
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
  * Method:    getMembers

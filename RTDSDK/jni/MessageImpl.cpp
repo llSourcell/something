@@ -4,6 +4,7 @@
 #include <twilio-jni/twilio-jni.h>
 #include <android/log.h>
 
+#define TAG  "MessageImpl(native)"
 
 /*
  * Class:     com_twilio_ipmessaging_impl_MessageImpl
@@ -17,25 +18,21 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_getChanne
 	ITMessagePtr messagePtr = nullptr;
 	jstring sidString;
 
-
-	LOGW( "getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
-
+	LOGD(TAG,"getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
 	if (nativeMessageContext == 0) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "nativeMessageContext is null");
-			return nullptr;
+		LOGW(TAG, "nativeMessageContext is null");
+		return nullptr;
 	} else {
-
 		MessageContext *messageContextRecreate = reinterpret_cast<MessageContext *>(nativeMessageContext);
-
-		__android_log_print(ANDROID_LOG_ERROR, TAG, "nativeMessageContext context is recreated.");
+		LOGD(TAG, "nativeMessageContext context is recreated.");
 
 		if(messageContextRecreate == nullptr) {
-			LOGW( "Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative : MessageContextRecreate is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative : MessageContextRecreate is NULL.");
 			return 0;
 		}
 
 		if(messageContextRecreate->message == nullptr) {
-			LOGW( "MessageContextRecreate : ITMessagesPtr is NULL.");
+			LOGW(TAG,"MessageContextRecreate : ITMessagesPtr is NULL.");
 			return 0;
 		}
 
