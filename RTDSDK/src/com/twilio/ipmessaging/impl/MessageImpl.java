@@ -65,12 +65,10 @@ public class MessageImpl implements Message, Parcelable {
 	
 	@Override
 	public String getChannelSid() {
-		String sid = getChannelSidNative();
+		String sid = getChannelSidNative(this.nativeMessageContextHandle);
 		return sid;
 	}
 	
-	public native String getChannelSidNative();
-
 	@Override
 	public int describeContents() {
 			return 0;
@@ -106,5 +104,7 @@ public class MessageImpl implements Message, Parcelable {
     };
     
     //private native String getChannelSidNative(long nativeMessageContextHandle);
+    public native String getChannelSidNative(long nativeMessageContextHandle);
+
 
 }

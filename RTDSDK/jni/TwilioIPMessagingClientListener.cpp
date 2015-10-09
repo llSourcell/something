@@ -101,7 +101,7 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr channelPtr)
 {
 	LOGW(TAG,"TwilioIPMessagingClientListener::onChannel");
-	switch (action) {
+	/*switch (action) {
 		case rtd::kTMActionAdded:
 		{
 			if(channelPtr != nullptr) {
@@ -171,7 +171,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
 						LOGW(TAG,"Created Channel Object.");
 
-						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
+						//jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
 
 						break;
 					}
@@ -245,7 +245,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 
 			break;
 		}
-	}
+	} */
 }
 
 void TwilioIPMessagingClientListener::onMember(TMAction action, ITMMemberPtr member)
