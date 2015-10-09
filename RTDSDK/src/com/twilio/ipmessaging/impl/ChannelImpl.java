@@ -2,18 +2,17 @@ package com.twilio.ipmessaging.impl;
 
 
 import java.util.Map;
-import java.util.Set;
 
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
-import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
-import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -44,6 +43,8 @@ public class ChannelImpl implements Channel, Parcelable{
 	private long nativeChannelHandle;
 	
 	private PendingIntent incomingIntent;
+	
+	private Handler handler;
 	
 	public ChannelImpl(ChannelListener listener, String friendlyName, String sid) {
 		super();
@@ -84,6 +85,8 @@ public class ChannelImpl implements Channel, Parcelable{
 			default:
 				break;
 		}	
+		
+		setupListenerHandler();
 	}
 
 	@Override
@@ -263,6 +266,22 @@ public class ChannelImpl implements Channel, Parcelable{
 			}
 		}
 	}
+	
+	/*
+	 * Use the thread looper or the main thread looper if the thread does not
+	 * provide one to callback on the thread that provided the event listener.
+	 */
+	private void setupListenerHandler() {
+		Looper looper;
+		if((looper = Looper.myLooper()) != null) {
+			handler = new Handler(looper);
+		} else if((looper = Looper.getMainLooper()) != null) {
+			handler = new Handler(looper);
+		} else {
+			handler = null;
+		}
+	}
+
 	
 	
 	public native Messages getMessagesObject(long nativeClientParamHandle, String channel_sid);

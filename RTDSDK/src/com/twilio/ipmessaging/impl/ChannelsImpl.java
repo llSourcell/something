@@ -27,7 +27,7 @@ public class ChannelsImpl implements Channels {
 			break;
 		}
 	
-		ChannelImpl channel = this.createChannelNativeWithType(friendlyName, nativeType, listener);
+		ChannelImpl channel = this.createChannelNativeWithType(friendlyName, nativeType, listener, this.nativeChannelsHandler);
 		String cSid = channel.getSid();
 		TwilioIPMessagingClientImpl.publicChannelMap.put(cSid, channel);
 		return channel;
@@ -50,8 +50,8 @@ public class ChannelsImpl implements Channels {
 		return channelArray;
 	}
 	
-	private native ChannelImpl createChannelNative(String friendlyName, ChannelListener listener);
-	private native ChannelImpl createChannelNativeWithType(String friendlyName, int type, ChannelListener listener);
+	private native ChannelImpl createChannelNative(String friendlyName, ChannelListener listener, long nativeChannelsContext);
+	private native ChannelImpl createChannelNativeWithType(String friendlyName, int type, ChannelListener listener, long nativeChannelsContext);
 	private native ChannelImpl getChannelNative(String channelId, long handle);
 	private native ChannelImpl[] getChannelsNative(long handle);
 	private native ChannelImpl[] getMyChannelsNative(long handle);

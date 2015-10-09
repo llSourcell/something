@@ -69,7 +69,7 @@ jstring JNICALL convertByteArrayToString(JNIEnv* env, jclass clazz, jbyteArray a
 ITMessagesPtr getMessagesPtrFromNativeHandle(JNIEnv *env, jobject obj) {
 	ITMessagesPtr messages = nullptr;
 
-	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesHandler");
+	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesContextHandler");
 
 	LOGD(TAG,"getMessagesPtrFromNativeHandle : Checking nativeMessagesContext.");
 
@@ -100,7 +100,7 @@ ITMessagesPtr getMessagesPtrFromNativeHandle(JNIEnv *env, jobject obj) {
 ITMessagePtr getMessagePtrFromNativeHandle(JNIEnv *env, jobject obj) {
 	ITMessagePtr message = nullptr;
 
-	jlong nativeMessageContext = tw_jni_fetch_long(env, obj, "nativeMessageHandle");
+	jlong nativeMessageContext = tw_jni_fetch_long(env, obj, "nativeMessageContextHandle");
 
 	LOGD(TAG,"getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
 
@@ -269,10 +269,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessa
  * Signature: (J)[Lcom/twilio/ipmessaging/Message;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative
-  (JNIEnv *env, jobject obj , jlong handle){
+  (JNIEnv *env, jobject obj , jlong nativeMessagesContext1){
 	jobject message;
 
-	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesHandler");
+	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesContextHandler");
 
 	LOGD(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : Checking nativeMessagesContext.");
 

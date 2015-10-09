@@ -13,14 +13,14 @@ public class MessageImpl implements Message, Parcelable {
 	private String date;
 	private String body;
 	private String sid;
-	private long nativeMessageHandle; 
+	private long nativeMessageContextHandle; 
 	private Channel channel;
 
 	public MessageImpl(String author, String body, String timeStamp, long handle) {
 		this.author = author;
 		this.body = body;
 		this.date = timeStamp;
-		this.nativeMessageHandle = handle;
+		this.nativeMessageContextHandle = handle;
 	}
 	
 	public MessageImpl(String author, String body) {
@@ -60,7 +60,7 @@ public class MessageImpl implements Message, Parcelable {
 	}
 
 	public long getNativeHandle() {
-		return nativeMessageHandle;
+		return nativeMessageContextHandle;
 	}
 	
 	@Override
@@ -104,5 +104,7 @@ public class MessageImpl implements Message, Parcelable {
 			return null;
 		}
     };
+    
+    //private native String getChannelSidNative(long nativeMessageContextHandle);
 
 }

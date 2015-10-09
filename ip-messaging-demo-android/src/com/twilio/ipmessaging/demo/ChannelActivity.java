@@ -118,7 +118,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								.toString();
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-						Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PRIVATE, ChannelActivity.this);
+						Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, ChannelActivity.this);
 						getChannels(newChannel.getSid());
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
