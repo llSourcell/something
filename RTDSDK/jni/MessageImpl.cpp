@@ -14,7 +14,6 @@
 JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative
   (JNIEnv *env, jobject obj, jlong nativeMessageContext)
 {
-	//jlong nativeMessageContext = tw_jni_fetch_long(env, obj, "nativeMessageHandle");
 	ITMessagePtr messagePtr = nullptr;
 	jstring sidString;
 

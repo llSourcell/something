@@ -19,7 +19,6 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
   (JNIEnv *env, jobject obj, jstring friendlyName, jobject listener, jlong nativeChannelsContext) {
 
 	jobject channel;
-	//jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 	LOGD(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_W(TAG,"nativeChannelsContext is null");
@@ -98,7 +97,6 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithType
 (JNIEnv *env, jobject obj, jstring friendlyName, jint type, jobject listener, jlong nativeChannelsContext) {
 	jobject channel;
-	//jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 	LOGD(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_W(TAG,"nativeChannelsContext is null");
@@ -182,7 +180,6 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
   (JNIEnv *env, jobject obj, jstring channel_sid, jlong nativeChannelsContext) {
 
 	jobject channel;
-	//jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 
 	if(channel_sid != nullptr) {
 		const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
@@ -253,10 +250,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 	jobject channel;
 	jobjectArray channelsArray ;
 
-	//jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
-
 	LOGD(TAG, "Checking nativeChannelsContext.");
-
 	if (nativeChannelsContext == 0) {
 		LOGW(TAG, "nativeChannelsContext is null");
 			return nullptr;
@@ -326,8 +320,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 	jobject channel;
 	jobjectArray channelsArray ;
-
-	//jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 
 	LOGD(TAG, "Checking nativeChannelsContext.");
 
