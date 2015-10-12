@@ -43,7 +43,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	private static Context context;	
 	private IPMessagingClientListener ipMessagingListener;
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
-	private long nativeClientParam;
+	private long nativeClientParamContextHandle;
 	private long nativeObserverHandle;
 	private InitListener listener;	
 	final static Map<String, ChannelImpl> publicChannelMap = new HashMap<String, ChannelImpl>();
@@ -253,7 +253,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 
 	@Override
 	public Channels getChannels() {		
-		return getChannelsNative();
+		return getChannelsNative(this.nativeClientParamContextHandle);
 	}
 
 
@@ -276,8 +276,8 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		}
 		this.ipMessagingListener = listener;
 		this.internalListener = new IPMessagingClientListenerInternal(listener);
-		nativeClientParam = initNative(token, internalListener);
-		long status = createMessagingClient(token);
+		nativeClientParamContextHandle = initNative(token, internalListener);
+		long status = createMessagingClient(token, this.nativeClientParamContextHandle);
 
 		return instance;
 	}
@@ -285,7 +285,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 
 
 	public long getNativeClientParam() {
-		return nativeClientParam;
+		return nativeClientParamContextHandle;
 	}
 
 	@Override
@@ -342,6 +342,6 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	
 	private native void create();
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
-	public native long createMessagingClient(String token);
-	private native ChannelsImpl getChannelsNative();
+	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
+	private native ChannelsImpl getChannelsNative(long nativeClientParam);
 }

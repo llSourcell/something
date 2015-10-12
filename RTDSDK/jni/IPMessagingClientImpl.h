@@ -30,7 +30,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
  * Signature: (Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_createMessagingClient
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jstring, jlong);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
@@ -38,7 +38,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
  * Signature: ()Lcom/twilio/ipmessaging/Channels;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jlong);
 
 
 #ifdef __cplusplus

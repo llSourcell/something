@@ -1,13 +1,8 @@
 package com.twilio.ipmessaging;
 
-import java.util.Map;
-
 /**
  * This interface defines IPMessagingClient callback methods.
  * 
- * @author kbagchi
- * 
- * TODO :: Toast Notification related apis
  */
 public interface IPMessagingClientListener {
 	

@@ -12,11 +12,11 @@ import android.os.Parcelable;
 
 public class MessagesImpl implements Messages , Parcelable{
 	
-	private long nativeMessagesHandler;
+	private long nativeMessagesContextHandler;
 
 	public MessagesImpl(long handler) {
 		super();
-		this.nativeMessagesHandler = handler;
+		this.nativeMessagesContextHandler = handler;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class MessagesImpl implements Messages , Parcelable{
 
 	@Override
 	public Message[] getMessages() {
-		return this.getMessagesNative(this.nativeMessagesHandler);
+		return this.getMessagesNative(this.nativeMessagesContextHandler);
 	}
 	
 	//parcel

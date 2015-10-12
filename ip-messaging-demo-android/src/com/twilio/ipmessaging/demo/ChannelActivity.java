@@ -11,6 +11,8 @@ import java.util.Map;
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
+import com.twilio.ipmessaging.impl.ChannelImpl;
+import com.twilio.ipmessaging.impl.TwilioIPMessagingClientImpl;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
@@ -118,7 +120,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								.toString();
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-						Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PRIVATE, ChannelActivity.this);
+						Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, ChannelActivity.this);
 						getChannels(newChannel.getSid());
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -137,8 +139,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
 					@Override
 					public void onChannelClicked(final Channel channel) {
 						if (channel.getStatus() == Channel.ChannelStatus.JOINED) {
+							Channel channelSelected = channelsLocal.getChannel(channel.getSid());
+							logger.e("HashCode of channelSelected is : " + channelSelected.hashCode());
 							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
-							i.putExtra(Channel.EXTRA_CHANNEL, (Parcelable) channel);
+							i.putExtra(Channel.EXTRA_CHANNEL, (Parcelable) channelSelected);
+							i.putExtra("C_SID", channelSelected.getSid());
 							startActivity(i);
 							return;
 						} 
@@ -165,7 +170,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		if (this.channels != null) {
 			this.channels.clear();
 			channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-			channelArray = channelsLocal.getChannels();	
+      		channelArray = channelsLocal.getChannels();	
+			setupListenersForChannel(this.channelArray);
 			this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
 			Collections.sort(this.channels, new CustomChannelComparator());
 			adapter.notifyDataSetChanged();
@@ -174,7 +180,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 	@Override
 	public void onMessageAdd(Message message) {
-		logger.d("Message received");
+	/*	logger.d("Message received");
 		StringBuffer text = new StringBuffer();
 		text.append("From: " + message.getAuthor());
 		text.append("Body:" + message.getMessageBody());
@@ -185,33 +191,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		LinearLayout toastLayout = (LinearLayout) toast.getView();
 		TextView toastTV = (TextView) toastLayout.getChildAt(0);
 		toastTV.setTextSize(30);
-		toast.show(); 
-		
-	}
-
-
-
-	@Override
-	public void onMessageDelete(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onMemberJoin(Member member) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onMemberChange(Member member) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onMemberDelete(Member member) {
-		// TODO Auto-generated method stub
+		toast.show();  */
 		
 	}
 
@@ -267,5 +247,48 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		public int compare(Channel lhs, Channel rhs) {
 			return lhs.getFriendlyName().compareTo(rhs.getFriendlyName());		
 		}
+	}
+
+	@Override
+	public void onMessageDelete(Message message) {
+		logger.e("Member deleted");
+	}
+
+	@Override
+	public void onMemberJoin(Member member) {
+		if(member != null) {
+			showToast(member.getIdentity() + " joined");
+		}
+	}
+
+	@Override
+	public void onMemberChange(Member member) {
+		if(member != null) {
+			showToast(member.getIdentity() + " changed");
+		}
+	}
+	
+	@Override
+	public void onMemberDelete(Member member) {
+		if(member != null) {
+			showToast(member.getIdentity() + " deleted");
+		}
+		
+	}
+	
+	private void setupListenersForChannel(Channel[] channelArray){
+		for(int i=0; i<channelArray.length; i++) {
+			channelArray[i].setListener(ChannelActivity.this);
+			logger.e("HashCode is " + channelArray[i].hashCode());
+		}
+	}
+	
+	private void showToast(String text) {
+		Toast toast= Toast.makeText(getApplicationContext(),text, Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+		LinearLayout toastLayout = (LinearLayout) toast.getView();
+		TextView toastTV = (TextView) toastLayout.getChildAt(0);
+		toastTV.setTextSize(30);
+		toast.show(); 
 	}
 }

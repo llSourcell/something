@@ -16,10 +16,9 @@ using namespace rtd;
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
-  (JNIEnv *env, jobject obj, jstring friendlyName, jobject listener) {
+  (JNIEnv *env, jobject obj, jstring friendlyName, jobject listener, jlong nativeChannelsContext) {
 
 	jobject channel;
-	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 	LOGD(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_W(TAG,"nativeChannelsContext is null");
@@ -96,9 +95,8 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithType
-(JNIEnv *env, jobject obj, jstring friendlyName, jint type, jobject listener) {
+(JNIEnv *env, jobject obj, jstring friendlyName, jint type, jobject listener, jlong nativeChannelsContext) {
 	jobject channel;
-	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 	LOGD(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_W(TAG,"nativeChannelsContext is null");
@@ -179,10 +177,9 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
  * Signature: (Ljava/lang/String;J)V
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelNative
-  (JNIEnv *env, jobject obj, jstring channel_sid) {
+  (JNIEnv *env, jobject obj, jstring channel_sid, jlong nativeChannelsContext) {
 
 	jobject channel;
-	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 
 	if(channel_sid != nullptr) {
 		const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
@@ -248,15 +245,12 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
  * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelsNative
-  (JNIEnv *env, jobject obj, jlong handle) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelsContext) {
 
 	jobject channel;
 	jobjectArray channelsArray ;
 
-	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
-
 	LOGD(TAG, "Checking nativeChannelsContext.");
-
 	if (nativeChannelsContext == 0) {
 		LOGW(TAG, "nativeChannelsContext is null");
 			return nullptr;
@@ -322,12 +316,10 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
  * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getMyChannelsNative
-  (JNIEnv *env, jobject obj, jlong handle) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelsContext) {
 
 	jobject channel;
 	jobjectArray channelsArray ;
-
-	jlong nativeChannelsContext = tw_jni_fetch_long(env, obj, "nativeChannelsHandler");
 
 	LOGD(TAG, "Checking nativeChannelsContext.");
 

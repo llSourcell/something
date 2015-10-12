@@ -2,6 +2,11 @@ package com.twilio.ipmessaging;
 
 import java.util.Map;
 
+/**
+ * Representation of an IP Messaging Member object.
+ * 
+ */
+
 public interface Member {
 	
 	/**

@@ -60,6 +60,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 	static const char *class_names[] = {
 			"com/twilio/ipmessaging/impl/MessageImpl",
 			"com/twilio/ipmessaging/impl/ChannelImpl",
+			"com/twilio/ipmessaging/impl/MemberImpl",
 			NULL
 		};
 	static bool classes_precached = false;
@@ -101,9 +102,6 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	IPMessagingClientContext *clientParams_ = new IPMessagingClientContext();
 	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>(env, obj, listener);
 
-	LOGD(TAG,"Creating messagingListener");
-	jlong nativeObserverHandle = tw_jni_fetch_long(env, obj, "nativeObserverHandle");
-
 	LOGD(TAG,"Creating  config map");
 	configMap.insert(std::make_pair("RTDIPMessagingServiceAddr", TEST_IPMESSAGING_SERVICE));
 	configMap.insert(std::make_pair("RTDRegistrationServiceAddr", TEST_REGISTRATION_SERVICE));
@@ -139,15 +137,15 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	clientParams_->notificationClientObserver = notificationClientObserver;
 	clientParams_->notificationClient = notificationClientPtr;
 
-	LOGD( TAG, "Setting nativeClientParam");
-	tw_jni_set_long(env, obj, "nativeClientParam", (jlong)clientParams_);
+	//LOGD( TAG, "Setting nativeClientParam");
+	//tw_jni_set_long(env, obj, "nativeClientParam", (jlong)clientParams_);
 
 	return reinterpret_cast<jlong>(clientParams_);
 
 }
 
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_createMessagingClient
-  (JNIEnv *env, jobject obj, jstring token) {
+  (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext) {
 
 	LOGD( TAG,"Checking token validity.");
 
@@ -157,8 +155,6 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	}
 
 	const char *tokenStr = env->GetStringUTFChars(token, 0);
-	jlong nativeClientContext = tw_jni_fetch_long(env, obj, "nativeClientParam");
-
 	LOGD(TAG,"Checking nativeClientParam.");
 
 	if (nativeClientContext == 0) {
@@ -208,10 +204,8 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
  * Signature: ()Lcom/twilio/ipmessaging/Channels;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative
-  (JNIEnv *env, jobject obj) {
+  (JNIEnv *env, jobject obj, jlong nativeClientContext) {
 	jobject channels = nullptr;
-
-	jlong nativeClientContext = tw_jni_fetch_long(env, obj, "nativeClientParam");
 
 	LOGW(TAG,"Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative : Checking nativeClientContext.");
 

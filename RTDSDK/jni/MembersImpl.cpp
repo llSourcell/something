@@ -7,11 +7,9 @@
 #define TAG  "MembersImpl(native)"
 
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getMembersNative
-  (JNIEnv *env, jobject obj) {
+  (JNIEnv *env, jobject obj, jlong nativeMembersContext) {
 
 	jobject member;
-
-	jlong nativeMembersContext = tw_jni_fetch_long(env, obj, "nativeMembersHandler");
 
 	LOGD(TAG,"Java_com_twilio_ipmessaging_impl_MembersImpl_getMembersNative : Checking nativeMessagesContext.");
 
@@ -78,12 +76,12 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getM
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
-  (JNIEnv *env, jobject obj, jstring memberIdentity) {
+  (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext) {
 
 	LOGD(TAG, "invite : Entered.");
 
 	const char *nativeString = env->GetStringUTFChars(memberIdentity, JNI_FALSE);
-	jlong nativeMembersContext = tw_jni_fetch_long(env, obj, "nativeMembersHandler");
+	//jlong nativeMembersContext = tw_jni_fetch_long(env, obj, "nativeMembersHandler");
 
 	if (nativeMembersContext == 0) {
 		LOGD(TAG,"nativeMembersContext is null");
@@ -119,10 +117,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
  * Signature: (Lcom/twilio/ipmessaging/Member;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
-  (JNIEnv *env, jobject obj, jstring memberIdentity) {
+  (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext) {
 
 	LOGD(TAG,"add member : Entered.");
-	jlong nativeMembersContext = tw_jni_fetch_long(env, obj, "nativeMembersHandler");
 	const char *nativeString = env->GetStringUTFChars(memberIdentity, JNI_FALSE);
 
 	if (nativeMembersContext == 0) {
@@ -152,10 +149,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
  * Signature: (Lcom/twilio/ipmessaging/Member;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
-  (JNIEnv *env, jobject obj, jobject memberObj) {
+  (JNIEnv *env, jobject obj, jlong nativeMemberContext, jlong nativeMembersContext) {
 
 	LOGD(TAG,"Remove member : Entered.");
-	jlong nativeMembersContext = tw_jni_fetch_long(env, obj, "nativeMembersHandler");
 
 	if (nativeMembersContext == 0) {
 		LOGW(TAG,"nativeMembersContext is null");
@@ -165,27 +161,20 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
 
 		if(membersContextRecreate != nullptr) {
-
-			jlong nativeMemberContext = tw_jni_fetch_long(env, memberObj, "nativeMemberHandler");
-
 			if (nativeMemberContext == 0) {
 				LOGW(TAG, "nativeMemberContext is null");
 				return;
 			} else {
-
 				MemberContext *memberContextRecreate = reinterpret_cast<MemberContext *>(nativeMemberContext);
 				LOGD(TAG,"memberContext is recreated.");
-
 				if(memberContextRecreate == nullptr) {
 					LOGW(TAG,"membersContextRecreate is NULL.");
 					return;
 				}
-
 				if(memberContextRecreate->member == nullptr) {
 					LOGW(TAG,"ITMMembers is NULL.");
 					return;
 				}
-
 				ITMMembersPtr members = membersContextRecreate->members;
 				ITMMemberPtr memberPtr = memberContextRecreate->member;
 				members->remove(memberPtr, [](TMResult result) {LOGD(TAG,"Members remove command processed");});

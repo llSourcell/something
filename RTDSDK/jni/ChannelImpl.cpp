@@ -376,3 +376,23 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 
 	env->ReleaseStringUTFChars(channel_sid, nativeString);
 }
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getChannelSidNative
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChannelSidNative
+  (JNIEnv *env, jobject obj, jlong nativeChannelContext) {
+	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
+	jstring sidString;
+	if(clientChannelContext != nullptr) {
+		ITMChannelPtr channelPtr = clientChannelContext->channel;
+		if(channelPtr != nullptr) {
+			const char* sid = channelPtr->getSid().c_str();
+			sidString = env->NewStringUTF(sid);
+		}
+	}
+	return sidString;
+}

@@ -159,13 +159,6 @@ public interface Channel {
 	 * 
 	 */
 	public void declineInvitation();
-	
-	/**
-	 * Sets a {@link PendingIntent} that will be sent when an incoming message is received.
-	 * 
-	*/
-	public void setIncomingIntent(PendingIntent inIntent);
-
 }
 
 

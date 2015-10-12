@@ -1,9 +1,11 @@
 package com.twilio.ipmessaging;
 
-import java.util.Date;
+/**
+ * Representation of an IP Messaging Message object.
+ * 
+ */
 
 public interface Message {
-	
 	
 	/** 
 	 * Returns the identifier for this message. 

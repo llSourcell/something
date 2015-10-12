@@ -13,15 +13,8 @@ extern "C" {
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
-  (JNIEnv *, jobject, jstring, jobject);
+  (JNIEnv *, jobject, jstring, jobject, jlong);
 
-/*
- * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
- * Method:    createChannelNative
- * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
- */
-JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
-  (JNIEnv *, jobject, jstring, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -29,7 +22,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithType
-  (JNIEnv *, jobject, jstring, jint, jobject);
+  (JNIEnv *, jobject, jstring, jint, jobject, jlong);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -37,7 +30,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createCh
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelNative
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jstring, jlong);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl

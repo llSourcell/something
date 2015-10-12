@@ -7,7 +7,8 @@ import com.twilio.ipmessaging.Channels;
 
 
 public class ChannelsImpl implements Channels {
-	
+
+	private static final Logger logger = Logger.getLogger(ChannelsImpl.class);
 	private long nativeChannelsHandler;
 
 	public ChannelsImpl(long handler) {
@@ -27,7 +28,7 @@ public class ChannelsImpl implements Channels {
 			break;
 		}
 	
-		ChannelImpl channel = this.createChannelNativeWithType(friendlyName, nativeType, listener);
+		ChannelImpl channel = this.createChannelNativeWithType(friendlyName, nativeType, listener, this.nativeChannelsHandler);
 		String cSid = channel.getSid();
 		TwilioIPMessagingClientImpl.publicChannelMap.put(cSid, channel);
 		return channel;
@@ -36,7 +37,7 @@ public class ChannelsImpl implements Channels {
 	@Override
 	public Channel getChannel(String channelId) {
 		
-		return this.getChannelNative(channelId, nativeChannelsHandler);
+		return TwilioIPMessagingClientImpl.publicChannelMap.get(channelId);//this.getChannelNative(channelId, nativeChannelsHandler);
 	}
 
 	@Override
@@ -45,13 +46,14 @@ public class ChannelsImpl implements Channels {
 		Channel[] channelArray =  getChannelsNative(this.nativeChannelsHandler);
 
 		for(int i=0; i<channelArray.length; i++) {
+			logger.e("getChannels(): Channel Sid " + channelArray[i].getSid() + "HashCode is : " + channelArray[i].hashCode());
 			TwilioIPMessagingClientImpl.publicChannelMap.put(channelArray[i].getSid(), (ChannelImpl) channelArray[i]);
 		}
 		return channelArray;
 	}
 	
-	private native ChannelImpl createChannelNative(String friendlyName, ChannelListener listener);
-	private native ChannelImpl createChannelNativeWithType(String friendlyName, int type, ChannelListener listener);
+	private native ChannelImpl createChannelNative(String friendlyName, ChannelListener listener, long nativeChannelsContext);
+	private native ChannelImpl createChannelNativeWithType(String friendlyName, int type, ChannelListener listener, long nativeChannelsContext);
 	private native ChannelImpl getChannelNative(String channelId, long handle);
 	private native ChannelImpl[] getChannelsNative(long handle);
 	private native ChannelImpl[] getMyChannelsNative(long handle);
