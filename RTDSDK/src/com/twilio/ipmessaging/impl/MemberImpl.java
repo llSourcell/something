@@ -43,6 +43,4 @@ public class MemberImpl implements Member {
 	public String getIdentity() {
 		return identity;
 	}
-
-
 }

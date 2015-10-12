@@ -60,6 +60,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 	static const char *class_names[] = {
 			"com/twilio/ipmessaging/impl/MessageImpl",
 			"com/twilio/ipmessaging/impl/ChannelImpl",
+			"com/twilio/ipmessaging/impl/MemberImpl",
 			NULL
 		};
 	static bool classes_precached = false;

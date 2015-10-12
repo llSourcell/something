@@ -5,12 +5,9 @@ import java.util.Map;
 
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
+import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Messages;
-
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
@@ -42,8 +39,6 @@ public class ChannelImpl implements Channel, Parcelable{
 	private ChannelType type;
 	private long nativeChannelHandle;
 	
-	private PendingIntent incomingIntent;
-	
 	private Handler handler;
 	
 	public ChannelImpl(ChannelListener listener, String friendlyName, String sid) {
@@ -51,13 +46,14 @@ public class ChannelImpl implements Channel, Parcelable{
 		this.listener = listener;
 		this.friendlyName = friendlyName;
 		this.sid = sid;
+		
+		setupListenerHandler();
 	}
 	
-	public ChannelImpl(String friendlyName, String sid/*, long nativeHandle*/) {
+	public ChannelImpl(String friendlyName, String sid) {
 		super();
 		this.friendlyName = friendlyName;
 		this.sid = sid;
-		//this.nativeChannelHandle = nativeHandle;
 	}
 	
 	public ChannelImpl(String friendlyName, String sid, long nativeHandle) {
@@ -85,8 +81,6 @@ public class ChannelImpl implements Channel, Parcelable{
 			default:
 				break;
 		}	
-		
-		setupListenerHandler();
 	}
 
 	@Override
@@ -123,7 +117,10 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public void setListener(ChannelListener listener) {
+		logger.e("Setting listener for " + this.hashCode());
+		logger.e("Listener hashcode " + listener.hashCode());
 		this.listener = listener;
+		setupListenerHandler();
 	}
 
 	@Override
@@ -207,19 +204,6 @@ public class ChannelImpl implements Channel, Parcelable{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	@Override
-	public void setIncomingIntent(PendingIntent inIntent) {
-		this.incomingIntent = inIntent;
-		ChannelImpl channelCopy = TwilioIPMessagingClientImpl.publicChannelMap.get(this.sid);
-		channelCopy.incomingIntent = inIntent;
-	}
-	
-
-	public PendingIntent getIncomingIntent() {
-		return incomingIntent;
-	}
-
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
@@ -253,18 +237,18 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
     
    
-	public void handleIncomingMessage(MessageImpl message) {
-		if (this.incomingIntent != null) {
-			Intent intent = new Intent();
-			intent.putExtra(Channel.EXTRA_CHANNEL, this);
-			intent.putExtra(Channel.EXTRA_MESSAGE, message);
-			try {
-				this.incomingIntent.send(TwilioIPMessagingClientImpl.getContext(), 0, intent);
-			} catch (final CanceledException e) {
-				logger.e(
-						"Unable to send PendingIntent for incoming connection", e);
-			}
+	public void handleIncomingMessage(final MessageImpl message) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+					 listener.onMessageAdd(message);
+					}
+				}
+			});
 		}
+
 	}
 	
 	/*
@@ -282,7 +266,45 @@ public class ChannelImpl implements Channel, Parcelable{
 		}
 	}
 
-	
+	public void handleOnMemberJoin(final Member member) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onMemberJoin(member);
+					}
+				}
+			});
+		}
+
+	}
+
+	public void handleOnMemberChange(final Member member) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onMemberChange(member);
+					}
+				}
+			});
+		}	
+	}
+
+	public void handleOnMemberDelete(final Member member) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onMemberDelete(member);
+					}
+				}
+			});
+		}	
+	}
 	
 	public native Messages getMessagesObject(long nativeClientParamHandle, String channel_sid);
     public native int getStatus(long nativeClientParamHandle, String channel_sid);   
@@ -294,4 +316,5 @@ public class ChannelImpl implements Channel, Parcelable{
 	public native Members getMembers(long nativeClientParamHandle, String channel_sid);
 	public native void updateChannelAttributes(long nativeClientParamHandle, String channel_sid, Map<String, String> attrMap);
 	public native void declineChannelInvite(long nativeClientParamHandle, String channel_sid);
+	private native String getChannelSidNative(long nativeClientParamHandle);
 }

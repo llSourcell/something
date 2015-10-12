@@ -88,6 +88,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChannelInvite
   (JNIEnv *, jobject, jlong, jstring);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getChannelSidNative
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChannelSidNative
+  (JNIEnv *, jobject, jlong);
+
+
 #ifdef __cplusplus
 }
 #endif

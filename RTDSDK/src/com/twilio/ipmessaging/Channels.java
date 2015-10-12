@@ -27,7 +27,4 @@ public interface Channels {
 	 * @return The channels loaded so far.
 	 */
 	public Channel[] getChannels();
-
-	
-
 }

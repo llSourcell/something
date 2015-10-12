@@ -48,6 +48,9 @@ private:
 	jmethodID j_onChannelChanged_;
 	jmethodID j_onChannelDeleted_;
 	jmethodID j_onAttributesChange_;
+    jmethodID j_onMemberJoin_;
+    jmethodID j_onMemberChange_;
+    jmethodID j_onMemberDelete_;
 	jmethodID j_onError_;
 	JNIEnv* env_;
 };

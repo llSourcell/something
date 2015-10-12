@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
@@ -22,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.text.style.SuperscriptSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -37,7 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
-public class MessageActivity extends Activity{
+public class MessageActivity extends Activity implements ChannelListener{
 
 	private static final Logger logger = Logger.getLogger(MessageActivity.class);
 	private ListView messageListView;
@@ -84,12 +84,10 @@ public class MessageActivity extends Activity{
 		setContentView(R.layout.activity_message);
 		messageListView = (ListView) findViewById(R.id.message_list_view);
 		if(getIntent() != null) {
-			channel = (Channel) getIntent().getParcelableExtra(Channel.EXTRA_CHANNEL);
-			if(channel != null) {
-				Intent intent = new Intent(this, MessageActivity.class);
-				PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-				channel.setIncomingIntent(pendingIntent);
-			}
+			BasicIPMessagingClient rtdJni = TwilioApplication.get().getRtdJni();
+			String channelSid = getIntent().getStringExtra("C_SID");
+			channel = rtdJni.getIpMessagingClient().getChannels().getChannel(channelSid);
+			channel.setListener(MessageActivity.this);
 		}
 	
 		setupListView(channel);
@@ -366,5 +364,55 @@ public class MessageActivity extends Activity{
 		public int compare(Message lhs, Message rhs) {
 			return lhs.getTimeStamp().compareTo(rhs.getTimeStamp());		
 		}
+	}
+
+	@Override
+	public void onMessageAdd(Message message) {	
+		setupListView(this.channel);
+	}
+
+	@Override
+	public void onMessageChange(Message message) {
+		
+	}
+
+	@Override
+	public void onMessageDelete(Message message) {
+		
+	}
+
+	@Override
+	public void onMemberJoin(Member member) {
+		if(member != null) {
+			showToast(member.getIdentity() + " joined");
+		}
+	}
+
+	@Override
+	public void onMemberChange(Member member) {
+		if(member != null) {
+			showToast(member.getIdentity() + " changed");
+		}
+	}
+	
+	@Override
+	public void onMemberDelete(Member member) {
+		if(member != null) {
+			showToast(member.getIdentity() + " deleted");
+		}
+	}
+	
+	@Override
+	public void onAttributesChange(Map<String, String> updatedAttributes) {
+		
+	}
+	
+	private void showToast(String text) {
+		Toast toast= Toast.makeText(getApplicationContext(),text, Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+		LinearLayout toastLayout = (LinearLayout) toast.getView();
+		TextView toastTV = (TextView) toastLayout.getChildAt(0);
+		toastTV.setTextSize(30);
+		toast.show(); 
 	}
 }

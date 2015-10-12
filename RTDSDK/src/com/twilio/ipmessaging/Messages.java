@@ -3,8 +3,6 @@ package com.twilio.ipmessaging;
 /**
  * Representation of an IP Messaging channel's message list.
  * 
- * @author kbagchi
- *
  */
 public interface Messages
 {

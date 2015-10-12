@@ -68,6 +68,9 @@ jstring JNICALL convertByteArrayToString(JNIEnv* env, jclass clazz, jbyteArray a
 
 ITMessagesPtr getMessagesPtrFromNativeHandle(JNIEnv *env, jobject obj) {
 	ITMessagesPtr messages = nullptr;
+
+	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesContextHandler");
+
 	LOGD(TAG,"getMessagesPtrFromNativeHandle : Checking nativeMessagesContext.");
 
 	if (nativeMessagesContext == 0) {

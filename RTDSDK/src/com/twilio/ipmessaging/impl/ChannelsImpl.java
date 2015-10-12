@@ -7,7 +7,8 @@ import com.twilio.ipmessaging.Channels;
 
 
 public class ChannelsImpl implements Channels {
-	
+
+	private static final Logger logger = Logger.getLogger(ChannelsImpl.class);
 	private long nativeChannelsHandler;
 
 	public ChannelsImpl(long handler) {
@@ -36,7 +37,7 @@ public class ChannelsImpl implements Channels {
 	@Override
 	public Channel getChannel(String channelId) {
 		
-		return this.getChannelNative(channelId, nativeChannelsHandler);
+		return TwilioIPMessagingClientImpl.publicChannelMap.get(channelId);//this.getChannelNative(channelId, nativeChannelsHandler);
 	}
 
 	@Override
@@ -45,6 +46,7 @@ public class ChannelsImpl implements Channels {
 		Channel[] channelArray =  getChannelsNative(this.nativeChannelsHandler);
 
 		for(int i=0; i<channelArray.length; i++) {
+			logger.e("getChannels(): Channel Sid " + channelArray[i].getSid() + "HashCode is : " + channelArray[i].hashCode());
 			TwilioIPMessagingClientImpl.publicChannelMap.put(channelArray[i].getSid(), (ChannelImpl) channelArray[i]);
 		}
 		return channelArray;

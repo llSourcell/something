@@ -3,14 +3,9 @@ package com.twilio.ipmessaging.impl;
 import java.util.Map;
 
 import com.twilio.ipmessaging.Channel;
-import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
-
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
-import android.content.Intent;
 
 public class IPMessagingClientListenerInternal {
 	
@@ -25,8 +20,10 @@ public class IPMessagingClientListenerInternal {
 	public void onMessageAdd(final Message message) {
 		logger.d("Entered onMessageAdd");
 		String cSid = message.getChannelSid();
-		ChannelImpl channel = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
-		channel.handleIncomingMessage((MessageImpl) message);
+		ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+		if(channelImpl != null) {
+			channelImpl.handleIncomingMessage((MessageImpl) message);
+		}
 	}
 
 	
@@ -41,22 +38,42 @@ public class IPMessagingClientListenerInternal {
 	}
 
 	
-	public void onMemberJoin(Member member) {
-		// TODO Auto-generated method stub
-		
+	public void onMemberJoin(Member member, Channel channel) {
+		logger.d("Entered onMemberJoin");
+		if(channel != null) {
+			String cSid = channel.getSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				logger.e("hashCode : " + channelImpl.hashCode());
+				channelImpl.handleOnMemberJoin(member);
+			}
+		}
+	}
+
+	public void onMemberChange(Member member, Channel channel) {
+		logger.d("Entered onMemberChange");
+		if(channel != null) {
+			String cSid = channel.getSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleOnMemberChange(member);
+			}
+		}
 	}
 
 
-	public void onMemberChange(Member member) {
-		// TODO Auto-generated method stub
-		
+	public void onMemberDelete(Member member, Channel channel) {
+		logger.d("Entered onMemberDelete");
+		if(channel != null) {
+			String cSid = channel.getSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleOnMemberDelete(member);
+			}
+		}
 	}
 
 
-	public void onMemberDelete(Member member) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	
 	public void onAttributesChange(Map<String, String> updatedAttributes) {

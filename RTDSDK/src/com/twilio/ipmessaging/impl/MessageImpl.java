@@ -103,8 +103,7 @@ public class MessageImpl implements Message, Parcelable {
 		}
     };
     
-    //private native String getChannelSidNative(long nativeMessageContextHandle);
-    public native String getChannelSidNative(long nativeMessageContextHandle);
+    private native String getChannelSidNative(long nativeMessageContextHandle);
 
 
 }
