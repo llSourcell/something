@@ -42,5 +42,5 @@ public interface IPMessagingClientListener {
 	 * @param attributes The updated attributes string.
 	 */
 	public void onAttributesChange(String attributes);
-	
+
 }

@@ -159,6 +159,12 @@ public interface Channel {
 	 * 
 	 */
 	public void declineInvitation();
+	
+	/**
+	 * Called when Member starts typing on this channel.
+	 * 
+	 */
+	public void typing();
 }
 
 

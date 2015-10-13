@@ -18,11 +18,12 @@ import com.twilio.ipmessaging.Messages;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -304,6 +305,24 @@ public class MessageActivity extends Activity implements ChannelListener{
 		// send
 		// button
 		EditText inputText = (EditText) findViewById(R.id.messageInput);
+		inputText.addTextChangedListener(new TextWatcher(){
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				//channel.typing();
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				//channel.typing();
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				//channel.typing();
+			}
+		   
+		}); 
 		inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -322,6 +341,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 		});
 	}
 
+	
+	private class CustomMessageComparator implements Comparator<Message> {
+		@Override
+		public int compare(Message lhs, Message rhs) {
+			return lhs.getTimeStamp().compareTo(rhs.getTimeStamp());		
+		}
+	}
 
 	private void setupListView(Channel channel) {
 		messageListView = (ListView) findViewById(R.id.message_list_view);
@@ -357,13 +383,6 @@ public class MessageActivity extends Activity implements ChannelListener{
 			inputText.setText("");
 		}
 		inputText.requestFocus();
-	}
-	
-	private class CustomMessageComparator implements Comparator<Message> {
-		@Override
-		public int compare(Message lhs, Message rhs) {
-			return lhs.getTimeStamp().compareTo(rhs.getTimeStamp());		
-		}
 	}
 
 	@Override
@@ -406,6 +425,16 @@ public class MessageActivity extends Activity implements ChannelListener{
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
 		
 	}
+	
+	public void onTypingStarted(Member member) {
+		
+	}
+	
+
+	public void onTypingEnded(Member member){
+		
+	}
+	
 	
 	private void showToast(String text) {
 		Toast toast= Toast.makeText(getApplicationContext(),text, Toast.LENGTH_LONG);
