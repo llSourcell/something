@@ -291,4 +291,13 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		toastTV.setTextSize(30);
 		toast.show(); 
 	}
+	
+	public void onTypingStarted(Member member){
+		
+	}
+	
+
+	public void onTypingEnded(Member member) {
+		
+	}
 }

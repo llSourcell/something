@@ -28,8 +28,10 @@ TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,job
 	j_onChannelDeleted_= tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelDelete", "(Lcom/twilio/ipmessaging/Channel;)V");
 	j_onAttributesChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onAttributesChange", "(Ljava/lang/String;)V");
     j_onMemberJoin_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberJoin", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");;
-    j_onMemberChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberChange", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");;
-    j_onMemberDelete_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberDelete", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");;
+    j_onMemberChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberChange", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");
+    j_onMemberDelete_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberDelete", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");
+    j_onTypingStarted_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onTypingStarted", "(Lcom/twilio/ipmessaging/Channel;Lcom/twilio/ipmessaging/Member;)V");
+    j_onTypingEnded_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onTypingEnded", "(Lcom/twilio/ipmessaging/Channel;Lcom/twilio/ipmessaging/Member;)V");
     j_onError_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onError", "(ILjava/lang/String;)V");
 	env_ = env;
 }
@@ -347,9 +349,65 @@ void TwilioIPMessagingClientListener::onToastFailed(TNError code)
 	LOGW(TAG,"TwilioIPMessagingClientListener::onToastFailed");
 }
 
-void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannelPtr channel, ITMMemberPtr member)
+void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannelPtr channelPtr, ITMMemberPtr memberPtr)
 {
     LOGW(TAG,"onTyping TwilioIPMessagingClientListener");
+
+    JNIEnvAttacher jniAttacher;
+	jobject member, channel;
+
+   jclass java_member_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/MemberImpl");
+	if(java_member_impl_cls != nullptr) {
+		LOGW(TAG,"Found java_member_impl_cls class" );
+	}
+
+	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_member_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
+	const char* sid = memberPtr->getSid().c_str();
+	const char* name = memberPtr->getUsername().c_str();
+	LOGD(TAG,"Member Name  : %s.", name );
+	LOGD(TAG,"Member Sid %s", sid);
+
+	MemberContext* memberContext_ = new MemberContext();
+	memberContext_->member = memberPtr;
+	jlong memberContextHandle = reinterpret_cast<jlong>(memberContext_);
+	jstring nameString = jniAttacher.get()->NewStringUTF(name);
+	jstring memberSidString = jniAttacher.get()->NewStringUTF(sid);
+
+	member = tw_jni_new_object(jniAttacher.get(), java_member_impl_cls, construct, memberSidString, nameString, memberContextHandle);
+	LOGW(TAG,"Created Member Object.");
+
+	jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
+	if(java_channel_impl_cls != nullptr) {
+		LOGW(TAG,"Found java_channel_impl_cls class" );
+	}
+
+	jmethodID channelConstruct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
+	const char* channelSid = channelPtr->getSid().c_str();
+	const char* channelName = channelPtr->getName().c_str();
+
+	LOGD(TAG,"Channel Name  : %s.", channelName );
+	LOGD(TAG,"Channel Sid %s", channelSid);
+
+	ChannelContext* channelContext_ = new ChannelContext();
+	channelContext_->channel = channelPtr;
+	jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
+
+	jstring channelNameString = jniAttacher.get()->NewStringUTF(channelName);
+	jstring channelSidString = jniAttacher.get()->NewStringUTF(channelSid);
+
+	channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, channelConstruct, channelNameString, channelSidString, channelContextHandle);
+	LOGW(TAG,"Created Channel Object.");
+
+    switch (action) {
+   		case rtd::TMTypingAction::kTMTypingActionStarted: {
+   			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingStarted_, member, channel);
+   			break;
+   		}
+   		case rtd::TMTypingAction::kTMTypingActionEnded:{
+   			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingEnded_, member, channel);
+   			break;
+   		}
+   	}
 }
 
 

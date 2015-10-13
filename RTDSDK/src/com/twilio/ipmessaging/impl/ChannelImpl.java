@@ -37,7 +37,7 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	/** The channel's visibility type. */
 	private ChannelType type;
-	private long nativeChannelHandle;
+	private long nativeChannelContextHandle;
 	
 	private Handler handler;
 	
@@ -60,14 +60,14 @@ public class ChannelImpl implements Channel, Parcelable{
 		super();
 		this.friendlyName = friendlyName;
 		this.sid = sid;
-		this.nativeChannelHandle = nativeHandle;
+		this.nativeChannelContextHandle = nativeHandle;
 	}
 	
 	public ChannelImpl(String friendlyName, String sid, long nativeHandle, int status) {
 		super();
 		this.friendlyName = friendlyName;
 		this.sid = sid;
-		this.nativeChannelHandle = nativeHandle;
+		this.nativeChannelContextHandle = nativeHandle;
 		switch (status) {
 			case 0:
 				this.status = Channel.ChannelStatus.INVITED;
@@ -195,8 +195,13 @@ public class ChannelImpl implements Channel, Parcelable{
 		return getMessagesObject(nativeClientHandle, this.sid);
 	}
 	
+	@Override
+	public void typing() {
+		typingStartNative(this.nativeChannelContextHandle);
+	}
+	
 	public long getNativeHandle() {
-		return this.nativeChannelHandle;
+		return this.nativeChannelContextHandle;
 	}
 	
 	@Override
@@ -306,15 +311,44 @@ public class ChannelImpl implements Channel, Parcelable{
 		}	
 	}
 	
-	public native Messages getMessagesObject(long nativeClientParamHandle, String channel_sid);
-    public native int getStatus(long nativeClientParamHandle, String channel_sid);   
-    public native void joinChannel(long nativeClientParamHandle, String channel_sid);
-	public native void leaveChannel(long nativeClientParamHandle, String channel_sid);
-	public native void destroyChannel(long nativeClientParamHandle, String channel_sid);
-	public native void updateChannelName(long nativeClientParamHandle, String channel_sid, String name);
-	private native void updateChannelType(long nativeClientHandle, String channel_sid, int channelType);
-	public native Members getMembers(long nativeClientParamHandle, String channel_sid);
-	public native void updateChannelAttributes(long nativeClientParamHandle, String channel_sid, Map<String, String> attrMap);
-	public native void declineChannelInvite(long nativeClientParamHandle, String channel_sid);
-	private native String getChannelSidNative(long nativeClientParamHandle);
+	public void handleOnTypingStarted(final Member member) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onTypingStarted(member);
+					}
+				}
+			});
+		}	
+	}
+
+	public void handleOnTypingEnded(final Member member) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onTypingEnded(member);
+					}
+				}
+			});
+		}	
+	}
+
+	
+	private native Messages getMessagesObject(long nativeChannelContextHandle, String channel_sid);
+	private native int getStatus(long nativeChannelContextHandle, String channel_sid);   
+	private native void joinChannel(long nativeChannelContextHandle, String channel_sid);
+	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid);
+	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid);
+	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name);
+	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType);
+	private native Members getMembers(long nativeChannelContextHandle, String channel_sid);
+	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, Map<String, String> attrMap);
+	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
+	private native String getChannelSidNative(long nativeChannelContextHandle);
+	private native void typingStartNative(long nativeChannelContextHandle);
+	
 }

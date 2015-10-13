@@ -115,5 +115,27 @@ public class IPMessagingClientListenerInternal {
 		TwilioIPMessagingClientImpl.getInstance().handleChannelAttributeChange(attribute);
 	}
 	
+	
+	public void onTypingStarted(Channel channel, Member member) {
+		logger.d("Entered onTypingStarted");
+		if(channel != null) {
+			String cSid = channel.getSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleOnTypingStarted(member);
+			}
+		}
+	}
+	
+	public void onTypingEnded(Channel channel, Member member) {
+		logger.d("Entered onTypingEnded");
+		if(channel != null) {
+			String cSid = channel.getSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleOnTypingEnded(member);
+			}
+		}
+	}
 
 }

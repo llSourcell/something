@@ -97,6 +97,15 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChanne
   (JNIEnv *, jobject, jlong);
 
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    typingStartNative
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_typingStartNative
+  (JNIEnv *, jobject, jlong);
+
+
 #ifdef __cplusplus
 }
 #endif

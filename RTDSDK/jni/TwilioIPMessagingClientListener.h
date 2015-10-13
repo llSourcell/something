@@ -51,6 +51,8 @@ private:
     jmethodID j_onMemberJoin_;
     jmethodID j_onMemberChange_;
     jmethodID j_onMemberDelete_;
+    jmethodID j_onTypingStarted_;
+    jmethodID j_onTypingEnded_;
 	jmethodID j_onError_;
 	JNIEnv* env_;
 };

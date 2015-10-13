@@ -396,3 +396,21 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChanne
 	}
 	return sidString;
 }
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    typingStartNative
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_typingStartNative
+(JNIEnv *env, jobject obj, jlong nativeChannelContext) {
+	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
+	jstring sidString;
+	if(clientChannelContext != nullptr) {
+		ITMChannelPtr channelPtr = clientChannelContext->channel;
+		if(channelPtr != nullptr) {
+			channelPtr->typing();
+		}
+	}
+}

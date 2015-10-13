@@ -59,4 +59,19 @@ public interface ChannelListener {
 	 * @param updatedAttributes updated channel attribute. 
 	 */
 	void onAttributesChange(Map<String, String> updatedAttributes);
+	
+	/**
+	 * Called when an Member starts typing on a Channel.
+	 * 
+	 * @param member The member that started typing.
+	 */
+	public void onTypingStarted(Member member);
+	
+	/**
+	 * Called when an Member stops typing on a Channel.
+	 * 
+	 * @param member The member that stopped typing.
+	 */
+	public void onTypingEnded(Member member);
+	
 }
