@@ -18,19 +18,39 @@ public class TwilioIPMessagingClient {
 	 */
 	public interface InitListener {
 		/**
-		 * Callback to report when TwilioRTC Client SDK has been successfully
+		 * Callback to report when TwilioRTD Client SDK has been successfully
 		 * initialized.
 		 */
 		public void onInitialized();
 
 		/**
-		 * Called if there is an error initializing the TwilioSignal Client SDK.
+		 * Called if there is an error initializing the TwilioRTD Client SDK.
 		 * 
 		 * @param error
 		 *            An exception describing the error that occurred
 		 */
 		public void onError(Exception error);
 	}
+	
+	/**
+	 * Interface for the listener object to pass to while creatting Channel
+	 * 
+	 */
+	public interface CreateChannelListener {
+		/**
+		 * Callback to report when Channel is successfully created.
+		 */
+		public void onCreated(Channel newChannel);
+
+		/**
+		 * Called if there is an error creating a channel.
+		 * 
+		 * @param error
+		 *            An exception describing the error that occurred
+		 */
+		public void onError(Exception error);
+	}
+	
 	
 	
 	/**
@@ -126,26 +146,6 @@ public class TwilioIPMessagingClient {
 		return TwilioIPMessagingClientImpl.getInstance().getChannels();
 	}
 	
-	
-	/**
-	 * Method to join a Channel. ChannelStatus should transition from INVITED->JOINED or IDLE->JOINED
-	 * when this method is called.
-	 * 
-	 * @param channelSid	The identifier of the channel to join.
-	 */
-	public void joinChannel(String channelSid) {
-		TwilioIPMessagingClientImpl.getInstance().joinChannel(channelSid);
-	}
-	
-	/**
-	 * Retrieve a channel by identifier. 
-	 * 
-	 * @param channelSid  The identifier of the channel to retrieve.
-	 * @return The channel with channelSid.
-	 */
-	public Channel getChannel(String channelSid) {
-		return TwilioIPMessagingClientImpl.getInstance().getChannel(channelSid);
-	}
 	
 	/**
 	 * Sets a {@link PendingIntent} that will be sent when an incoming channel invite is received.

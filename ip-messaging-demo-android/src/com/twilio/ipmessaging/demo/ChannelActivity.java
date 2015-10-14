@@ -18,6 +18,7 @@ import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
+import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -116,12 +117,35 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				.setPositiveButton("Create", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
+						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-						Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, ChannelActivity.this);
-						getChannels(newChannel.getSid());
+						//Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, ChannelActivity.this);
+						channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, new TwilioIPMessagingClient.CreateChannelListener()
+				        {
+				            @Override
+				            public void onCreated(Channel newChannel)
+				            {
+				            	if(newChannel != null) {
+				            		final String sid = newChannel.getSid();
+				            		runOnUiThread(new Runnable() {
+				            	        @Override
+				            	        public void run() {
+				            	        	getChannels(sid);
+				            	        }
+				            	    });
+								} 
+				            }
+
+				            @Override
+				            public void onError(Exception error)
+				            {
+				               
+				            }
+				        }); 
+
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -180,18 +204,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 	@Override
 	public void onMessageAdd(Message message) {
-	/*	logger.d("Message received");
-		StringBuffer text = new StringBuffer();
-		text.append("From: " + message.getAuthor());
-		text.append("Body:" + message.getMessageBody());
-		text.append("cSid: " + message.getChannelSid());
-		
-		Toast toast= Toast.makeText(getApplicationContext(),text.toString(), Toast.LENGTH_LONG);
-		toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
-		LinearLayout toastLayout = (LinearLayout) toast.getView();
-		TextView toastTV = (TextView) toastLayout.getChildAt(0);
-		toastTV.setTextSize(30);
-		toast.show();  */
 		
 	}
 

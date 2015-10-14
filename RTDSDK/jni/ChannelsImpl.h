@@ -7,22 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
- * Method:    createChannelNative
- * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
- */
-JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
-  (JNIEnv *, jobject, jstring, jobject, jlong);
-
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
- * Method:    createChannelNative
- * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/ChannelListener;)Lcom/twilio/ipmessaging/Message;
+ * Method:    createChannelNativeWithListener
+ * Signature: (Ljava/lang/String;IJLcom/twilio/ipmessaging/TwilioIPMessagingClient/CreateChannelListener;)V
  */
-JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithType
-  (JNIEnv *, jobject, jstring, jint, jobject, jlong);
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithListener
+  (JNIEnv *, jobject, jstring, jint, jlong, jobject);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
+ * Method:    createChannelNative
+ * Signature: (Ljava/lang/String;IJ)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
+  (JNIEnv *, jobject, jstring, jint, jlong);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
