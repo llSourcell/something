@@ -1,9 +1,10 @@
 package com.twilio.ipmessaging;
 
 import com.twilio.ipmessaging.Channel.ChannelType;
+import com.twilio.ipmessaging.TwilioIPMessagingClient.CreateChannelListener;
 
 public interface Channels {
-		
+			
 	/**
 	 * Method to create channel with attributes.
 	 * 
@@ -11,7 +12,8 @@ public interface Channels {
 	 * @param channelType  Channel type
 	 * @param listener 		listener that receives this channel related events.
 	 */
-	public Channel createChannel(String friendlyName, ChannelType type, ChannelListener listener);
+	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
+	
 	
 	/**
 	 * Loads a channel with the specified id.

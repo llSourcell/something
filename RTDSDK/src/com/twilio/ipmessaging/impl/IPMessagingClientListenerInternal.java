@@ -82,7 +82,7 @@ public class IPMessagingClientListenerInternal {
 	}
 
 
-	public void onChannelAdd(Channel channel) {
+	public void onChannelAdd(ChannelImpl channel) {
 		TwilioIPMessagingClientImpl.getInstance().handleChannelAddEvent(channel);
 	}
 	

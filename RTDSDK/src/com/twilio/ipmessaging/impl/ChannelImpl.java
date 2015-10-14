@@ -61,6 +61,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		this.friendlyName = friendlyName;
 		this.sid = sid;
 		this.nativeChannelContextHandle = nativeHandle;
+		logger.e("created channel");
 	}
 	
 	public ChannelImpl(String friendlyName, String sid, long nativeHandle, int status) {

@@ -23,7 +23,7 @@ TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,job
 	j_ipmessagingclient_ == env->NewGlobalRef(j_ipmessagingclient);
 	j_onMessageAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMessageAdd", "(Lcom/twilio/ipmessaging/Message;)V");
 	j_onChannelInvite_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelInvite", "(Lcom/twilio/ipmessaging/Channel;)V");
-	j_onChannelAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelAdd", "(Lcom/twilio/ipmessaging/Channel;)V");
+	j_onChannelAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelAdd", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
 	j_onChannelChanged_=tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelChange", "(Lcom/twilio/ipmessaging/Channel;)V");
 	j_onChannelDeleted_= tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelDelete", "(Lcom/twilio/ipmessaging/Channel;)V");
 	j_onAttributesChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onAttributesChange", "(Ljava/lang/String;)V");
@@ -129,6 +129,8 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						LOGW(TAG,"Channel Name  : %s.", name );
 						LOGW(TAG,"Channel Sid %s", sid);
 
+						__android_log_print(ANDROID_LOG_INFO, "DebugTag", "Channel Sid %s", sid);
+
 						ChannelContext* channelContext_ = new ChannelContext();
 						channelContext_->channel = channelPtr;
 						jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
@@ -150,6 +152,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 					case TMChannelStatus::kTMChannelStatusNotParticipating:
 					{
 						LOGW(TAG,"TwilioIPMessagingClientListener::onChannel notparticipating");
+						__android_log_print(ANDROID_LOG_INFO, "DebugTag", "Creating channel TMChannelStatusNotParticipating");
 
 						jobject channel;
 						JNIEnvAttacher jniAttacher;
@@ -174,9 +177,9 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						jstring nameString = jniAttacher.get()->NewStringUTF(name);
 						jstring sidString = jniAttacher.get()->NewStringUTF(sid);
 						channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
-						LOGW(TAG,"Created Channel Object.");
+						LOG_W(TAG,"Created Channel Object. Calling java");
 
-						//jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
+						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
 
 						break;
 					}

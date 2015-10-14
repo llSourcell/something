@@ -229,8 +229,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 
 	@Override
 	public IPMessagingClientListener getListener() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.ipMessagingListener;
 	}
 
 	@Override
@@ -254,19 +253,6 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	@Override
 	public Channels getChannels() {		
 		return getChannelsNative(this.nativeClientParamContextHandle);
-	}
-
-
-	@Override
-	public void joinChannel(String channelSid) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Channel getChannel(String channelSid) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public TwilioIPMessagingClient initClientWithToken(String token, IPMessagingClientListener listener) {
@@ -316,8 +302,9 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		}
 	}
 	
-	public void handleChannelAddEvent(Channel channel) {
+	public void handleChannelAddEvent(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
+			publicChannelMap.put(channel.getSid(), channel);
 			this.ipMessagingListener.onChannelAdd(channel);
 		}
 	}
