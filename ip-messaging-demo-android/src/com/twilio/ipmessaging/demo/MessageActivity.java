@@ -377,7 +377,6 @@ public class MessageActivity extends Activity implements ChannelListener{
 			Messages messagesObject = this.channel.getMessages(50);
 			Message message = messagesObject.createMessage(input);
 			messagesObject.sendMessage(message);
-		
 			messages.add(message);
 			adapter.notifyDataSetChanged();
 			inputText.setText("");

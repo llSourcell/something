@@ -19,10 +19,12 @@ public class IPMessagingClientListenerInternal {
 
 	public void onMessageAdd(final Message message) {
 		logger.d("Entered onMessageAdd");
-		String cSid = message.getChannelSid();
-		ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
-		if(channelImpl != null) {
-			channelImpl.handleIncomingMessage((MessageImpl) message);
+		if(message != null) {
+			String cSid = message.getChannelSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleIncomingMessage((MessageImpl) message);
+			}
 		}
 	}
 

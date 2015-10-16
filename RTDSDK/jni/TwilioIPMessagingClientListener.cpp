@@ -115,9 +115,11 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 			const char* author = messagePtr->getAuthor().c_str();
 			const char* body = messagePtr->getBody().c_str();
 			const char* timestamp = messagePtr->getTimestamp().c_str();
+			const char* sid = messagePtr->getSid().c_str();
 
 			LOGW(TAG, "author Name  : %s.", author );
 			LOGW(TAG, "Message body is %s", body);
+			LOGW(TAG, "Message sid is %s", sid);
 
 			jstring authorString = jniAttacher.get()->NewStringUTF(author);
 			jstring bodyString = jniAttacher.get()->NewStringUTF(body);
