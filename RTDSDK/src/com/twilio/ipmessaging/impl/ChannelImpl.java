@@ -41,15 +41,6 @@ public class ChannelImpl implements Channel, Parcelable{
 	
 	private Handler handler;
 	
-	public ChannelImpl(ChannelListener listener, String friendlyName, String sid) {
-		super();
-		this.listener = listener;
-		this.friendlyName = friendlyName;
-		this.sid = sid;
-		
-		setupListenerHandler();
-	}
-	
 	public ChannelImpl(String friendlyName, String sid) {
 		super();
 		this.friendlyName = friendlyName;
@@ -61,10 +52,10 @@ public class ChannelImpl implements Channel, Parcelable{
 		this.friendlyName = friendlyName;
 		this.sid = sid;
 		this.nativeChannelContextHandle = nativeHandle;
-		logger.e("created channel");
-	}
+		logger.d("created channel");
+	} 
 	
-	public ChannelImpl(String friendlyName, String sid, long nativeHandle, int status) {
+	public ChannelImpl(String friendlyName, String sid, long nativeHandle, int status, int type) {
 		super();
 		this.friendlyName = friendlyName;
 		this.sid = sid;
@@ -77,8 +68,18 @@ public class ChannelImpl implements Channel, Parcelable{
 				this.status =Channel.ChannelStatus.JOINED;
 				break;
 			case 2:
-				this.status = Channel.ChannelStatus.NOT_PARTICIATING;
-				return;
+				this.status = Channel.ChannelStatus.NOT_PARTICIPATING;
+				break;
+			default:
+				break;
+		}	
+		switch (type) {
+			case 0:
+				this.type = Channel.ChannelType.CHANNEL_TYPE_PUBLIC;
+				break;
+			case 1:
+				this.type = Channel.ChannelType.CHANNEL_TYPE_PRIVATE;
+				break;
 			default:
 				break;
 		}	
@@ -111,15 +112,13 @@ public class ChannelImpl implements Channel, Parcelable{
 			case 1:
 				return Channel.ChannelStatus.JOINED;
 			case 2:
-				return Channel.ChannelStatus.NOT_PARTICIATING;
+				return Channel.ChannelStatus.NOT_PARTICIPATING;
 		}
 		return null;
 	}
 
 	@Override
 	public void setListener(ChannelListener listener) {
-		logger.e("Setting listener for " + this.hashCode());
-		logger.e("Listener hashcode " + listener.hashCode());
 		this.listener = listener;
 		setupListenerHandler();
 	}
@@ -197,6 +196,11 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 	
 	@Override
+	public ChannelType getType() {
+		return this.type;
+	}
+	
+	@Override
 	public void typing() {
 		typingStartNative(this.nativeChannelContextHandle);
 	}
@@ -214,7 +218,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		 dest.writeString(this.sid);
-		 dest.writeString(this.friendlyName);		
+		 dest.writeString(this.friendlyName);
 	}
 
 
@@ -226,6 +230,7 @@ public class ChannelImpl implements Channel, Parcelable{
         {
             String sid = in.readString();
             String friendlyName = in.readString();
+      
             
             ChannelImpl chImpl = new ChannelImpl(friendlyName, sid);
             return chImpl;
@@ -254,7 +259,6 @@ public class ChannelImpl implements Channel, Parcelable{
 				}
 			});
 		}
-
 	}
 	
 	/*
@@ -351,5 +355,5 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
 	private native String getChannelSidNative(long nativeChannelContextHandle);
 	private native void typingStartNative(long nativeChannelContextHandle);
-	
+
 }

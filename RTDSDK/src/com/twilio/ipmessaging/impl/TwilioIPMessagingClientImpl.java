@@ -1,12 +1,15 @@
 package com.twilio.ipmessaging.impl;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
@@ -47,6 +50,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	private long nativeObserverHandle;
 	private InitListener listener;	
 	final static Map<String, ChannelImpl> publicChannelMap = new HashMap<String, ChannelImpl>();
+	final static Map<String, ChannelImpl> privateChannelList = new HashMap<String,ChannelImpl>();
 	private IPMessagingClientListenerInternal internalListener;
 	private PendingIntent incomingIntent;
 	private boolean sdkIniting;
@@ -304,19 +308,32 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	
 	public void handleChannelAddEvent(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
-			publicChannelMap.put(channel.getSid(), channel);
+			if(channel != null) {
+				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
+					privateChannelList.put(channel.getSid(),channel);
+				} 
+				publicChannelMap.put(channel.getSid(), channel);
+			}
 			this.ipMessagingListener.onChannelAdd(channel);
 		}
 	}
 	
-	public void handleChannelChanged(Channel channel) {
+	public void handleChannelChanged(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
+			if(channel != null) {
+				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
+					privateChannelList.put(channel.getSid(),channel);
+				} 
+				publicChannelMap.put(channel.getSid(), channel);
+			}
 			this.ipMessagingListener.onChannelChange(channel);
 		}
 	}
 	
-	public void handleChannelDeleted(Channel channel) {
+	public void handleChannelDeleted(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
+			privateChannelList.remove(channel.getSid());
+			publicChannelMap.remove(channel.getSid());
 			this.ipMessagingListener.onChannelDelete(channel);
 		}
 	}

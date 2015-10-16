@@ -145,15 +145,21 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
 		ITMChannelsPtr channels = clientParamsRecreate->channels;
 		if(channels != NULL) {
 			ITMChannelPtr channel = clientParamsRecreate->channels->getChannel(nativeString);
-
 			if(channel != nullptr) {
-
 				LOGW(TAG, "Destroying channel with sid : %s ", nativeString);
-				channel->destroy([](TMResult result){LOGW(TAG,"Channel destroy command processed"); });
+				channel->destroy([](TMResult result){
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Channel Destroy successful");
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Channel destroy failed");
+					}
+				});
 			} else {
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null");
 				LOGW(TAG, "channel is null");
 			}
 		} else {
+			__android_log_print(ANDROID_LOG_INFO, TAG, "Channels is null");
 			LOGW(TAG, "channels is null");
 		}
 	}
@@ -202,18 +208,27 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring channel_sid) {
 
 	LOGW(TAG,"joinChannel Entered ");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "joinChannel Entered ");
 
 	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
 	IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 
 	if(clientParamsRecreate != nullptr) {
+		__android_log_print(ANDROID_LOG_INFO, TAG, "joinChannel clientParamsRecreate is not null.");
 		ITMChannelsPtr channels = clientParamsRecreate->channels;
 		if(channels != NULL) {
+			__android_log_print(ANDROID_LOG_INFO, TAG, "joinChannel channels is not null.");
 			ITMChannelPtr channel = clientParamsRecreate->channels->getChannel(nativeString);
-
 			if(channel != nullptr) {
 				LOGD(TAG, "Joining channel with sid : %s ", nativeString);
-				channel->join([](TMResult result){LOGW(TAG,"Channel join command processed"); });
+				__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
+				channel->join([](TMResult result){
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel is successful");
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel failed");
+					}
+				});
 			} else {
 				LOGW(TAG, "channel is null");
 				}

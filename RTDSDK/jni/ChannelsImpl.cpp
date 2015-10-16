@@ -11,6 +11,10 @@ using namespace rtd;
 
 #define TAG  "ChannelsImpl(native)"
 
+jobject createChannelOnject() {
+
+}
+
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
  * Method:    createChannelNativeWithListener
@@ -43,10 +47,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 
 			const char *nativeNameString = env->GetStringUTFChars(friendlyName, JNI_FALSE);
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
-			if(type == rtd::kTMChannelTypePublic) {
-				channelPtr->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");});
+			if(type == 0) {
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Creating public channel");
+				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePublic, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");});
 			} else {
-				channelPtr->setType(rtd::kTMChannelTypePrivate, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Creating private channel");
+				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePrivate, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
 			}
 			channelPtr->setName(nativeNameString, NULL);
 			LOGD(TAG,"createChannelNative: release native string.");
@@ -61,7 +67,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 					const char* sid = channelPtr->getSid().c_str();
 					const char* name = channelPtr->getName().c_str();
-					__android_log_print(ANDROID_LOG_INFO, "DebugTag", "Channel Sid 1 %s", sid);
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Channel Sid 1 %s", sid);
 					jstring nameString = jniAttacher.get()->NewStringUTF(name);
 					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
 					//create channel object
@@ -70,8 +76,35 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 						LOGD(TAG, "Found java_channel_impl_cls class" );
 					}
 
-					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
+					int status = 0;
+					switch (channelPtr->getStatus()) {
+						case TMChannelStatus::kTMChannelStatusInvited:
+							status = 0;
+						case TMChannelStatus::kTMChannelStatusJoined:
+							status = 1;
+						case TMChannelStatus::kTMChannelStatusNotParticipating:
+							status = 2;
+						default:
+							break;
+					}
+
+					int type = 0;
+					switch (channelPtr->getType()) {
+						case rtd::TMChannelType::kTMChannelTypePublic:
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Setting type to kTMChannelTypePublic");
+							type = 0;
+							break;
+						case rtd::TMChannelType::kTMChannelTypePrivate:
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Setting type to kTMChannelTypePrivate");
+							type = 1;
+							break;
+						default:
+							break;
+					}
+
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
+					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
+					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
 					LOGD(TAG, "Created Channel Object.");
 
 					//Call Java
@@ -196,11 +229,37 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
 
 					jstring nameString = env->NewStringUTF(name);
 					jstring sidString = env->NewStringUTF(sid);
+					int status = 0;
+					switch (channelPtr->getStatus()) {
+						case rtd::TMChannelStatus::kTMChannelStatusInvited:
+							status = 0;
+							break;
+						case rtd::TMChannelStatus::kTMChannelStatusJoined:
+							status = 1;
+							break;
+						case rtd::TMChannelStatus::kTMChannelStatusNotParticipating:
+							status = 2;
+							break;
+						default:
+							break;
+					}
+
+					int type = 0;
+					switch (channelPtr->getType()) {
+						case rtd::TMChannelType::kTMChannelTypePublic:
+							type = 0;
+							break;
+						case rtd::TMChannelType::kTMChannelTypePrivate:
+							type = 1;
+							break;
+						default:
+							break;
+					}
 
 					//create channel object
 					jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
-					jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-					channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
+					jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
+					channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
 					LOGD(TAG, "Created Channel Object.");
 
 				} else {
@@ -248,8 +307,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 		jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
 
-		//jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JI)V");
+		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
 		channelsArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),java_channel_impl_cls, 0);
 
 		for (int i= 0; i<publicChannels.size() ; i++ ) {
@@ -258,22 +316,41 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			const char* name = channelPtr->getName().c_str();
 			int status = 0;
 			switch (channelPtr->getStatus()) {
-				case TMChannelStatus::kTMChannelStatusInvited:
+				case rtd::TMChannelStatus::kTMChannelStatusInvited:
 					status = 0;
-				case TMChannelStatus::kTMChannelStatusJoined:
+					break;
+				case rtd::TMChannelStatus::kTMChannelStatusJoined:
 					status = 1;
-				case TMChannelStatus::kTMChannelStatusNotParticipating:
+					break;
+				case rtd::TMChannelStatus::kTMChannelStatusNotParticipating:
 					status = 2;
+					break;
 				default:
 					break;
 			}
 
+			int type = 0;
+			switch (channelPtr->getType()) {
+				case rtd::TMChannelType::kTMChannelTypePublic:
+					__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePublic");
+					type = 0;
+					break;
+				case rtd::TMChannelType::kTMChannelTypePrivate:
+					__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePrivate");
+					type = 1;
+					break;
+				default:
+					break;
+			}
+
+			__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
+
 			ChannelContext* channelContext_ = new ChannelContext();
 			channelContext_->channel = channelPtr;
 			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 			jstring nameString = env->NewStringUTF(name);
 			jstring sidString = env->NewStringUTF(sid);
-			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status);
+			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
 			env->SetObjectArrayElement(channelsArray, i, channel);
 		}
 	}
@@ -282,63 +359,4 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 }
 
-
-/*
- * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
- * Method:    getMyChannelsNative
- * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
- */
-JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getMyChannelsNative
-  (JNIEnv *env, jobject obj, jlong nativeChannelsContext) {
-
-	jobject channel;
-	jobjectArray channelsArray ;
-
-	LOGD(TAG, "Checking nativeChannelsContext.");
-
-	if (nativeChannelsContext == 0) {
-		LOGW(TAG, "nativeChannelsContext is null");
-			return nullptr;
-	} else {
-
-		ChannelsContext *channelsContextRecreate = reinterpret_cast<ChannelsContext *>(nativeChannelsContext);
-		if(channelsContextRecreate == nullptr) {
-			LOGW(TAG, "channelsContextRecreate is null.");
-			return 0;
-		}
-
-		if(channelsContextRecreate->channels == nullptr) {
-			LOGW( TAG, " ITChannelsPtr is null.");
-			return 0;
-		}
-
-		ITMChannelsPtr channels = channelsContextRecreate->channels;
-
-		std::vector<ITMChannelPtr> channelsList;
-		channels->getMyChannelsList(channelsList);
-
-		LOGD(TAG,"my channels count : %d.", channelsList.size() );
-
-		jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
-		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-		channelsArray = (jobjectArray) env->NewObjectArray(channelsList.size(),java_channel_impl_cls, 0);
-
-		for (int i= 0; i<channelsList.size() ; i++ ) {
-			ITMChannelPtr channelPtr = channelsList[i];
-			const char* sid = channelPtr->getSid().c_str();
-			const char* name = channelPtr->getName().c_str();
-
-			ChannelContext* channelContext_ = new ChannelContext();
-			channelContext_->channel = channelPtr;
-			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-			jstring nameString = env->NewStringUTF(name);
-			jstring sidString = env->NewStringUTF(sid);
-			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
-			env->SetObjectArrayElement(channelsArray, i, channel);
-		}
-	}
-
-	return channelsArray ;
-
-}
 

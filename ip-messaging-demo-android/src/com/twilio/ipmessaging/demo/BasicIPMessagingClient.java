@@ -95,17 +95,23 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 	@Override
 	public void onChannelAdd(Channel channel) {
-		Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got added");		
+		if(channel != null) {
+			Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got added");	
+		}
 	}
 
 	@Override
 	public void onChannelChange(Channel channel) {
-		Log.i(TAG, "Channel Name : "+ channel.getFriendlyName() + " got Changed");	
+		if(channel != null) {
+			Log.i(TAG, "Channel Name : "+ channel.getFriendlyName() + " got Changed");	
+		}
 	}
 
 	@Override
 	public void onChannelDelete(Channel channel) {
-		Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got deleted");		
+		if(channel != null) {
+			Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got deleted");	
+		}
 	}
 
 	@Override

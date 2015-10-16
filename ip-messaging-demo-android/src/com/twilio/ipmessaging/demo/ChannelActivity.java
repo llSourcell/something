@@ -4,26 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
-import com.twilio.ipmessaging.impl.ChannelImpl;
-import com.twilio.ipmessaging.impl.TwilioIPMessagingClientImpl;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
-import com.twilio.ipmessaging.Messages;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -77,8 +72,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.action_create:
-			showCreateChannelDialog();
+		case R.id.action_create_public:
+			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PUBLIC);
+			break;
+		case R.id.action_create_private:
+			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -106,14 +104,15 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		return false;
 	}
 
-	private void showCreateChannelDialog() {
+	private void showCreateChannelDialog(final ChannelType type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
 		// Get the layout inflater
 		LayoutInflater inflater = getLayoutInflater();
+		String title = "Enter " + type.toString() + " name";
 
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
-		builder.setView(inflater.inflate(R.layout.dialog_add_channel, null)).setTitle("Enter channel name")
+		builder.setView(inflater.inflate(R.layout.dialog_add_channel, null)).setTitle(title)
 				.setPositiveButton("Create", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
@@ -123,13 +122,16 @@ public class ChannelActivity extends Activity implements ChannelListener {
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
 						//Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, ChannelActivity.this);
-						channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, new TwilioIPMessagingClient.CreateChannelListener()
+						channelsLocal.createChannel(channelName,type, new TwilioIPMessagingClient.CreateChannelListener()
 				        {
 				            @Override
 				            public void onCreated(Channel newChannel)
 				            {
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
+				            		ChannelType type = newChannel.getType();
+				            		newChannel.setListener(ChannelActivity.this);
+				            		logger.e("channel Type is : " + type.toString());
 				            		runOnUiThread(new Runnable() {
 				            	        @Override
 				            	        public void run() {
@@ -164,11 +166,12 @@ public class ChannelActivity extends Activity implements ChannelListener {
 					public void onChannelClicked(final Channel channel) {
 						if (channel.getStatus() == Channel.ChannelStatus.JOINED) {
 							Channel channelSelected = channelsLocal.getChannel(channel.getSid());
-							logger.e("HashCode of channelSelected is : " + channelSelected.hashCode());
-							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
-							i.putExtra(Channel.EXTRA_CHANNEL, (Parcelable) channelSelected);
-							i.putExtra("C_SID", channelSelected.getSid());
-							startActivity(i);
+							if(channelSelected!= null) {
+								Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+								i.putExtra(Channel.EXTRA_CHANNEL, (Parcelable) channelSelected);
+								i.putExtra("C_SID", channelSelected.getSid());
+								startActivity(i);
+							}
 							return;
 						} 
 						AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
@@ -176,8 +179,10 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == JOIN) {
+									dialog.cancel();
 									channel.join();
 								} else if (which == DESTROY) {
+									dialog.cancel();
 									channel.destroy();
 									getChannels(null);
 								}
@@ -195,7 +200,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			this.channels.clear();
 			channelsLocal= rtdJni.getIpMessagingClient().getChannels();
       		channelArray = channelsLocal.getChannels();	
-			setupListenersForChannel(this.channelArray);
+      		setupListenersForChannel(channelArray);
 			this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
 			Collections.sort(this.channels, new CustomChannelComparator());
 			adapter.notifyDataSetChanged();
@@ -291,7 +296,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private void setupListenersForChannel(Channel[] channelArray){
 		for(int i=0; i<channelArray.length; i++) {
 			channelArray[i].setListener(ChannelActivity.this);
-			logger.e("HashCode is " + channelArray[i].hashCode());
 		}
 	}
 	
