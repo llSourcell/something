@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 /**
  *  Container for channel object.
  * 
- * @author kbagchi
  *
  */
 
@@ -46,7 +45,7 @@ public interface Channel {
 		/** User has been joined to this channel. */
 		JOINED,
 		/** User has NOT been invited or joined to this channel. */
-		NOT_PARTICIATING
+		NOT_PARTICIPATING
 	};
 	
 	/** 
@@ -115,6 +114,13 @@ public interface Channel {
 	 * @return Set of Member objects.
 	 */
 	public Members getMembers();
+	
+	/**
+	 * Method to get the channel type.
+	 * 
+	 * @return ChannelType of the channel.
+	 */
+	public ChannelType getType();
 	
 	/**
 	 * Updates the attribute data for this channel.

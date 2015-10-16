@@ -13,8 +13,55 @@
 
 using namespace rtd;
 
-void handleChannelInvite(ITMChannelPtr channelPtr) {
+jobject createChannelObject(ITMChannelPtr channelPtr) {
+	jobject channel;
+	JNIEnvAttacher jniAttacher;
+	int status = 0;
+	int type = 0;
 
+	jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
+	if(java_channel_impl_cls != nullptr) {
+		LOGW(TAG,"Found java_channel_impl_cls class" );
+	}
+
+	const char* sid = channelPtr->getSid().c_str();
+	const char* name = channelPtr->getName().c_str();
+	switch (channelPtr->getStatus()) {
+		case TMChannelStatus::kTMChannelStatusInvited:
+			status = 0;
+			break;
+		case TMChannelStatus::kTMChannelStatusJoined:
+			status = 1;
+			break;
+		case TMChannelStatus::kTMChannelStatusNotParticipating:
+			status = 2;
+			break;
+		default:
+			break;
+	}
+	switch (channelPtr->getType()) {
+		case TMChannelType::kTMChannelTypePublic:
+			type = 0;
+			break;
+		case TMChannelType::kTMChannelTypePrivate:
+			type = 1;
+			break;
+		default:
+			break;
+	}
+
+	ChannelContext* channelContext_ = new ChannelContext();
+	channelContext_->channel = channelPtr;
+	jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
+
+	jstring nameString = jniAttacher.get()->NewStringUTF(name);
+	jstring sidString = jniAttacher.get()->NewStringUTF(sid);
+	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
+	channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
+	LOGD(TAG, "Created Channel Object.");
+	jniAttacher.get()->NewGlobalRef(channel);
+
+	return channel;
 }
 
 
@@ -24,8 +71,8 @@ TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,job
 	j_onMessageAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMessageAdd", "(Lcom/twilio/ipmessaging/Message;)V");
 	j_onChannelInvite_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelInvite", "(Lcom/twilio/ipmessaging/Channel;)V");
 	j_onChannelAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelAdd", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
-	j_onChannelChanged_=tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelChange", "(Lcom/twilio/ipmessaging/Channel;)V");
-	j_onChannelDeleted_= tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelDelete", "(Lcom/twilio/ipmessaging/Channel;)V");
+	j_onChannelChanged_=tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelChange", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
+	j_onChannelDeleted_= tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelDelete", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
 	j_onAttributesChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onAttributesChange", "(Ljava/lang/String;)V");
     j_onMemberJoin_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberJoin", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");;
     j_onMemberChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMemberChange", "(Lcom/twilio/ipmessaging/Member;Lcom/twilio/ipmessaging/Channel;)V");
@@ -38,7 +85,6 @@ TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,job
 
 TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
 {
-
 	if (j_ipmessagingclientListenerInternal_ != NULL) {
 		//TODO - we should probably notify jobject that native handle is being destroyed
 		env_->DeleteGlobalRef(j_ipmessagingclientListenerInternal_);
@@ -49,14 +95,14 @@ TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
 		env_->DeleteGlobalRef(j_ipmessagingclient_);
 		j_ipmessagingclient_ = NULL;
 	}
-
-
 }
 
 
 void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr messagePtr)
 {
-	LOGW(TAG,"TwilioIPMessagingClientListener::onMessage changed 1");
+	LOGW(TAG,"TwilioIPMessagingClientListener::onMessage");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "TwilioIPMessagingClientListener::onMessage");
+
 	JNIEnvAttacher jniAttacher;
 	switch (action) {
 		case rtd::kTMActionAdded:
@@ -69,9 +115,11 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 			const char* author = messagePtr->getAuthor().c_str();
 			const char* body = messagePtr->getBody().c_str();
 			const char* timestamp = messagePtr->getTimestamp().c_str();
+			const char* sid = messagePtr->getSid().c_str();
 
 			LOGW(TAG, "author Name  : %s.", author );
 			LOGW(TAG, "Message body is %s", body);
+			LOGW(TAG, "Message sid is %s", sid);
 
 			jstring authorString = jniAttacher.get()->NewStringUTF(author);
 			jstring bodyString = jniAttacher.get()->NewStringUTF(body);
@@ -106,6 +154,7 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr channelPtr)
 {
 	LOGW(TAG,"TwilioIPMessagingClientListener::onChannel");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "TwilioIPMessagingClientListener::onChannel");
 	switch (action) {
 		case rtd::kTMActionAdded:
 		{
@@ -114,143 +163,46 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 					case TMChannelStatus::kTMChannelStatusInvited:
 					{
 						LOGW(TAG,"TwilioIPMessagingClientListener::onChannel invited");
-						jobject channel;
 						JNIEnvAttacher jniAttacher;
-
-						jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
-						if(java_channel_impl_cls != nullptr) {
-							LOGW(TAG,"Found java_channel_impl_cls class" );
-						}
-
-						jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-						const char* sid = channelPtr->getSid().c_str();
-						const char* name = channelPtr->getName().c_str();
-
-						LOGW(TAG,"Channel Name  : %s.", name );
-						LOGW(TAG,"Channel Sid %s", sid);
-
-						__android_log_print(ANDROID_LOG_INFO, "DebugTag", "Channel Sid %s", sid);
-
-						ChannelContext* channelContext_ = new ChannelContext();
-						channelContext_->channel = channelPtr;
-						jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-
-
-						jstring nameString = jniAttacher.get()->NewStringUTF(name);
-						jstring sidString = jniAttacher.get()->NewStringUTF(sid);
-						channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
-						LOGW(TAG,"Created Channel Object.");
-
+						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelInvite_, channel);
-
+						jniAttacher.get()->DeleteGlobalRef(channel);
 						LOGW(TAG,"Calling java");
 						break;
 					}
 					case TMChannelStatus::kTMChannelStatusJoined:
 						LOGW(TAG,"TwilioIPMessagingClientListener::onChannel joined");
+						__android_log_print(ANDROID_LOG_INFO, TAG, "TwilioIPMessagingClientListener::onChannel - joined");
 						break;
 					case TMChannelStatus::kTMChannelStatusNotParticipating:
 					{
 						LOGW(TAG,"TwilioIPMessagingClientListener::onChannel notparticipating");
-						__android_log_print(ANDROID_LOG_INFO, "DebugTag", "Creating channel TMChannelStatusNotParticipating");
-
-						jobject channel;
+						__android_log_print(ANDROID_LOG_INFO, TAG, "TwilioIPMessagingClientListener::onChannel - notparticipating");
 						JNIEnvAttacher jniAttacher;
-
-						jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
-						if(java_channel_impl_cls != nullptr) {
-							LOGW(TAG,"Found java_channel_impl_cls class" );
-						}
-
-						jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-						const char* sid = channelPtr->getSid().c_str();
-						const char* name = channelPtr->getName().c_str();
-
-						LOGW(TAG,"Channel Name  : %s.", name );
-						LOGW(TAG,"Channel Sid %s", sid);
-
-						ChannelContext* channelContext_ = new ChannelContext();
-						channelContext_->channel = channelPtr;
-						jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-
-
-						jstring nameString = jniAttacher.get()->NewStringUTF(name);
-						jstring sidString = jniAttacher.get()->NewStringUTF(sid);
-						channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
-						LOG_W(TAG,"Created Channel Object. Calling java");
-
+						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
-
+						jniAttacher.get()->DeleteGlobalRef(channel);
 						break;
 					}
 				}
-			}//if
-			break;
+			}
 		}
 		case rtd::kTMActionChanged:
 		{
 			LOGW(TAG, "onChannel::kTMActionChanged");
-
-			jobject channel;
 			JNIEnvAttacher jniAttacher;
-
-			jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
-			if(java_channel_impl_cls != nullptr) {
-				LOGW(TAG,"Found java_channel_impl_cls class" );
-			}
-
-			jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-			const char* sid = channelPtr->getSid().c_str();
-			const char* name = channelPtr->getName().c_str();
-
-			LOGW(TAG,"Channel Name  : %s.", name );
-			LOGW(TAG,"Channel Sid %s", sid);
-
-			ChannelContext* channelContext_ = new ChannelContext();
-			channelContext_->channel = channelPtr;
-			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-
-
-			jstring nameString = jniAttacher.get()->NewStringUTF(name);
-			jstring sidString = jniAttacher.get()->NewStringUTF(sid);
-			channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
-			LOGW(TAG,"Created Channel Object.");
-
+			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelChanged_, channel);
-
+			jniAttacher.get()->DeleteGlobalRef(channel);
 			break;
 		}
 		case rtd::kTMActionDeleted:
 		{
 			LOGW(TAG,"onChannel::kTMActionDeleted");
-
-			jobject channel;
 			JNIEnvAttacher jniAttacher;
-
-			jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
-			if(java_channel_impl_cls != nullptr) {
-				LOGW(TAG,"Found java_channel_impl_cls class" );
-			}
-
-			jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-			const char* sid = channelPtr->getSid().c_str();
-			const char* name = channelPtr->getName().c_str();
-
-			LOGW(TAG,"Channel Name  : %s.", name );
-			LOGW(TAG,"Channel Sid %s", sid);
-
-			ChannelContext* channelContext_ = new ChannelContext();
-			channelContext_->channel = channelPtr;
-			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-
-
-			jstring nameString = jniAttacher.get()->NewStringUTF(name);
-			jstring sidString = jniAttacher.get()->NewStringUTF(sid);
-			channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle);
-			LOGW(TAG,"Created Channel Object.");
-
+			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);
-
+			jniAttacher.get()->DeleteGlobalRef(channel);
 			break;
 		}
 	}
@@ -281,29 +233,8 @@ void TwilioIPMessagingClientListener::onMember(TMAction action, ITMMemberPtr mem
 
     member = tw_jni_new_object(jniAttacher.get(), java_member_impl_cls, construct, memberSidString, nameString, memberContextHandle);
     LOGW(TAG,"Created Member Object.");
-    
     ITMChannelPtr channelPtr = memberPtr->getChannel();
-    jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
-    if(java_channel_impl_cls != nullptr) {
-        LOGW(TAG,"Found java_channel_impl_cls class" );
-    }
-    
-    jmethodID channelConstruct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-    const char* channelSid = channelPtr->getSid().c_str();
-    const char* channelName = channelPtr->getName().c_str();
-    
-    LOGD(TAG,"Channel Name  : %s.", channelName );
-    LOGD(TAG,"Channel Sid %s", channelSid);
-    
-    ChannelContext* channelContext_ = new ChannelContext();
-    channelContext_->channel = channelPtr;
-    jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-    
-    jstring channelNameString = jniAttacher.get()->NewStringUTF(channelName);
-    jstring channelSidString = jniAttacher.get()->NewStringUTF(channelSid);
-
-    channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, channelConstruct, channelNameString, channelSidString, channelContextHandle);
-    LOGW(TAG,"Created Channel Object.");
+	channel = createChannelObject(channelPtr);
     
     switch (action) {
 		case rtd::kTMActionAdded: {
@@ -325,6 +256,7 @@ void TwilioIPMessagingClientListener::onMember(TMAction action, ITMMemberPtr mem
 			break;
 		}
 	}
+    jniAttacher.get()->DeleteGlobalRef(channel);
 }
 
 void TwilioIPMessagingClientListener::onError(const std::string& error)
@@ -364,43 +296,9 @@ void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannel
 		LOGW(TAG,"Found java_member_impl_cls class" );
 	}
 
-	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_member_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-	const char* sid = memberPtr->getSid().c_str();
-	const char* name = memberPtr->getUsername().c_str();
-	LOGD(TAG,"Member Name  : %s.", name );
-	LOGD(TAG,"Member Sid %s", sid);
-
-	MemberContext* memberContext_ = new MemberContext();
-	memberContext_->member = memberPtr;
-	jlong memberContextHandle = reinterpret_cast<jlong>(memberContext_);
-	jstring nameString = jniAttacher.get()->NewStringUTF(name);
-	jstring memberSidString = jniAttacher.get()->NewStringUTF(sid);
-
-	member = tw_jni_new_object(jniAttacher.get(), java_member_impl_cls, construct, memberSidString, nameString, memberContextHandle);
-	LOGW(TAG,"Created Member Object.");
-
-	jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
-	if(java_channel_impl_cls != nullptr) {
-		LOGW(TAG,"Found java_channel_impl_cls class" );
-	}
-
-	jmethodID channelConstruct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
-	const char* channelSid = channelPtr->getSid().c_str();
-	const char* channelName = channelPtr->getName().c_str();
-
-	LOGD(TAG,"Channel Name  : %s.", channelName );
-	LOGD(TAG,"Channel Sid %s", channelSid);
-
-	ChannelContext* channelContext_ = new ChannelContext();
-	channelContext_->channel = channelPtr;
-	jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-
-	jstring channelNameString = jniAttacher.get()->NewStringUTF(channelName);
-	jstring channelSidString = jniAttacher.get()->NewStringUTF(channelSid);
-
-	channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, channelConstruct, channelNameString, channelSidString, channelContextHandle);
-	LOGW(TAG,"Created Channel Object.");
-
+	channel = createChannelObject(channelPtr);
+	jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);
+	jniAttacher.get()->DeleteGlobalRef(channel);
     switch (action) {
    		case rtd::TMTypingAction::kTMTypingActionStarted: {
    			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingStarted_, member, channel);

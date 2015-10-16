@@ -26,12 +26,12 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_getChanne
 		LOGD(TAG, "nativeMessageContext context is recreated.");
 
 		if(messageContextRecreate == nullptr) {
-			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative : MessageContextRecreate is NULL.");
+			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative : MessageContextRecreate is null.");
 			return 0;
 		}
 
 		if(messageContextRecreate->message == nullptr) {
-			LOGW(TAG,"MessageContextRecreate : ITMessagesPtr is NULL.");
+			LOGW(TAG,"MessageContextRecreate : ITMessagesPtr is null.");
 			return 0;
 		}
 

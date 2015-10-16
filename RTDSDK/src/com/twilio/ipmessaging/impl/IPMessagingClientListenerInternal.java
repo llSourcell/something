@@ -19,10 +19,12 @@ public class IPMessagingClientListenerInternal {
 
 	public void onMessageAdd(final Message message) {
 		logger.d("Entered onMessageAdd");
-		String cSid = message.getChannelSid();
-		ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
-		if(channelImpl != null) {
-			channelImpl.handleIncomingMessage((MessageImpl) message);
+		if(message != null) {
+			String cSid = message.getChannelSid();
+			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleIncomingMessage((MessageImpl) message);
+			}
 		}
 	}
 
@@ -44,7 +46,6 @@ public class IPMessagingClientListenerInternal {
 			String cSid = channel.getSid();
 			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
-				logger.e("hashCode : " + channelImpl.hashCode());
 				channelImpl.handleOnMemberJoin(member);
 			}
 		}
@@ -73,14 +74,10 @@ public class IPMessagingClientListenerInternal {
 		}
 	}
 
-
-
-	
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
 		// TODO Auto-generated method stub
 		
 	}
-
 
 	public void onChannelAdd(ChannelImpl channel) {
 		TwilioIPMessagingClientImpl.getInstance().handleChannelAddEvent(channel);
@@ -92,13 +89,13 @@ public class IPMessagingClientListenerInternal {
 	}
 
 	
-	public void onChannelChange(Channel channel) {
+	public void onChannelChange(ChannelImpl channel) {
 		logger.d("Entered onChannelChange");
 		TwilioIPMessagingClientImpl.getInstance().handleChannelChanged(channel);	
 	}
 
 
-	public void onChannelDelete(Channel channel) {
+	public void onChannelDelete(ChannelImpl  channel) {
 		logger.d("Entered onChannelChange");
 		TwilioIPMessagingClientImpl.getInstance().handleChannelDeleted(channel);
 	}
