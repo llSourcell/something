@@ -23,6 +23,14 @@ public class MessageImpl implements Message, Parcelable {
 		this.nativeMessageContextHandle = handle;
 	}
 	
+	public MessageImpl(String author, String body, String timeStamp, String sid, long handle) {
+		this.author = author;
+		this.body = body;
+		this.date = timeStamp;
+		this.sid = sid;
+		this.nativeMessageContextHandle = handle;
+	}
+	
 	public MessageImpl(String author, String body) {
 		this.author = author;
 		this.body = body;
@@ -57,6 +65,10 @@ public class MessageImpl implements Message, Parcelable {
 	public void updateMessageBody(String body) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void setSid(String sid) {
+		this.sid = sid;
 	}
 
 	public long getNativeHandle() {

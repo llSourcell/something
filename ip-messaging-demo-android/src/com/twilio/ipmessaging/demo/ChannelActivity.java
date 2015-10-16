@@ -121,7 +121,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								.toString();
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-						//Channel newChannel = channelsLocal.createChannel(channelName, ChannelType.CHANNEL_TYPE_PUBLIC, ChannelActivity.this);
 						channelsLocal.createChannel(channelName,type, new TwilioIPMessagingClient.CreateChannelListener()
 				        {
 				            @Override
@@ -274,21 +273,24 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	@Override
 	public void onMemberJoin(Member member) {
 		if(member != null) {
-			showToast(member.getIdentity() + " joined");
+			logger.d(member.getIdentity() + " joined");
+			//showToast(member.getIdentity() + " joined");
 		}
 	}
 
 	@Override
 	public void onMemberChange(Member member) {
 		if(member != null) {
-			showToast(member.getIdentity() + " changed");
+			logger.d(member.getIdentity() + " changed");
+			//showToast(member.getIdentity() + " changed");
 		}
 	}
 	
 	@Override
 	public void onMemberDelete(Member member) {
 		if(member != null) {
-			showToast(member.getIdentity() + " deleted");
+			logger.d(member.getIdentity() + " deleted");
+			//showToast(member.getIdentity() + " deleted");
 		}
 		
 	}
@@ -309,11 +311,15 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	}
 	
 	public void onTypingStarted(Member member){
-		
+		if(member != null) {
+			logger.d(member.getIdentity() + " started typing");
+		}
 	}
 	
 
 	public void onTypingEnded(Member member) {
-		
+		if(member != null) {
+			logger.d(member.getIdentity() + " ended typing");
+		}
 	}
 }

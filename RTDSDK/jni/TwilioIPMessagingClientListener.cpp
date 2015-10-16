@@ -120,10 +120,12 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 			LOGW(TAG, "author Name  : %s.", author );
 			LOGW(TAG, "Message body is %s", body);
 			LOGW(TAG, "Message sid is %s", sid);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "MessageSid is: %s", sid);
 
 			jstring authorString = jniAttacher.get()->NewStringUTF(author);
 			jstring bodyString = jniAttacher.get()->NewStringUTF(body);
 			jstring timeStampString  = jniAttacher.get()->NewStringUTF(timestamp);
+			jstring sidString  = jniAttacher.get()->NewStringUTF(sid);
 
 			jclass java_message_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/MessageImpl");
 			if(java_message_impl_cls != NULL) {
@@ -133,6 +135,8 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 			jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 			LOGW(TAG,"Creating Messsage Object : construct");
 			jobject message = tw_jni_new_object(jniAttacher.get(), java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle);
+			jmethodID setSid = tw_jni_get_method_by_class(jniAttacher.get(), java_message_impl_cls, "setSid", "(Ljava/lang/String;)V");
+			jniAttacher.get()->CallVoidMethod(message, setSid, sidString);
 			LOGW(TAG,"Created Message Object, calling java");
 
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onMessageAdd_, message);
