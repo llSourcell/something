@@ -59,7 +59,7 @@ jobject createChannelObject(ITMChannelPtr channelPtr) {
 	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
 	channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
 	LOGD(TAG, "Created Channel Object.");
-	jniAttacher.get()->NewGlobalRef(channel);
+	//jniAttacher.get()->NewGlobalRef(channel);
 
 	return channel;
 }
@@ -170,7 +170,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						JNIEnvAttacher jniAttacher;
 						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelInvite_, channel);
-						jniAttacher.get()->DeleteGlobalRef(channel);
+						//jniAttacher.get()->DeleteGlobalRef(channel);
 						LOGW(TAG,"Calling java");
 						break;
 					}
@@ -185,7 +185,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						JNIEnvAttacher jniAttacher;
 						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
-						jniAttacher.get()->DeleteGlobalRef(channel);
+						//jniAttacher.get()->DeleteGlobalRef(channel);
 						break;
 					}
 				}
@@ -197,7 +197,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 			JNIEnvAttacher jniAttacher;
 			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelChanged_, channel);
-			jniAttacher.get()->DeleteGlobalRef(channel);
+			//jniAttacher.get()->DeleteGlobalRef(channel);
 			break;
 		}
 		case rtd::kTMActionDeleted:
@@ -206,7 +206,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 			JNIEnvAttacher jniAttacher;
 			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);
-			jniAttacher.get()->DeleteGlobalRef(channel);
+			//jniAttacher.get()->DeleteGlobalRef(channel);
 			break;
 		}
 	}
@@ -260,7 +260,7 @@ void TwilioIPMessagingClientListener::onMember(TMAction action, ITMMemberPtr mem
 			break;
 		}
 	}
-    jniAttacher.get()->DeleteGlobalRef(channel);
+    //jniAttacher.get()->DeleteGlobalRef(channel);
 }
 
 void TwilioIPMessagingClientListener::onError(const std::string& error)
@@ -302,7 +302,7 @@ void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannel
 
 	channel = createChannelObject(channelPtr);
 	jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);
-	jniAttacher.get()->DeleteGlobalRef(channel);
+	//jniAttacher.get()->DeleteGlobalRef(channel);
     switch (action) {
    		case rtd::TMTypingAction::kTMTypingActionStarted: {
    			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingStarted_, member, channel);
