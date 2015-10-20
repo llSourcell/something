@@ -291,25 +291,43 @@ void TwilioIPMessagingClientListener::onToastFailed(TNError code)
 void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannelPtr channelPtr, ITMMemberPtr memberPtr)
 {
     LOGW(TAG,"onTyping TwilioIPMessagingClientListener");
+    __android_log_print(ANDROID_LOG_INFO, TAG, "TwilioIPMessagingClientListener::onTyping");
 
     JNIEnvAttacher jniAttacher;
 	jobject member, channel;
 
-   jclass java_member_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/MemberImpl");
+    jclass java_member_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/MemberImpl");
 	if(java_member_impl_cls != nullptr) {
 		LOGW(TAG,"Found java_member_impl_cls class" );
 	}
 
+	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_member_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;J)V");
+	const char* sid = memberPtr->getSid().c_str();
+	const char* name = memberPtr->getUsername().c_str();
+	LOGD(TAG,"Member Name  : %s.", name );
+	LOGD(TAG,"Member Sid %s", sid);
+
+	MemberContext* memberContext_ = new MemberContext();
+	memberContext_->member = memberPtr;
+	jlong memberContextHandle = reinterpret_cast<jlong>(memberContext_);
+	jstring nameString = jniAttacher.get()->NewStringUTF(name);
+	jstring memberSidString = jniAttacher.get()->NewStringUTF(sid);
+
+	member = tw_jni_new_object(jniAttacher.get(), java_member_impl_cls, construct, memberSidString, nameString, memberContextHandle);
+	LOGW(TAG,"Created Member Object.");
+	 __android_log_print(ANDROID_LOG_INFO, TAG, "onTyping:: created message object.");
+
 	channel = createChannelObject(channelPtr);
-	jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);
-	//jniAttacher.get()->DeleteGlobalRef(channel);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "onTyping:: created channel object.");
     switch (action) {
    		case rtd::TMTypingAction::kTMTypingActionStarted: {
-   			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingStarted_, member, channel);
+   			__android_log_print(ANDROID_LOG_INFO, TAG, "onTyping:: calling j_onTypingStarted_.");
+   			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingStarted_, channel, member);
    			break;
    		}
    		case rtd::TMTypingAction::kTMTypingActionEnded:{
-   			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingEnded_, member, channel);
+   			__android_log_print(ANDROID_LOG_INFO, TAG, "onTyping:: calling j_onTypingEnded_.");
+   			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onTypingEnded_, channel, member);
    			break;
    		}
    	}
