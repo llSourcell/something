@@ -15,6 +15,8 @@ import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 import com.twilio.ipmessaging.TwilioIpMessagingClientService;
 import com.twilio.ipmessaging.TwilioIpMessagingClientService.TwilioBinder;
+import com.twilio.ipmessaging.Constants.InitListener;
+import com.twilio.ipmessaging.Constants;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -86,7 +88,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 		return instance;
 	}
 
-	public void initialize(Context inContext, final TwilioIPMessagingClient.InitListener inListener) {
+	public void initialize(Context inContext, final InitListener inListener) {
 		TwilioIPMessagingClientImpl.context = inContext;
 		this.listener = inListener;
 
@@ -295,8 +297,8 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	public void handleIncomingInvite(Channel channel) {
 		if (this.incomingIntent != null) {
 			Intent intent = new Intent();
-			intent.putExtra(Channel.EXTRA_CHANNEL, (ChannelImpl)channel);
-			intent.putExtra(Channel.EXTRA_ACTION, Channel.EXTRA_ACTION_INVITE);
+			intent.putExtra(Constants.EXTRA_CHANNEL, (ChannelImpl)channel);
+			intent.putExtra(Constants.EXTRA_ACTION, Constants.EXTRA_ACTION_INVITE);
 			try {
 				this.incomingIntent.send(TwilioIPMessagingClientImpl.getContext(), 0, intent);
 			} catch (final CanceledException e) {
@@ -307,6 +309,7 @@ public class TwilioIPMessagingClientImpl extends TwilioIPMessagingClient {
 	}
 	
 	public void handleChannelAddEvent(ChannelImpl channel) {
+		logger.e("handleChannelAddEvent");
 		if(this.ipMessagingListener != null) {
 			if(channel != null) {
 				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {

@@ -73,6 +73,7 @@ public class ChannelImpl implements Channel, Parcelable{
 			default:
 				break;
 		}	
+		
 		switch (type) {
 			case 0:
 				this.type = Channel.ChannelType.CHANNEL_TYPE_PUBLIC;
@@ -130,7 +131,6 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public Members getMembers() {
-		
 		return getMembers(this.getNativeClientContextHandle(), this.sid);
 	}
 
@@ -142,7 +142,11 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public void setFriendlyName(String friendlyName) {
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		updateChannelName(nativeClientHandle, this.getSid(), friendlyName);
+		if (friendlyName != null && this.getSid() != null) {
+			synchronized(this) {
+				updateChannelName(nativeClientHandle, this.getSid(), friendlyName);
+			}
+		}
 	}
 	
 	@Override
@@ -157,42 +161,61 @@ public class ChannelImpl implements Channel, Parcelable{
 			channelType = 1;
 			break;
 		}
-		updateChannelType(nativeClientHandle, this.getSid(), channelType);
+		synchronized(this) {
+			updateChannelType(nativeClientHandle, this.getSid(), channelType);
+		}
 	}
 
 	@Override
 	public void join() {
 		logger.d("channelimpl join called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		this.joinChannel(nativeClientHandle, this.getSid());
+		if (this.getSid() != null) {
+			synchronized (this) {
+				this.joinChannel(nativeClientHandle, this.getSid());
+			}
+		}
 	}
 
 	@Override
 	public void leave() {
 		logger.d("channelimpl leave called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		this.leaveChannel(nativeClientHandle, this.getSid());
+		if (this.getSid() != null) {
+			synchronized (this) {
+				this.leaveChannel(nativeClientHandle, this.getSid());
+			}
+		}
 	}
 
 	@Override
 	public void destroy() {
 		logger.d("channelimpl destroy called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		destroyChannel(nativeClientHandle, this.getSid());
+		if(this.getSid() != null) {
+			synchronized(this) {
+				destroyChannel(nativeClientHandle, this.getSid());
+			}
+		}
 	}
 	
 	@Override
 	public void declineInvitation() {
 		logger.d("channelimpl decline called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		this.declineChannelInvite(nativeClientHandle, this.getSid());
-		
+		if(this.getSid() != null) {
+			this.declineChannelInvite(nativeClientHandle, this.getSid());
+		}
 	}
 
 	@Override
-	public Messages getMessages(int count) {
+	public Messages getMessages() {
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		return getMessagesObject(nativeClientHandle, this.sid);
+		if(this.getSid() != null) {
+			return getMessagesObject(nativeClientHandle, this.sid);
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -230,8 +253,6 @@ public class ChannelImpl implements Channel, Parcelable{
         {
             String sid = in.readString();
             String friendlyName = in.readString();
-      
-            
             ChannelImpl chImpl = new ChannelImpl(friendlyName, sid);
             return chImpl;
         }

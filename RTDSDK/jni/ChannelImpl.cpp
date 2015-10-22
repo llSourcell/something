@@ -337,9 +337,25 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 			if(channelPtr != nullptr) {
 				LOGW("Update Name for channel with sid : %s ", nativeSidString);
 				if(type == rtd::kTMChannelTypePublic) {
-					channelPtr->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");});
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to public");
+					channelPtr->setType(rtd::kTMChannelTypePublic, [](TMResult result) {
+						if (result == rtd::TMResult::kTMResultSuccess) {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully set channel type to Public");
+						} else {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to set channel type to Public");
+							LOG_D(TAG, "Error creating Channel Object.");
+						}
+					});
 				} else {
-					channelPtr->setType(rtd::kTMChannelTypePrivate, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to private");
+					channelPtr->setType(rtd::kTMChannelTypePrivate, [](TMResult result) {
+						if (result == rtd::TMResult::kTMResultSuccess) {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully set channel type to Private");
+						} else {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to set channel type to Private");
+							LOG_D(TAG, "Error creating Channel Object.");
+						}
+					});
 				}
 			}
 		}

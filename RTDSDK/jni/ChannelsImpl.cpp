@@ -49,10 +49,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
 			if(type == 0) {
 				__android_log_print(ANDROID_LOG_INFO, TAG, "Creating public channel");
-				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePublic, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");});
+				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePublic, [](TMResult result) {
+					LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");
+				});
+
 			} else {
 				__android_log_print(ANDROID_LOG_INFO, TAG, "Creating private channel");
-				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePrivate, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
+				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePrivate, [](TMResult result) {
+					LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");
+				});
 			}
 			channelPtr->setName(nativeNameString, NULL);
 			LOGD(TAG,"createChannelNative: release native string.");
@@ -102,10 +107,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 							break;
 					}
 
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
+					//__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
 					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
 					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
-					LOGD(TAG, "Created Channel Object.");
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Created Channel Object with type %d", type);
 
 					//Call Java
 					jniAttacher.get()->CallVoidMethod(j_createChanneListener_,j_onCreated_, channel);
@@ -314,6 +319,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			ITMChannelPtr channelPtr = publicChannels[i];
 			const char* sid = channelPtr->getSid().c_str();
 			const char* name = channelPtr->getName().c_str();
+			channelPtr = channels->getChannel(sid);
 			int status = 0;
 			switch (channelPtr->getStatus()) {
 				case rtd::TMChannelStatus::kTMChannelStatusInvited:

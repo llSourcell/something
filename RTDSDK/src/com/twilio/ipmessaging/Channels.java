@@ -1,10 +1,13 @@
 package com.twilio.ipmessaging;
 
 import com.twilio.ipmessaging.Channel.ChannelType;
-import com.twilio.ipmessaging.TwilioIPMessagingClient.CreateChannelListener;
+import com.twilio.ipmessaging.Constants.CreateChannelListener;
+import com.twilio.ipmessaging.Constants.StatusListener;
+
+
 
 public interface Channels {
-			
+	
 	/**
 	 * Method to create channel with attributes.
 	 * 
@@ -14,6 +17,12 @@ public interface Channels {
 	 */
 	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
 	
+	
+	/** Requesting loading of all channels from server to be delivered via delegate callbacks.
+	 * 
+	 *  @param listener Listener that will receive callback of the result.
+	 */
+	public void loadChannelsWithListener(StatusListener listener);
 	
 	/**
 	 * Loads a channel with the specified id.

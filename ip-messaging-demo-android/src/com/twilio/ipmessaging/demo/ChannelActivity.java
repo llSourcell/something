@@ -14,7 +14,10 @@ import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
-import com.twilio.ipmessaging.TwilioIPMessagingClient;
+import com.twilio.ipmessaging.Messages;
+import com.twilio.ipmessaging.Constants.CreateChannelListener;
+import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.Constants.StatusListener;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -48,7 +51,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private List<Channel> channels = new ArrayList<Channel>();
 	private EasyAdapter<Channel> adapter;
 	private AlertDialog createChannelDialog;
-	private Channels channelsLocal;
+	private Channels channelsObject;
 	private Channel[] channelArray;
 	
 	private static final Handler handler = new Handler();
@@ -91,12 +94,12 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 	private boolean handleIncomingIntent(Intent intent) {
 		if(intent != null) {
-			Channel channel = intent.getParcelableExtra(Channel.EXTRA_CHANNEL);
-			String action = intent.getStringExtra(Channel.EXTRA_ACTION);
-			intent.removeExtra(Channel.EXTRA_CHANNEL);
-		    intent.removeExtra(Channel.EXTRA_ACTION);
+			Channel channel = intent.getParcelableExtra(Constants.EXTRA_CHANNEL);
+			String action = intent.getStringExtra(Constants.EXTRA_ACTION);
+			intent.removeExtra(Constants.EXTRA_CHANNEL);
+		    intent.removeExtra(Constants.EXTRA_ACTION);
 			if(action != null) {
-				if(action.compareTo(Channel.EXTRA_ACTION_INVITE) == 0 ) {
+				if(action.compareTo(Constants.EXTRA_ACTION_INVITE) == 0 ) {
 					this.showIncomingInvite(channel);
 				}
 			}
@@ -121,7 +124,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								.toString();
 						logger.e(channelName);
 						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-						channelsLocal.createChannel(channelName,type, new TwilioIPMessagingClient.CreateChannelListener()
+						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
 				            @Override
 				            public void onCreated(Channel newChannel)
@@ -131,6 +134,10 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            		ChannelType type = newChannel.getType();
 				            		newChannel.setListener(ChannelActivity.this);
 				            		logger.e("channel Type is : " + type.toString());
+				            		newChannel.join();
+				            		Messages messagesObject = newChannel.getMessages();
+				        			Message message = messagesObject.createMessage("Test Message");
+				        			messagesObject.sendMessage(message);
 				            		runOnUiThread(new Runnable() {
 				            	        @Override
 				            	        public void run() {
@@ -164,12 +171,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
 					@Override
 					public void onChannelClicked(final Channel channel) {
 						if (channel.getStatus() == Channel.ChannelStatus.JOINED) {
-							Channel channelSelected = channelsLocal.getChannel(channel.getSid());
+							final Channel channelSelected = channelsObject.getChannel(channel.getSid());
 							if(channelSelected!= null) {
-								Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
-								i.putExtra(Channel.EXTRA_CHANNEL, (Parcelable) channelSelected);
-								i.putExtra("C_SID", channelSelected.getSid());
-								startActivity(i);
+								new Handler().postDelayed(new Runnable() {
+						            @Override
+						            public void run() {
+						            	Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+										i.putExtra(Constants.EXTRA_CHANNEL, (Parcelable) channelSelected);
+										i.putExtra("C_SID", channelSelected.getSid());
+										startActivity(i);
+						                //finish();              
+						            }
+						        }, 0);
+								
 							}
 							return;
 						} 
@@ -194,15 +208,39 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		getChannels(null);
 	}
 
-	private void getChannels(String channelId) {
+	private void getChannelsOld(String channelId) {
 		if (this.channels != null) {
 			this.channels.clear();
-			channelsLocal= rtdJni.getIpMessagingClient().getChannels();
-      		channelArray = channelsLocal.getChannels();	
+			channelsObject= rtdJni.getIpMessagingClient().getChannels();
+      		channelArray = channelsObject.getChannels();	
       		setupListenersForChannel(channelArray);
 			this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
 			Collections.sort(this.channels, new CustomChannelComparator());
 			adapter.notifyDataSetChanged();
+		}
+	}
+	
+	private void getChannels(String channelId) {
+		if (this.channels != null) {
+			this.channels.clear();
+			channelsObject= rtdJni.getIpMessagingClient().getChannels();
+			channelsObject.loadChannelsWithListener(new StatusListener() {
+
+				@Override
+				public void onError(Exception error) {
+					
+				}
+
+				@Override
+				public void onSuccess() {
+					channelArray = channelsObject.getChannels();
+					setupListenersForChannel(channelArray);
+					ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+					Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+					adapter.notifyDataSetChanged();
+				}
+      			
+      		});	     	
 		}
 	}
 
@@ -274,7 +312,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	public void onMemberJoin(Member member) {
 		if(member != null) {
 			logger.d(member.getIdentity() + " joined");
-			//showToast(member.getIdentity() + " joined");
 		}
 	}
 
@@ -282,7 +319,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	public void onMemberChange(Member member) {
 		if(member != null) {
 			logger.d(member.getIdentity() + " changed");
-			//showToast(member.getIdentity() + " changed");
 		}
 	}
 	
@@ -290,7 +326,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	public void onMemberDelete(Member member) {
 		if(member != null) {
 			logger.d(member.getIdentity() + " deleted");
-			//showToast(member.getIdentity() + " deleted");
 		}
 		
 	}

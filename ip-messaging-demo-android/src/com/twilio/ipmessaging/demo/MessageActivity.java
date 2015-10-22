@@ -10,11 +10,13 @@ import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
+import com.twilio.ipmessaging.Constants;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -61,6 +63,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
+    private AlertDialog changeChannelTypeDialog;
 	
 	
 	@Override
@@ -74,7 +77,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		super.onResume();
 		Intent intent = getIntent();
 		if (intent != null) {
-			Channel channel = intent.getParcelableExtra(Channel.EXTRA_CHANNEL);
+			Channel channel = intent.getParcelableExtra(Constants.EXTRA_CHANNEL);
 			if(channel != null) {
 				setupListView(channel);
 			}
@@ -92,7 +95,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		}
 	
 		setupListView(channel);
-		this.setTitle("Channel: "+channel.getFriendlyName());
+		this.setTitle("Channel: "+channel.getFriendlyName() + " Type: " + channel.getType());
 		messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		messageListView.setStackFromBottom(true);
 		adapter.registerDataSetObserver(new DataSetObserver() {
@@ -131,7 +134,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 				if (which == NAME_CHANGE) {
 					showChangeNameDialog();
 				} else if (which == TOPIC_CHANGE) {
-					channel.leave();
+					//channel.leave();
 				} else if (which == LIST_MEMBERS) {
 					Members membersObject = channel.getMembers();
 					Member[] members = membersObject.getMembers();
@@ -159,6 +162,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 					finish();
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
+				} else if (which == CHANNEL_TYPE) {
+					showChangeChannelType();
 				}  
 			}
 		});
@@ -299,6 +304,33 @@ public class MessageActivity extends Activity implements ChannelListener{
 		memberListDialog.getWindow().setLayout(800, 600);
 	}
 	
+	private void showChangeChannelType() {
+
+		// Strings to Show In Dialog with Radio Buttons
+		final CharSequence[] items = { " Public ", " Private " };
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		builder.setTitle("Select The Channel Type");
+		builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int item) {
+				switch (item) {
+				case 0:
+					// PUBLIC
+					logger.e("Setting channel type to public");
+					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC);
+					break;
+				case 1:
+					// PRIVATE
+					logger.e("Setting channel type to private");
+					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE);
+					break;
+				}
+				changeChannelTypeDialog.dismiss();
+			}
+		});
+		changeChannelTypeDialog = builder.create();
+		changeChannelTypeDialog.show();
+	}
+	
 
 	private void setupInput() {
 		// Setup our input methods. Enter key on the keyboard or pushing the
@@ -351,7 +383,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 	private void setupListView(Channel channel) {
 		messageListView = (ListView) findViewById(R.id.message_list_view);
-		Messages messagesObject = channel.getMessages(50);
+		Messages messagesObject = channel.getMessages();
 		Message[] messagesArray = messagesObject.getMessages();
 		if(messagesArray.length > 0 ) {
 			messages = new ArrayList<Message>(Arrays.asList(messagesArray));
@@ -374,7 +406,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		String input = inputText.getText().toString();
 		if (!input.equals("")) {
 			
-			Messages messagesObject = this.channel.getMessages(50);
+			Messages messagesObject = this.channel.getMessages();
 			Message message = messagesObject.createMessage(input);
 			messagesObject.sendMessage(message);
 			messages.add(message);
