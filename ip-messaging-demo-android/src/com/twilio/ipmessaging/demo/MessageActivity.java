@@ -94,8 +94,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 			channel.setListener(MessageActivity.this);
 		}
 	
-		setupListView(channel);
-		this.setTitle("Channel: "+channel.getFriendlyName() + " Type: " + channel.getType());
+		setupListView(channel);		
+		this.setTitle("Channel Name: "+channel.getFriendlyName() + " Type:" + ((channel.getType()==ChannelType.CHANNEL_TYPE_PUBLIC)? "Public":"Private"));
 		messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		messageListView.setStackFromBottom(true);
 		adapter.registerDataSetObserver(new DataSetObserver() {
