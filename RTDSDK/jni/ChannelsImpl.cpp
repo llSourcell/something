@@ -49,10 +49,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
 			if(type == 0) {
 				__android_log_print(ANDROID_LOG_INFO, TAG, "Creating public channel");
-				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePublic, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");});
+				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePublic, [](TMResult result) {
+					LOGD(TAG,"Channel setType to kTMChannelTypePublic command processed");
+				});
+
 			} else {
 				__android_log_print(ANDROID_LOG_INFO, TAG, "Creating private channel");
-				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePrivate, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
+				channelPtr->setType(rtd::TMChannelType::kTMChannelTypePrivate, [](TMResult result) {
+					LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");
+				});
 			}
 			channelPtr->setName(nativeNameString, NULL);
 			LOGD(TAG,"createChannelNative: release native string.");

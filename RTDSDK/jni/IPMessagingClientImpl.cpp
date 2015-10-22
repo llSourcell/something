@@ -1,4 +1,4 @@
-x#include <jni.h>
+#include <jni.h>
 #include <iostream>
 #include <string.h>
 #include <map>

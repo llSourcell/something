@@ -14,6 +14,7 @@ import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
+import com.twilio.ipmessaging.Messages;
 import com.twilio.ipmessaging.Constants.CreateChannelListener;
 import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -133,6 +134,10 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            		ChannelType type = newChannel.getType();
 				            		newChannel.setListener(ChannelActivity.this);
 				            		logger.e("channel Type is : " + type.toString());
+				            		newChannel.join();
+				            		Messages messagesObject = newChannel.getMessages();
+				        			Message message = messagesObject.createMessage("Test Message");
+				        			messagesObject.sendMessage(message);
 				            		runOnUiThread(new Runnable() {
 				            	        @Override
 				            	        public void run() {

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
@@ -62,6 +63,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
+    private AlertDialog changeChannelTypeDialog;
 	
 	
 	@Override
@@ -93,7 +95,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		}
 	
 		setupListView(channel);
-		this.setTitle("Channel: "+channel.getFriendlyName());
+		this.setTitle("Channel: "+channel.getFriendlyName() + " Type: " + channel.getType());
 		messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		messageListView.setStackFromBottom(true);
 		adapter.registerDataSetObserver(new DataSetObserver() {
@@ -132,7 +134,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 				if (which == NAME_CHANGE) {
 					showChangeNameDialog();
 				} else if (which == TOPIC_CHANGE) {
-					channel.leave();
+					//channel.leave();
 				} else if (which == LIST_MEMBERS) {
 					Members membersObject = channel.getMembers();
 					Member[] members = membersObject.getMembers();
@@ -160,6 +162,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 					finish();
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
+				} else if (which == CHANNEL_TYPE) {
+					showChangeChannelType();
 				}  
 			}
 		});
@@ -298,6 +302,33 @@ public class MessageActivity extends Activity implements ChannelListener{
 		memberListDialog = alertDialog.create();
 		memberListDialog.show();
 		memberListDialog.getWindow().setLayout(800, 600);
+	}
+	
+	private void showChangeChannelType() {
+
+		// Strings to Show In Dialog with Radio Buttons
+		final CharSequence[] items = { " Public ", " Private " };
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		builder.setTitle("Select The Channel Type");
+		builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int item) {
+				switch (item) {
+				case 0:
+					// PUBLIC
+					logger.e("Setting channel type to public");
+					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC);
+					break;
+				case 1:
+					// PRIVATE
+					logger.e("Setting channel type to private");
+					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE);
+					break;
+				}
+				changeChannelTypeDialog.dismiss();
+			}
+		});
+		changeChannelTypeDialog = builder.create();
+		changeChannelTypeDialog.show();
 	}
 	
 
