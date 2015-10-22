@@ -6,33 +6,10 @@ import android.app.PendingIntent;
 
 /**
  *  Container for channel object.
- * 
- *
  */
 
 
 public interface Channel {
-	
-	/**
-	 * Key into an Intent's extras data that points to a {@link Channel} object.
-	 */
-	public static final String EXTRA_CHANNEL = "com.twilio.ipmessaging.Channel";
-	
-	/**
-	 * Key into an Intent's extras data that points to a {@link Message} object.
-	 */
-	public static final String EXTRA_MESSAGE = "com.twilio.ipmessaging.Message";
-	
-	/**
-	 * Key into an Intent's extras data that points to a {@link Message} object.
-	 */
-	public static final String EXTRA_ACTION = "channel.action";
-	
-	/**
-	 * Key into an Intent's extras data that points to a {@link Message} object.
-	 */
-	public static final String EXTRA_ACTION_INVITE = "channel.action.invite";
-	
 	
 	/** 
 	 * The Channel.ChannelStatus enum represents the various states of the member with respect to this channel 

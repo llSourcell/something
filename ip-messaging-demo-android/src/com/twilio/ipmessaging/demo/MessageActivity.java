@@ -15,6 +15,7 @@ import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
+import com.twilio.ipmessaging.Constants;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -74,7 +75,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		super.onResume();
 		Intent intent = getIntent();
 		if (intent != null) {
-			Channel channel = intent.getParcelableExtra(Channel.EXTRA_CHANNEL);
+			Channel channel = intent.getParcelableExtra(Constants.EXTRA_CHANNEL);
 			if(channel != null) {
 				setupListView(channel);
 			}
@@ -180,7 +181,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
-						channel.setFriendlyName(friendlyName);
+						channel.setFriendlyName(null);
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
