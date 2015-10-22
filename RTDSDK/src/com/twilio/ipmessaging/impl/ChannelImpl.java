@@ -131,7 +131,6 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public Members getMembers() {
-		
 		return getMembers(this.getNativeClientContextHandle(), this.sid);
 	}
 
@@ -144,7 +143,9 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void setFriendlyName(String friendlyName) {
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
 		if (friendlyName != null && this.getSid() != null) {
-			updateChannelName(nativeClientHandle, this.getSid(), friendlyName);
+			synchronized(this) {
+				updateChannelName(nativeClientHandle, this.getSid(), friendlyName);
+			}
 		}
 	}
 	
@@ -160,15 +161,19 @@ public class ChannelImpl implements Channel, Parcelable{
 			channelType = 1;
 			break;
 		}
-		updateChannelType(nativeClientHandle, this.getSid(), channelType);
+		synchronized(this) {
+			updateChannelType(nativeClientHandle, this.getSid(), channelType);
+		}
 	}
 
 	@Override
 	public void join() {
 		logger.d("channelimpl join called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		if(this.getSid() != null) {
-			this.joinChannel(nativeClientHandle, this.getSid());
+		if (this.getSid() != null) {
+			synchronized (this) {
+				this.joinChannel(nativeClientHandle, this.getSid());
+			}
 		}
 	}
 
@@ -176,8 +181,10 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void leave() {
 		logger.d("channelimpl leave called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
-		if(this.getSid() != null) {
-			this.leaveChannel(nativeClientHandle, this.getSid());
+		if (this.getSid() != null) {
+			synchronized (this) {
+				this.leaveChannel(nativeClientHandle, this.getSid());
+			}
 		}
 	}
 
@@ -186,7 +193,9 @@ public class ChannelImpl implements Channel, Parcelable{
 		logger.d("channelimpl destroy called");
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
 		if(this.getSid() != null) {
-			destroyChannel(nativeClientHandle, this.getSid());
+			synchronized(this) {
+				destroyChannel(nativeClientHandle, this.getSid());
+			}
 		}
 	}
 	
