@@ -59,10 +59,9 @@ public interface Channel {
 	/**
 	 * Method to get messages.
 	 * 
-	 * @param count number of messages to return.
-	 * @return the count number of messages.
+	 * @return Messages object for this channel.
 	 */
-	public Messages getMessages(int count);
+	public Messages getMessages();
 	
 	/**
 	 * Returns the current user's status on this channel.

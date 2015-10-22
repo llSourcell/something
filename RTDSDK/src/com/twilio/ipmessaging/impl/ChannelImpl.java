@@ -200,7 +200,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public Messages getMessages(int count) {
+	public Messages getMessages() {
 		long nativeClientHandle = TwilioIPMessagingClientImpl.getInstance().getNativeClientParam();
 		if(this.getSid() != null) {
 			return getMessagesObject(nativeClientHandle, this.sid);

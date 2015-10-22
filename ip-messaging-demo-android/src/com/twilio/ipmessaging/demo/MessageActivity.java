@@ -352,7 +352,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 	private void setupListView(Channel channel) {
 		messageListView = (ListView) findViewById(R.id.message_list_view);
-		Messages messagesObject = channel.getMessages(50);
+		Messages messagesObject = channel.getMessages();
 		Message[] messagesArray = messagesObject.getMessages();
 		if(messagesArray.length > 0 ) {
 			messages = new ArrayList<Message>(Arrays.asList(messagesArray));
@@ -375,7 +375,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		String input = inputText.getText().toString();
 		if (!input.equals("")) {
 			
-			Messages messagesObject = this.channel.getMessages(50);
+			Messages messagesObject = this.channel.getMessages();
 			Message message = messagesObject.createMessage(input);
 			messagesObject.sendMessage(message);
 			messages.add(message);
