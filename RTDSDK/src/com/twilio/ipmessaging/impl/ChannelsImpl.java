@@ -39,10 +39,12 @@ public class ChannelsImpl implements Channels {
 				break;
 		}
 	
-		if(listener != null) {
-			this.createChannelNativeWithListener(friendlyName, nativeType, this.nativeChannelsHandler, listener);
-		} else {
-			this.createChannelNative(friendlyName, nativeType, this.nativeChannelsHandler);
+		if(friendlyName != null) {
+			if(listener != null) {
+				this.createChannelNativeWithListener(friendlyName, nativeType, this.nativeChannelsHandler, listener);
+			} else {
+				this.createChannelNative(friendlyName, nativeType, this.nativeChannelsHandler);
+			}
 		}
 	}
 

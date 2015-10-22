@@ -181,7 +181,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
-						channel.setFriendlyName(null);
+						channel.setFriendlyName(friendlyName);
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
