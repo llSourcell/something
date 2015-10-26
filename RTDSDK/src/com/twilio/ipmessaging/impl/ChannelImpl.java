@@ -1,13 +1,19 @@
 package com.twilio.ipmessaging.impl;
 
 
+import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Messages;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
@@ -98,8 +104,18 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public Map<String, String> getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,String> attrMap = new HashMap<String,String>();
+		String attrString = getChannelAttributesNative(this.nativeChannelContextHandle);
+		try {
+			JSONObject jsonObj = new JSONObject(attrString);
+			attrMap = Utils.toMap(jsonObj);
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return attrMap;
 	}
 
 	@Override
@@ -136,7 +152,12 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public void setAttributes(Map<String, String> updatedAttributes) {
-		this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), updatedAttributes);
+		if(updatedAttributes != null) {
+			JSONObject jsonObj = new JSONObject(updatedAttributes);
+			if(jsonObj != null) { 
+				this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString());
+			}
+		}
 	}
 
 	@Override
@@ -372,9 +393,10 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name);
 	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType);
 	private native Members getMembers(long nativeChannelContextHandle, String channel_sid);
-	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, Map<String, String> attrMap);
+	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap);
 	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
 	private native String getChannelSidNative(long nativeChannelContextHandle);
 	private native void typingStartNative(long nativeChannelContextHandle);
+	private native String getChannelAttributesNative(long nativeChannelContextHandle);
 
 }

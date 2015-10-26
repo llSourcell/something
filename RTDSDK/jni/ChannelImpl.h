@@ -75,10 +75,11 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMember
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
  * Method:    updateChannelAttributes
- * Signature: (JLjava/lang/String;Ljava/util/Map;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelAttributes
-  (JNIEnv *, jobject, jlong, jstring, jobject);
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -105,6 +106,13 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChanne
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_typingStartNative
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getChannelAttributesNative
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChannelAttributesNative
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

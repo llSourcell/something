@@ -95,7 +95,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		}
 	
 		setupListView(channel);		
-		this.setTitle("Channel Name: "+channel.getFriendlyName() + " Type:" + ((channel.getType()==ChannelType.CHANNEL_TYPE_PUBLIC)? "Public":"Private"));
+		this.setTitle("Name:"+channel.getFriendlyName() + " Type:" + ((channel.getType()==ChannelType.CHANNEL_TYPE_PUBLIC)? "Pub":"Pri") + " Topic:" + channel.getAttributes().get("Topic"));
 		messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		messageListView.setStackFromBottom(true);
 		adapter.registerDataSetObserver(new DataSetObserver() {
@@ -134,7 +134,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 				if (which == NAME_CHANGE) {
 					showChangeNameDialog();
 				} else if (which == TOPIC_CHANGE) {
-					//channel.leave();
+					showChangeTopicDialog();
 				} else if (which == LIST_MEMBERS) {
 					Members membersObject = channel.getMembers();
 					Member[] members = membersObject.getMembers();
@@ -203,14 +203,14 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
-		builder.setView(inflater.inflate(R.layout.dialog_edit_friendly_name, null))
+		builder.setView(inflater.inflate(R.layout.dialog_edit_channel_topic, null))
 				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						String topic = ((EditText) editTextDialog.findViewById(R.id.update_topic)).getText()
 								.toString();
 						logger.e(topic);
-						Map attrMap = new HashMap<String, String>();
+						Map<String,String> attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
 						channel.setAttributes(attrMap);
 					}
@@ -301,7 +301,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 		lv.setAdapter(adapterMember);
 		memberListDialog = alertDialog.create();
 		memberListDialog.show();
-		memberListDialog.getWindow().setLayout(800, 600);
+		memberListDialog.getWindow().setLayout(800, 600); 
 	}
 	
 	private void showChangeChannelType() {

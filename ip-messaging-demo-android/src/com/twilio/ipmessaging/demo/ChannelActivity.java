@@ -180,7 +180,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 										i.putExtra(Constants.EXTRA_CHANNEL, (Parcelable) channelSelected);
 										i.putExtra("C_SID", channelSelected.getSid());
 										startActivity(i);
-						                //finish();              
 						            }
 						        }, 0);
 								

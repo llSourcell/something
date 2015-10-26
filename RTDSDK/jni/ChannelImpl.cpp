@@ -367,12 +367,40 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
  * Method:    updateChannelAttributes
- * Signature: (JLjava/lang/String;Ljava/util/Map;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelAttributes
-(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring channel_sid, jobject attributes) {
+  (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring channel_sid, jstring attrString) {
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	IPMessagingClientContext *clientParams_ = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 
+	if(clientParams_ != nullptr) {
+
+		LOGW(TAG,"Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelName: Entered ");
+		const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+		const char *nativeAttrString = env->GetStringUTFChars(attrString, JNI_FALSE);
+
+		ITMChannelsPtr channels = clientParams_->channels;
+		if(channels != nullptr) {
+			ITMChannelPtr channel = channels->getChannel(nativeSidString);
+			if(channel != nullptr) {
+				LOGW("Update Name for channel with sid : %s ", nativeSidString);
+				channel->setAttributes(nativeAttrString, ([](TMResult result){
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Channel attribute update successful");
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Channel attribute update failed");
+					}
+				}
+				));
+			}
+		}
+		env->ReleaseStringUTFChars(channel_sid, nativeSidString);
+		env->ReleaseStringUTFChars(channel_sid, nativeAttrString);
+	}
 }
+
+
 
 
 
@@ -404,7 +432,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 			LOGW(TAG,"declineChannelInvite: channels is null");
 		}
 	}
-
 	env->ReleaseStringUTFChars(channel_sid, nativeString);
 }
 
@@ -437,11 +464,42 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChanne
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_typingStartNative
 (JNIEnv *env, jobject obj, jlong nativeChannelContext) {
 	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
-	jstring sidString;
 	if(clientChannelContext != nullptr) {
 		ITMChannelPtr channelPtr = clientChannelContext->channel;
 		if(channelPtr != nullptr) {
 			channelPtr->typing();
 		}
 	}
+}
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getAttributesNative
+ * Signature: (J)Ljava/lang/String;
+ */
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getChannelAttributesNative
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChannelAttributesNative
+(JNIEnv *env, jobject obj, jlong nativeChannelContext) {
+	__android_log_print(ANDROID_LOG_INFO, TAG, "Entered Kumkum");
+	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
+	__android_log_print(ANDROID_LOG_INFO, TAG, "Entered Kumkum 2");
+	jstring attrString;
+	if(clientChannelContext != nullptr) {
+		__android_log_print(ANDROID_LOG_INFO, TAG, "clientChannelContext is not null Kumkum");
+		ITMChannelPtr channelPtr = clientChannelContext->channel;
+		if(channelPtr != nullptr) {
+			__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null Kumkum");
+			const char* attr = channelPtr->getAttributes().c_str();
+			__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null 2 Kumkum");
+			attrString = env->NewStringUTF(attr);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null 3 Kumkum");
+		}
+	}
+	__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null 4 Kumkum");
+	return attrString;
 }
