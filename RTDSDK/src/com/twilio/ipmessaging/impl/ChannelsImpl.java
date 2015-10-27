@@ -52,7 +52,7 @@ public class ChannelsImpl implements Channels {
 	@Override
 	public Channel getChannel(String channelId) {
 		
-		return TwilioIPMessagingClientImpl.publicChannelMap.get(channelId);//this.getChannelNative(channelId, nativeChannelsHandler);
+		return TwilioIPMessagingClientImpl.publicChannelMap.get(channelId);
 	}
 	
 	@Override
@@ -61,23 +61,32 @@ public class ChannelsImpl implements Channels {
 	}
 
 	public Channel[] getChannelsArraysAndCombine() {	
-		
-		alllObjects =  getChannelsNative(this.nativeChannelsHandler);
+		Channel[] localCopyChannelArray;
+		localCopyChannelArray =  getChannelsNative(this.nativeChannelsHandler);
+	
+		if (TwilioIPMessagingClientImpl.publicChannelMap != null) {
+			logger.d("ChannelList Size : " + TwilioIPMessagingClientImpl.publicChannelMap.size());
+		}
 
-		for(int i=0; i<alllObjects.length; i++) {
-			if(alllObjects[i] != null) {
-				TwilioIPMessagingClientImpl.publicChannelMap.put(alllObjects[i].getSid(), (ChannelImpl) alllObjects[i]);
+		if(localCopyChannelArray != null ) {
+			for(int i=0; i<localCopyChannelArray.length; i++) {
+				if(localCopyChannelArray[i] != null) {
+					TwilioIPMessagingClientImpl.publicChannelMap.put(localCopyChannelArray[i].getSid(), (ChannelImpl) localCopyChannelArray[i]);
+				}
 			}
 		}
+				
 		List<ChannelImpl> list = new ArrayList<ChannelImpl>(TwilioIPMessagingClientImpl.privateChannelList.values());
 		if(list != null && list.size() > 0) {
 			ChannelImpl[] privateChannel = list.toArray(new ChannelImpl[list.size()]);
-			int publicChannelArrayLength = alllObjects.length;
+			int publicChannelArrayLength = localCopyChannelArray.length;
 		    int privateChannelLength = list.toArray().length;
 		    ChannelImpl[] combineChannelArray= new ChannelImpl[publicChannelArrayLength+privateChannelLength];
-		    System.arraycopy(alllObjects, 0, combineChannelArray, 0, publicChannelArrayLength);
+		    System.arraycopy(localCopyChannelArray, 0, combineChannelArray, 0, publicChannelArrayLength);
 		    System.arraycopy(privateChannel, 0, combineChannelArray, publicChannelArrayLength, privateChannelLength);
-		    return combineChannelArray;
+		    alllObjects = combineChannelArray;
+		} else {
+			alllObjects = localCopyChannelArray;
 		}
 		return alllObjects;
 	}
@@ -86,7 +95,7 @@ public class ChannelsImpl implements Channels {
 	public void loadChannelsWithListener(StatusListener listener) {
 		//getChannels1();
 		setupListenerHandler();
-		 new GetChannelsTask(listener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new GetChannelsTask(listener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/*

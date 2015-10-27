@@ -109,12 +109,10 @@ public class ChannelImpl implements Channel, Parcelable{
 		try {
 			JSONObject jsonObj = new JSONObject(attrString);
 			attrMap = Utils.toMap(jsonObj);
-			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}		
 		return attrMap;
 	}
 

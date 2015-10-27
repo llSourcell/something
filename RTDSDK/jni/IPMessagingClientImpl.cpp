@@ -47,6 +47,16 @@ std::map<std::string, std::string> configMap;
 #endif
 
 
+class LogListener: public ITLLogListener {
+public :
+	void onNewEntry(const char * c, const char* prefix) {
+		//__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", c, prefix);
+	}
+
+};
+
+static LogListener logger;
+
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
  * Method:    create
@@ -84,7 +94,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	LOGD( TAG, "Entered IPMessagingClientImpl_initNative()");
 
 	rtd::ITDLogger::initialize(true);
-
+	rtd::TLLogger::instance().SetLogListener(&logger);
 	LOGD(TAG, "Set ITDLogger to true.");
 
 #if WITH_SSL

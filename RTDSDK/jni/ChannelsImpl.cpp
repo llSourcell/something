@@ -96,11 +96,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					int type = 0;
 					switch (channelPtr->getType()) {
 						case rtd::TMChannelType::kTMChannelTypePublic:
-							__android_log_print(ANDROID_LOG_INFO, TAG, "Setting type to kTMChannelTypePublic");
+							//__android_log_print(ANDROID_LOG_INFO, TAG, "Setting type to kTMChannelTypePublic");
 							type = 0;
 							break;
 						case rtd::TMChannelType::kTMChannelTypePrivate:
-							__android_log_print(ANDROID_LOG_INFO, TAG, "Setting type to kTMChannelTypePrivate");
+							//__android_log_print(ANDROID_LOG_INFO, TAG, "Setting type to kTMChannelTypePrivate");
 							type = 1;
 							break;
 						default:
@@ -338,18 +338,18 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			int type = 0;
 			switch (channelPtr->getType()) {
 				case rtd::TMChannelType::kTMChannelTypePublic:
-					__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePublic");
+					//__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePublic");
 					type = 0;
 					break;
 				case rtd::TMChannelType::kTMChannelTypePrivate:
-					__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePrivate");
+					//__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePrivate");
 					type = 1;
 					break;
 				default:
 					break;
 			}
 
-			__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
+			//__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
 
 			ChannelContext* channelContext_ = new ChannelContext();
 			channelContext_->channel = channelPtr;

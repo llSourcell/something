@@ -485,21 +485,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_typingStartN
  */
 JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChannelAttributesNative
 (JNIEnv *env, jobject obj, jlong nativeChannelContext) {
-	__android_log_print(ANDROID_LOG_INFO, TAG, "Entered Kumkum");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "Entered getChannelAttributesNative");
 	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
-	__android_log_print(ANDROID_LOG_INFO, TAG, "Entered Kumkum 2");
 	jstring attrString;
 	if(clientChannelContext != nullptr) {
-		__android_log_print(ANDROID_LOG_INFO, TAG, "clientChannelContext is not null Kumkum");
 		ITMChannelPtr channelPtr = clientChannelContext->channel;
 		if(channelPtr != nullptr) {
-			__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null Kumkum");
 			const char* attr = channelPtr->getAttributes().c_str();
-			__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null 2 Kumkum");
 			attrString = env->NewStringUTF(attr);
-			__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null 3 Kumkum");
 		}
 	}
-	__android_log_print(ANDROID_LOG_INFO, TAG, "channelPtr is not null 4 Kumkum");
 	return attrString;
 }

@@ -206,22 +206,10 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		listView.setAdapter(adapter);
 		getChannels(null);
 	}
-
-	private void getChannelsOld(String channelId) {
-		if (this.channels != null) {
-			this.channels.clear();
-			channelsObject= rtdJni.getIpMessagingClient().getChannels();
-      		channelArray = channelsObject.getChannels();	
-      		setupListenersForChannel(channelArray);
-			this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-			Collections.sort(this.channels, new CustomChannelComparator());
-			adapter.notifyDataSetChanged();
-		}
-	}
 	
 	private void getChannels(String channelId) {
 		if (this.channels != null) {
-			this.channels.clear();
+			//this.channels.clear();
 			channelsObject= rtdJni.getIpMessagingClient().getChannels();
 			channelsObject.loadChannelsWithListener(new StatusListener() {
 
@@ -232,11 +220,16 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 				@Override
 				public void onSuccess() {
-					channelArray = channelsObject.getChannels();
-					setupListenersForChannel(channelArray);
-					ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-					Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
-					adapter.notifyDataSetChanged();
+					if(channels != null) {
+						channels.clear();
+					}
+					if (channelsObject != null) {
+						channelArray = channelsObject.getChannels();
+						setupListenersForChannel(channelArray);
+						ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+						Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+						adapter.notifyDataSetChanged();
+					}
 				}
       			
       		});	     	
@@ -330,8 +323,10 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	}
 	
 	private void setupListenersForChannel(Channel[] channelArray){
-		for(int i=0; i<channelArray.length; i++) {
-			channelArray[i].setListener(ChannelActivity.this);
+		if(channelArray != null) {
+			for(int i=0; i<channelArray.length; i++) {
+				channelArray[i].setListener(ChannelActivity.this);
+			}
 		}
 	}
 	
