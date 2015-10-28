@@ -234,18 +234,22 @@ public class ChannelActivity extends Activity implements ChannelListener {
 
 	@Override
 	public void onMessageAdd(Message message) {
-		
+		if(message != null) {
+			logger.d("Received onMessageAdd event");
+		}
 	}
 
 	@Override
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
-		// TODO Auto-generated method stub
-		
+		if(updatedAttributes != null) {
+			logger.d("updatedAttributes event received");
+		}
 	}
 
-	public void onMessageChange(Message arg0) {
-		// TODO Auto-generated method stub
-		
+	public void onMessageChange(Message message) {
+		if(message != null) {
+			logger.d("Received onMessageChange event");
+		}		
 	}
 	
 	private void showIncomingInvite(final Channel channel)
@@ -335,13 +339,14 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		toast.show(); 
 	}
 	
+	@Override
 	public void onTypingStarted(Member member){
 		if(member != null) {
 			logger.d(member.getIdentity() + " started typing");
 		}
 	}
 	
-
+	@Override
 	public void onTypingEnded(Member member) {
 		if(member != null) {
 			logger.d(member.getIdentity() + " ended typing");

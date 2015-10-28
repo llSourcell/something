@@ -426,12 +426,20 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 	@Override
 	public void onMessageChange(Message message) {
-		
+		if(message != null) {
+			logger.d("Received onMessageChange "  + message.getSid());
+		} else {
+			logger.d("Received onMessageChange ");
+		}
 	}
 
 	@Override
 	public void onMessageDelete(Message message) {
-		
+		if(message != null) {
+			logger.d("Received onMessageDelete "  + message.getSid());
+		} else {
+			logger.d("Received onMessageDelete.");
+		}
 	}
 
 	@Override
@@ -457,16 +465,12 @@ public class MessageActivity extends Activity implements ChannelListener{
 	
 	@Override
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
-		
-	}
 	
-	public void onTypingStarted(Member member) {
-		
-	}
-	
-
-	public void onTypingEnded(Member member){
-		
+		if(updatedAttributes != null) {
+			logger.d("Received onAttributesChange event" + updatedAttributes.toString());
+		} else {
+			logger.d("Received onAttributesChange event");
+		}
 	}
 	
 	
@@ -477,5 +481,19 @@ public class MessageActivity extends Activity implements ChannelListener{
 		TextView toastTV = (TextView) toastLayout.getChildAt(0);
 		toastTV.setTextSize(30);
 		toast.show(); 
+	}
+
+	@Override
+	public void onTypingStarted(Member member){
+		if(member != null) {
+			logger.d(member.getIdentity() + " started typing");
+		}
+	}
+	
+	@Override
+	public void onTypingEnded(Member member) {
+		if(member != null) {
+			logger.d(member.getIdentity() + " ended typing");
+		}
 	}
 }

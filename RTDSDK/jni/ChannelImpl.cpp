@@ -230,8 +230,8 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 					}
 				});
 			} else {
-				LOGW(TAG, "channel is null");
-				}
+				__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
+			}
 		} else {
 			LOGW(TAG, "channels is null");
 		}
@@ -306,7 +306,14 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 
 			if(channel != nullptr) {
 				LOGW("Update Name for channel with sid : %s ", nativeSidString);
-				channel->setFriendlyName(nativeNameString, ([](TMResult result){LOGW(TAG,"Channel setName command processed"); }));
+				channel->setFriendlyName(nativeNameString, ([](TMResult result) {
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully setFriendlyName.");
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to setFriendlyName.");
+						LOG_D(TAG, "Error changing Channel Type.");
+					};
+				}));
 			}
 		}
 		env->ReleaseStringUTFChars(channel_sid, nativeSidString);
@@ -343,7 +350,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 							__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully set channel type to Public");
 						} else {
 							__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to set channel type to Public");
-							LOG_D(TAG, "Error creating Channel Object.");
+							LOG_D(TAG, "Error changing Channel Type.");
 						}
 					});
 				} else {
@@ -353,7 +360,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 							__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully set channel type to Private");
 						} else {
 							__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to set channel type to Private");
-							LOG_D(TAG, "Error creating Channel Object.");
+							LOG_D(TAG, "Error changing Channel Type.");
 						}
 					});
 				}
@@ -400,10 +407,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 	}
 }
 
-
-
-
-
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
  * Method:    declineChannelInvite
@@ -424,10 +427,17 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 
 			if(channel != nullptr) {
 				LOGD(TAG,"Joining channel with sid : %s ", nativeString);
-				channel->declineInvitation([](TMResult result){LOGW(TAG,"Channel declineInvitation command processed"); });
+				channel->declineInvitation([](TMResult result) {
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Channel declineInvitation command processed successfully.");
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Channel declineInvitation command failed to process.");
+					}
+				}
+				);
 			} else {
 				LOGW(TAG,"declineChannelInvite ELEMENT NOT found");
-				}
+			}
 		} else {
 			LOGW(TAG,"declineChannelInvite: channels is null");
 		}

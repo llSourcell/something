@@ -11,12 +11,10 @@ import com.twilio.ipmessaging.Constants.InitListener;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class BasicIPMessagingClient implements IPMessagingClientListener {
 
-
-	private static final String TAG = "BasicIPMessagingClient";
+	private static final Logger logger = Logger.getLogger(BasicIPMessagingClient.class);
 	private String capabilityToken;
 	private long nativeClientParam;
 	private TwilioIPMessagingClient ipMessagingClient;
@@ -74,7 +72,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 	public BasicIPMessagingClient() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public void cleanupTest() {
@@ -97,32 +94,38 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 	@Override
 	public void onChannelAdd(Channel channel) {
 		if(channel != null) {
-			Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got added");	
+			logger.d("A Channel :"+ channel.getFriendlyName() + " got added");	
+		} else {
+			logger.d("Received onChannelAdd event.");
 		}
 	}
 
 	@Override
 	public void onChannelChange(Channel channel) {
 		if(channel != null) {
-			Log.i(TAG, "Channel Name : "+ channel.getFriendlyName() + " got Changed");	
+			logger.d("Channel Name : "+ channel.getFriendlyName() + " got Changed");	
+		} else {
+			logger.d("received onChannelChange event.");
 		}
 	}
 
 	@Override
 	public void onChannelDelete(Channel channel) {
 		if(channel != null) {
-			Log.i(TAG, "A Channel :"+ channel.getFriendlyName() + " got deleted");	
+			logger.d("A Channel :"+ channel.getFriendlyName() + " got deleted");	
+		} else {
+			logger.d("received onChannelDelete event.");
 		}
 	}
 
 	@Override
 	public void onError(int errorCode, String errorText) {
-		Log.i(TAG, "onError called");	
+		logger.d("Received onError event.");	
 	}
 
 	@Override
 	public void onAttributesChange(String attributes) {
-		Log.i(TAG, "Channel's attribute changed");	
+		logger.d("Received onAttributesChange event.");	
 	}
 	
 	public TwilioIPMessagingClient getIpMessagingClient() {
