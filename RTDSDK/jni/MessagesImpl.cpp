@@ -241,7 +241,13 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
 	if(messages != nullptr) {
 		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
 		if(message != nullptr) {
-			 messages->send(message, [](TMResult result) {LOGD(TAG,"Messages send command processed");});
+			 messages->send(message, [](TMResult result) {
+				   if (result == rtd::TMResult::kTMResultSuccess) {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully sent message.");
+				   } else {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to send message.");
+					}
+			});
 		}
 	}
 }

@@ -50,7 +50,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
 	private Channel channel;
-	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType" };
+	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy"};
 	
 	private static final int NAME_CHANGE = 0;
 	private static final int TOPIC_CHANGE = 1;
@@ -60,6 +60,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private static final int REMOVE_MEMBER = 5;
 	private static final int LEAVE = 6;
 	private static final int CHANNEL_TYPE = 7;
+	private static final int CHANNEL_DESTROY = 8;
 	
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
@@ -164,6 +165,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 					showRemoveMemberDialog();
 				} else if (which == CHANNEL_TYPE) {
 					showChangeChannelType();
+				}   else if (which == CHANNEL_DESTROY) {
+					channel.destroy();
 				}  
 			}
 		});

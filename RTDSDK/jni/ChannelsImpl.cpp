@@ -59,7 +59,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");
 				});
 			}
-			channelPtr->setName(nativeNameString, NULL);
+			channelPtr->setFriendlyName(nativeNameString, NULL);
 			LOGD(TAG,"createChannelNative: release native string.");
 			env->ReleaseStringUTFChars(friendlyName, nativeNameString);
 			channelsPtr->add(channelPtr, [channelPtr,j_createChanneListener_,j_onCreated_, j_onError_](TMResult result) {
@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					channelContext_->channel = channelPtr;
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getName().c_str();
+					const char* name = channelPtr->getFriendlyName().c_str();
 					__android_log_print(ANDROID_LOG_INFO, TAG, "Channel Sid 1 %s", sid);
 					jstring nameString = jniAttacher.get()->NewStringUTF(name);
 					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
@@ -161,7 +161,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 			} else {
 				channelPtr->setType(rtd::kTMChannelTypePrivate, [](TMResult result) {LOGD(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
 			}
-			channelPtr->setName(nativeNameString, NULL);
+			channelPtr->setFriendlyName(nativeNameString, NULL);
 			LOGD(TAG,"createChannelNative: release native string.");
 			env->ReleaseStringUTFChars(friendlyName, nativeNameString);
 			channelsPtr->add(channelPtr, [channelPtr](TMResult result) {
@@ -227,7 +227,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 
 					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getName().c_str();
+					const char* name = channelPtr->getFriendlyName().c_str();
 
 					LOGD(TAG, "Channel Name  : %s.", name );
 					LOGD(TAG, "Channel Sid %s", sid);
@@ -318,7 +318,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 		for (int i= 0; i<publicChannels.size() ; i++ ) {
 			ITMChannelPtr channelPtr = publicChannels[i];
 			const char* sid = channelPtr->getSid().c_str();
-			const char* name = channelPtr->getName().c_str();
+			const char* name = channelPtr->getFriendlyName().c_str();
 			channelPtr = channels->getChannel(sid);
 			int status = 0;
 			switch (channelPtr->getStatus()) {

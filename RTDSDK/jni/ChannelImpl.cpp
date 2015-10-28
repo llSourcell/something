@@ -306,7 +306,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 
 			if(channel != nullptr) {
 				LOGW("Update Name for channel with sid : %s ", nativeSidString);
-				channel->setName(nativeNameString, ([](TMResult result){LOGW(TAG,"Channel setName command processed"); }));
+				channel->setFriendlyName(nativeNameString, ([](TMResult result){LOGW(TAG,"Channel setName command processed"); }));
 			}
 		}
 		env->ReleaseStringUTFChars(channel_sid, nativeSidString);

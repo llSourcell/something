@@ -12,6 +12,7 @@
 #include <Poco/UUIDGenerator.h>
 #include <Common/TLLoggerInitializer.h>
 #include <twilio-jni/twilio-jni.h>
+#include <Twilsock/ITNTwilsockClient.h>
 
 #include "ITMClient.h"
 #include "ITMChannels.h"
@@ -23,8 +24,11 @@
 #include "IPMessagingClientImpl.h"
 #include "TwilioIPMessagingClientContextDefines.h"
 
+
 #define TAG  "IPMessagingClient(native)"
-#define PRODUCTION 1
+#define PRODUCTION 0
+#define STAGE 1
+#define DEV 0
 #define WITH_SSL 1
 
 
@@ -38,7 +42,13 @@ std::map<std::string, std::string> configMap;
 #define TEST_TWILSOCK_SERVICE "https://tsock.twilio.com"
 #define TEST_DATA_SERVICE "https://cds.twilio.com"
 #define TEST_SUBSCRIPTIONS_SERVICE "https://cds.twilio.com"
-#else
+#elif STAGE
+#define TEST_IPMESSAGING_SERVICE "https://aim.stage-us1.twilio.com"
+#define TEST_REGISTRATION_SERVICE "https://ers.stage-us1.twilio.com"
+#define TEST_TWILSOCK_SERVICE "https://tsock.stage-us1.twilio.com"
+#define TEST_DATA_SERVICE "https://cds.stage-us1.twilio.com"
+#define TEST_SUBSCRIPTIONS_SERVICE "https://cds.stage-us1.twilio.com"
+#elif DEV
 #define TEST_IPMESSAGING_SERVICE "https://aim.dev-us1.twilio.com"
 #define TEST_REGISTRATION_SERVICE "https://ers.dev-us1.twilio.com"
 #define TEST_TWILSOCK_SERVICE "https://tsock.dev-us1.twilio.com"
@@ -50,7 +60,7 @@ std::map<std::string, std::string> configMap;
 class LogListener: public ITLLogListener {
 public :
 	void onNewEntry(const char * c, const char* prefix) {
-		//__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", c, prefix);
+		__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", c, prefix);
 	}
 
 };
@@ -97,12 +107,8 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	rtd::TLLogger::instance().SetLogListener(&logger);
 	LOGD(TAG, "Set ITDLogger to true.");
 
-#if WITH_SSL
-	Poco::Net::initializeSSL();
-	auto context = new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, "", "", "", Poco::Net::Context::VERIFY_NONE, 9, true, "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH");
-	Poco::Net::SSLManager::instance().initializeClient(nullptr, nullptr, context);
-#endif
 
+	ITMClient::initialize();
 	if (token == nullptr) {
 		LOGE("token is null");
 		return 0;
@@ -113,6 +119,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>(env, obj, listener);
 
 	LOGD(TAG,"Creating  config map");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", TEST_IPMESSAGING_SERVICE, TEST_REGISTRATION_SERVICE);
 	configMap.insert(std::make_pair("RTDIPMessagingServiceAddr", TEST_IPMESSAGING_SERVICE));
 	configMap.insert(std::make_pair("RTDRegistrationServiceAddr", TEST_REGISTRATION_SERVICE));
 	configMap.insert(std::make_pair("RTDTwilsockServiceAddr", TEST_TWILSOCK_SERVICE));
@@ -131,11 +138,12 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 		LOGD( TAG, "notificationClientObserver is NULL");
 	}
 
+	auto m_twilsock = rtd::TNTwilsockClientFactory::create(nullptr, tokenStr, configurationProvider);
+	m_twilsock->connect();
 
 	LOGD( TAG,"Creating ITNNotificationClientPtr");
-
 	ITNNotificationClientPtr notificationClientPtr;
-	notificationClientPtr = TNNotificationClientFactory::CreateNotificationClient(tokenStr,configurationProvider);
+	notificationClientPtr = TNNotificationClientFactory::CreateNotificationClient(tokenStr,m_twilsock, configurationProvider);
 	notificationClientPtr->Init(notificationClientObserver);
 
 	if(notificationClientPtr == nullptr) {
@@ -192,7 +200,8 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 
 		LOGD( TAG,"Creating the msgClient.");
 
-		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
+		//ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
+		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr, "Android",
 				clientParamsRecreate->messagingListener,
 				clientParamsRecreate->configurationProvider,
 				clientParamsRecreate->notificationClient,

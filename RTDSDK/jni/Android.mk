@@ -108,6 +108,29 @@ LOCAL_EXPORT_C_INCLUDES := \
 
 include $(PREBUILT_STATIC_LIBRARY)
 
+# RTDHttpTransport
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := RTDHttpTransport
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/datasync-client-core/lib/release/armv7/libRTDHttpLib.a
+LOCAL_EXPORT_C_INCLUDES := \
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include/HttpTransport
+
+include $(PREBUILT_STATIC_LIBRARY)
+
+# RTDTwilioSock
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := RTDTwilioSock
+LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/datasync-client-core/lib/release/armv7/libRTDTwilsockLib.a
+LOCAL_EXPORT_C_INCLUDES := \
+		$(LOCAL_PREBUILT_ROOT)/datasync-client-core/include/Twilsock
+
+include $(PREBUILT_STATIC_LIBRARY)
+
+
 
 # twilio-rtd-native
 
@@ -134,6 +157,8 @@ LOCAL_STATIC_LIBRARIES := \
     RTDMessaging \
 	RTDNotification \
 	RTDDataSync\
+	RTDHttpTransport\
+	RTDTwilioSock \
 	PocoNet \
 	PocoNetSSL \
 	PocoCrypto \

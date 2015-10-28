@@ -1,6 +1,5 @@
 package com.twilio.ipmessaging.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Formatter;
 
@@ -34,7 +33,9 @@ public class MessagesImpl implements Messages , Parcelable{
 
 	@Override
 	public Message[] getMessages() {
-		return this.getMessagesNative(this.nativeMessagesContextHandler);
+		synchronized(this) {
+			return this.getMessagesNative(this.nativeMessagesContextHandler);
+		}
 	}
 	
 	//parcel

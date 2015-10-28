@@ -41,10 +41,10 @@ import uk.co.ribot.easyadapter.EasyAdapter;
 @SuppressLint("InflateParams")
 public class ChannelActivity extends Activity implements ChannelListener {
 
-	private static final String[] CHANNEL_OPTIONS = { "Join", "Destroy" };
+	private static final String[] CHANNEL_OPTIONS = { "Join" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
 	private static final int JOIN = 0;
-	private static final int DESTROY = 1;
+	//private static final int DESTROY = 1;
 
 	private ListView listView;
 	private BasicIPMessagingClient rtdJni;
@@ -193,11 +193,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								if (which == JOIN) {
 									dialog.cancel();
 									channel.join();
-								} else if (which == DESTROY) {
-									dialog.cancel();
-									channel.destroy();
-									getChannels(null);
-								}
+								} 
 							}
 						});
 						builder.show();

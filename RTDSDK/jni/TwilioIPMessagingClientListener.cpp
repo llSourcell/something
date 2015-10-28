@@ -25,7 +25,7 @@ jobject createChannelObject(ITMChannelPtr channelPtr) {
 	}
 
 	const char* sid = channelPtr->getSid().c_str();
-	const char* name = channelPtr->getName().c_str();
+	const char* name = channelPtr->getFriendlyName().c_str();
 	switch (channelPtr->getStatus()) {
 		case TMChannelStatus::kTMChannelStatusInvited:
 			status = 0;
