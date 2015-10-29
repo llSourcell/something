@@ -203,6 +203,7 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 		case rtd::kTMActionDeleted:
 		{
 			LOGW(TAG,"onChannel::kTMActionDeleted");
+			__android_log_print(ANDROID_LOG_INFO, TAG, "TwilioIPMessagingClientListener::onChannel - deleted");
 			JNIEnvAttacher jniAttacher;
 			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);

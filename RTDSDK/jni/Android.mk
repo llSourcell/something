@@ -146,6 +146,7 @@ LOCAL_SRC_FILES := \
 	TwilioIPMessagingConfigurationProvider.cpp \
 	TwilioIPMessagingNotificationClientListener.cpp \
 	TwilioIPMessagingClientListener.cpp \
+	TwilioIPMessagingSDKImpl.cpp\
 	IPMessagingClientImpl.cpp \
 	MessagesImpl.cpp \
 	ChannelsImpl.cpp \

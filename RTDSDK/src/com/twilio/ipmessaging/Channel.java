@@ -2,12 +2,10 @@ package com.twilio.ipmessaging;
 
 import java.util.Map;
 
-import android.app.PendingIntent;
 
 /**
  *  Container for channel object.
  */
-
 
 public interface Channel {
 	
@@ -30,8 +28,8 @@ public interface Channel {
 	 * 
 	 */
 	public enum ChannelType {
-	    CHANNEL_TYPE_PUBLIC,      ///< Channel is publicly visible
-	    CHANNEL_TYPE_PRIVATE      ///< Channel is private and only visible to invited members.
+	    CHANNEL_TYPE_PUBLIC,      //Channel is publicly visible
+	    CHANNEL_TYPE_PRIVATE      //Channel is private and only visible to invited members.
 	};
 
 	
@@ -137,7 +135,7 @@ public interface Channel {
 	public void destroy();	
 
 	/**
-	 * Destroys the current channel.
+	 * Declines an invite on this channel.
 	 * 
 	 */
 	public void declineInvitation();

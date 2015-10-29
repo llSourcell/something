@@ -2,24 +2,15 @@
 #include <jni.h>
 /* Header for class com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl */
 
-#ifndef _Included_IPMessagingClientImpl
-#define _Included_IPMessagingClientImpl
+#ifndef _Included_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+#define _Included_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
- * Method:    create
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_create
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
- * Method:    init
- * Signature: (Ljava/lang/String;J)J
+ * Method:    initNative
+ * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/impl/IPMessagingClientListenerInternal;)J
  */
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
   (JNIEnv *, jobject, jstring, jobject);
@@ -27,7 +18,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
  * Method:    createMessagingClient
- * Signature: (Ljava/lang/String;)J
+ * Signature: (Ljava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_createMessagingClient
   (JNIEnv *, jobject, jstring, jlong);
@@ -35,11 +26,10 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
  * Method:    getChannelsNative
- * Signature: ()Lcom/twilio/ipmessaging/Channels;
+ * Signature: (J)Lcom/twilio/ipmessaging/impl/ChannelsImpl;
  */
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative
   (JNIEnv *, jobject, jlong);
-
 
 #ifdef __cplusplus
 }

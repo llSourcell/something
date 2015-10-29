@@ -35,7 +35,7 @@
         </activity>
         
         <service
-            android:name="com.twilio.ipmessaging.TwilioIpMessagingClientService"
+            android:name="com.twilio.ipmessaging.TwilioIPMessagingClientService"
             android:exported="false" />
     </application>
 

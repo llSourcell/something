@@ -18,14 +18,14 @@ public interface Channels {
 	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
 	
 	
-	/** Requesting loading of all channels from server to be delivered via delegate callbacks.
+	/** Requesting loading of all channels from server to be delivered via callbacks.
 	 * 
 	 *  @param listener Listener that will receive callback of the result.
 	 */
 	public void loadChannelsWithListener(StatusListener listener);
 	
 	/**
-	 * Loads a channel with the specified id.
+	 * Retrieves a channel with the specified id.
 	 * 
 	 *  @param channelId Identifier for the channel.
 	 *  @return The channel.

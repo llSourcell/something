@@ -8,9 +8,9 @@
 #include <Notification/ITNNotificationClient.h>
 #include <Poco/Net/SSLManager.h>
 #include <Poco/Net/Context.h>
+#include <Common/TLLoggerInitializer.h>
 #include <Poco/Net/PrivateKeyPassphraseHandler.h>
 #include <Poco/UUIDGenerator.h>
-#include <Common/TLLoggerInitializer.h>
 #include <twilio-jni/twilio-jni.h>
 #include <Twilsock/ITNTwilsockClient.h>
 
@@ -30,7 +30,6 @@
 #define STAGE 1
 #define DEV 0
 #define WITH_SSL 1
-
 
 using namespace rtd;
 
@@ -67,37 +66,12 @@ public :
 
 static LogListener logger;
 
+
 /*
- * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
- * Method:    create
- * Signature: ()V
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl
+ * Method:    initNative
+ * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/impl/IPMessagingClientListenerInternal;)J
  */
-JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_create
-  (JNIEnv *env, jobject obj) {
-
-	LOGD(TAG, "Entered TwilioIPMessagingClientImpl_create()");
-
-	static const char *class_names[] = {
-			"com/twilio/ipmessaging/impl/MessageImpl",
-			"com/twilio/ipmessaging/impl/ChannelImpl",
-			"com/twilio/ipmessaging/impl/MemberImpl",
-			NULL
-		};
-	static bool classes_precached = false;
-
-	if (!classes_precached) {
-		for (int i = 0; class_names[i]; ++i) {
-			tw_jni_find_class(env, class_names[i]);
-			if (env->ExceptionOccurred()) {
-				env->ExceptionClear();
-			}
-		}
-		classes_precached = true;
-	}
-}
-
-
-
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
   (JNIEnv *env, jobject obj, jstring token, jobject listener) {
 
@@ -162,6 +136,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 
 }
 
+
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_createMessagingClient
   (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext) {
 
@@ -200,7 +175,6 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 
 		LOGD( TAG,"Creating the msgClient.");
 
-		//ITMClientPtr messagingClient = ITMClient::createClient(tokenStr,
 		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr, "Android",
 				clientParamsRecreate->messagingListener,
 				clientParamsRecreate->configurationProvider,
@@ -257,9 +231,9 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
 					LOGW(TAG, "Found java_channels_impl_cls class" );
 				}
 
-				jmethodID construct = tw_jni_get_method_by_class(env, java_channels_impl_cls, "<init>", "(J)V");
-				channels = tw_jni_new_object(env, java_channels_impl_cls, construct, channelsContextHandle);
-
+				//jmethodID construct = tw_jni_get_method_by_class(env, java_channels_impl_cls, "<init>", "(J)V");
+				jmethodID construct = tw_jni_get_method_by_class(env, java_channels_impl_cls, "<init>", "(Lcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;J)V");
+				channels = tw_jni_new_object(env, java_channels_impl_cls, construct, obj, channelsContextHandle);
 			}
 		}
 	}

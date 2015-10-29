@@ -11,17 +11,19 @@ public class IPMessagingClientListenerInternal {
 	
 	private static final Logger logger = Logger.getLogger(IPMessagingClientListenerInternal.class);
 	private IPMessagingClientListener listener;
+	private TwilioIPMessagingClientImpl ipmClient;
 	
 
-	public IPMessagingClientListenerInternal(IPMessagingClientListener listener) {
+	public IPMessagingClientListenerInternal(TwilioIPMessagingClientImpl client, IPMessagingClientListener listener) {
 		this.listener = listener;
+		this.ipmClient = client;
 	}
 
 	public void onMessageAdd(final Message message) {
 		logger.d("Entered onMessageAdd");
 		if(message != null) {
 			String cSid = message.getChannelSid();
-			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleIncomingMessage((MessageImpl) message);
 			}
@@ -44,7 +46,7 @@ public class IPMessagingClientListenerInternal {
 		logger.d("Entered onMemberJoin");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleOnMemberJoin(member);
 			}
@@ -55,7 +57,7 @@ public class IPMessagingClientListenerInternal {
 		logger.d("Entered onMemberChange");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleOnMemberChange(member);
 			}
@@ -67,7 +69,7 @@ public class IPMessagingClientListenerInternal {
 		logger.d("Entered onMemberDelete");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleOnMemberDelete(member);
 			}
@@ -80,24 +82,24 @@ public class IPMessagingClientListenerInternal {
 	}
 
 	public void onChannelAdd(ChannelImpl channel) {
-		TwilioIPMessagingClientImpl.getInstance().handleChannelAddEvent(channel);
+		this.ipmClient.handleChannelAddEvent(channel);
 	}
 	
 	public void onChannelInvite(Channel channel) {
 		logger.d("Entered onChannelInvite");
-		TwilioIPMessagingClientImpl.getInstance().handleIncomingInvite(channel);		
+		this.ipmClient.handleIncomingInvite(channel);		
 	}
 
 	
 	public void onChannelChange(ChannelImpl channel) {
 		logger.d("Entered onChannelChange");
-		TwilioIPMessagingClientImpl.getInstance().handleChannelChanged(channel);	
+		this.ipmClient.handleChannelChanged(channel);	
 	}
 
 
 	public void onChannelDelete(ChannelImpl  channel) {
-		logger.d("Entered onChannelChange");
-		TwilioIPMessagingClientImpl.getInstance().handleChannelDeleted(channel);
+		logger.d("Entered onChannelDelete");
+		this.ipmClient.handleChannelDeleted(channel);
 	}
 
 
@@ -109,7 +111,7 @@ public class IPMessagingClientListenerInternal {
 	
 	public void onAttributesChange(String attribute) {
 		logger.d("Entered onChannelChange");
-		TwilioIPMessagingClientImpl.getInstance().handleChannelAttributeChange(attribute);
+		this.ipmClient.handleChannelAttributeChange(attribute);
 	}
 	
 	
@@ -117,7 +119,7 @@ public class IPMessagingClientListenerInternal {
 		logger.d("Entered onTypingStarted");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleOnTypingStarted(member);
 			}
@@ -128,7 +130,7 @@ public class IPMessagingClientListenerInternal {
 		logger.d("Entered onTypingEnded");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) TwilioIPMessagingClientImpl.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleOnTypingEnded(member);
 			}
