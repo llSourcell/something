@@ -26,8 +26,8 @@
 
 
 #define TAG  "IPMessagingClient(native)"
-#define PRODUCTION 0
-#define STAGE 1
+#define PRODUCTION 1
+#define STAGE 0
 #define DEV 0
 #define WITH_SSL 1
 

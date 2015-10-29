@@ -21,9 +21,9 @@ public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 	public  boolean DevEnvV2 = false; 
 	//PROD TDL
-	//private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC96ccc904753b3364f24211e8d9746a93&auth_token=647e1a16c9e5285b4188ca36e4aca150&service_sid=IS2f100be24f76492abdc40352aa22e367&identity=";
+	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC96ccc904753b3364f24211e8d9746a93&auth_token=647e1a16c9e5285b4188ca36e4aca150&service_sid=IS2f100be24f76492abdc40352aa22e367&identity=";
 	//STAGE TDL
-	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC018d3c27feceaee897b3a8494c0140e1&auth_token=932bc154071289a4938b54fd77e05ae4&service_sid=ISe7e7ee18b69b4b29919dbc3a448269d4&identity=";
+	//private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC018d3c27feceaee897b3a8494c0140e1&auth_token=932bc154071289a4938b54fd77e05ae4&service_sid=ISe7e7ee18b69b4b29919dbc3a448269d4&identity=";
 	//STAGE kumkum
 	//private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC6641b263fc8b4f5b3789bd7dc5821f36&auth_token=ad0c505ba447949c68c8d82da9a60161&service_sid=IS254427d0c166405db8f04b0381adadaa&identity=";
 	//STAGE randy
