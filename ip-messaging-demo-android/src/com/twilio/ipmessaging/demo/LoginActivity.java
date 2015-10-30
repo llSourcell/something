@@ -1,7 +1,5 @@
 package com.twilio.ipmessaging.demo;
 
-import java.net.URLEncoder;
-
 import com.twilio.example.R;
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 
@@ -21,10 +19,10 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
-
-	private static final String AUTH_PHP_SCRIPT= "http://your.server/token";
-	private static final String DEFAULT_CLIENT_NAME = "UserName";
 	
+	private static final String AUTH_PHP_SCRIPT = "http://your.server/token";
+	private static final String DEFAULT_CLIENT_NAME = "UserName";
+				     
 	private ProgressDialog progressDialog;
 	private Button login;
 	private Button logout;
@@ -47,26 +45,24 @@ public class LoginActivity extends Activity implements LoginListener {
 		this.login.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String idChosen = clientNameTextBox.getText().toString();
-				String endpointIdFull = idChosen + "-" + LoginActivity.this.endpoint_id + "-android-"
-						+ getApplication().getPackageName();
 				StringBuilder url = new StringBuilder();
 				url.append(AUTH_PHP_SCRIPT);
-				url.append("?identity=");
-				url.append(URLEncoder.encode(idChosen));
-				url.append("&endpointId=" + URLEncoder.encode(endpointIdFull));
+				url.append(clientNameTextBox.getText().toString());
+				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
 				logger.e("url string : " + url.toString());
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
 		});
-	        this.logout = (Button) findViewById(R.id.logout);
-	        this.logout.setOnClickListener(new View.OnClickListener() {
-	            @Override
-	            public void onClick(View v) {
-	                chatClient.cleanupTest();
-	            }
-	        });
-	        chatClient = TwilioApplication.get().getBasicClient();
+
+		this.logout = (Button) findViewById(R.id.logout);
+		this.logout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				chatClient.cleanupTest();
+			}
+		});
+
+		chatClient = TwilioApplication.get().getBasicClient();
 	}
 
 	@Override
@@ -134,6 +130,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	@Override
 	public void onLogoutFinished() {
 		// TODO Auto-generated method stub
+
 	}
 
 }
