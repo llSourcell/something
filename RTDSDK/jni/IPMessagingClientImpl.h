@@ -31,6 +31,22 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    updateToken
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_updateToken
+  (JNIEnv *, jobject, jstring, jlong);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    shutDownNative
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_shutDownNative
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

@@ -81,6 +81,12 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		case R.id.action_create_private:
 			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
 			break;
+		case R.id.action_logout:
+			if(this.basicClient != null & this.basicClient.getIpMessagingClient() != null) {
+				this.basicClient.getIpMessagingClient().shutdown();
+				finish();
+			}
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

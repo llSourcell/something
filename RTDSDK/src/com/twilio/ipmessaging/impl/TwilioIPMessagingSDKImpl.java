@@ -33,7 +33,7 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 	}
 	
 	private static final Logger logger = Logger.getLogger(TwilioIPMessagingSDKImpl.class);
-	private static final String TWILIO_IPMESSAGING_SERVICE_NAME = "com.twilio.ipmessaging.TwilioIpMessagingClientService";
+	private static final String TWILIO_IPMESSAGING_SERVICE_NAME = "com.twilio.ipmessaging.TwilioIPMessagingClientService";
 	
 	private static final String[] requiredPermissions = {
 			"android.permission.INTERNET",
@@ -159,7 +159,7 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 				// we must never die!
 				context.startService(service);
 				twBinder = (TwilioBinder)binder;
-				TwilioIPMessagingSDKImpl twilioIpMessagingClient = twBinder.getTwiloIPMessagingClient();
+				TwilioIPMessagingSDKImpl twilioIpMessagingClient = twBinder.getTwiloIPMessagingSDKImpl();
 				if (twilioIpMessagingClient != null &&inListener!= null)
 				{
 					inListener.onInitialized();

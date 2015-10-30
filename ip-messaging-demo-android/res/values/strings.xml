@@ -22,7 +22,9 @@
     <string name="title_add_member">Add member</string>
     <string name="title_remove_member">Remove member</string>
     <string name="type_message">Type message</string>
-     <string name="OK">OK</string>
+    <string name="OK">OK</string>
+    <string name="Create_public_channel">Create public channel</string>
+    <string name="Create_private_channel">Create private channel</string>
     
 
 </resources>

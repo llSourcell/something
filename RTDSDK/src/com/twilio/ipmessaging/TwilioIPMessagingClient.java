@@ -44,4 +44,10 @@ public interface TwilioIPMessagingClient {
 	 * 
 	*/
 	public void setIncomingIntent(PendingIntent inIntent);
+	
+	/**
+	 * Cleanly shut down the messaging subsystem when you are done with it. 
+	 * 
+	 */
+	public void shutdown();
 }

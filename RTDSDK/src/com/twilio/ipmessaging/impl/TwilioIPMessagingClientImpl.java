@@ -8,7 +8,6 @@ import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
-import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.Channel.ChannelType;
 
 import android.app.PendingIntent;
@@ -20,7 +19,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
 	private static final Logger logger = Logger.getLogger(TwilioIPMessagingClientImpl.class);
 	
-	private static Context context;	
+	private Context context;	
 	private String identity;
 	private IPMessagingClientListener ipMessagingListener;
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
@@ -30,13 +29,12 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	protected final  Map<String, ChannelImpl> privateChannelList = new HashMap<String,ChannelImpl>();
 
 		
-	public TwilioIPMessagingClientImpl(Context context2, String token,
-			IPMessagingClientListener inListener) {
+	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {
 		this.context = context2;
 		this.ipMessagingListener = inListener;		
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
 		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal);
-		long status = createMessagingClient(token, this.nativeClientParamContextHandle);
+		createMessagingClient(token, this.nativeClientParamContextHandle);
 	}
 
 
@@ -56,8 +54,11 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 
 	@Override
 	public void updateToken(String accessToken) {
-		// TODO Auto-generated method stub
-		
+		if(accessToken != null) {
+			synchronized(this) {
+				this.updateToken(accessToken, this.nativeClientParamContextHandle);
+			}
+		}
 	}
 
 	@Override
@@ -71,7 +72,15 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		return null;
 	}
 	
-	public static Context getContext() {
+	@Override
+	public void shutdown() {
+		synchronized(this) {
+			this.shutDownNative(this.nativeClientParamContextHandle);
+		}
+		
+	}
+	
+	public Context getContext() {
 		return context;
 	}
 	
@@ -135,5 +144,6 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
-
+	private native void updateToken(String token, long nativeClientParam);
+	private native void shutDownNative(long nativeClientParam);
 }

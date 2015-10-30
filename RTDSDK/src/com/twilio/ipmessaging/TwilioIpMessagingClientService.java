@@ -19,9 +19,9 @@ public class TwilioIPMessagingClientService extends Service
 	
 	public class TwilioBinder extends Binder
 	{
-		public TwilioIPMessagingSDKImpl getTwiloIPMessagingClient()
+		public TwilioIPMessagingSDKImpl getTwiloIPMessagingSDKImpl()
 		{
-			return serviceImpl.getTwilioIPMessagingClient();
+			return serviceImpl.getTwilioIPMessagingSDKImpl();
 		}
 	}
 	
