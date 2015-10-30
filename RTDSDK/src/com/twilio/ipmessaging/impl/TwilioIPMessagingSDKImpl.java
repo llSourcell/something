@@ -9,10 +9,10 @@ import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.IPMessagingClientListener;
-import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
-import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.Constants.InitListener;
+import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
 import com.twilio.ipmessaging.Constants;
 
 import android.app.PendingIntent;
