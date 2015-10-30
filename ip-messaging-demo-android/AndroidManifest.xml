@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.twilio.example"
-    android:versionCode="13"
+    android:versionCode="14"
     android:versionName="1.1" >
      <uses-sdk
         android:minSdkVersion="19"
@@ -35,7 +35,7 @@
         </activity>
         
         <service
-            android:name="com.twilio.ipmessaging.TwilioIpMessagingClientService"
+            android:name="com.twilio.ipmessaging.TwilioIPMessagingClientService"
             android:exported="false" />
     </application>
 

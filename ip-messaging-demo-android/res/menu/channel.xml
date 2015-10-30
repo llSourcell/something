@@ -5,14 +5,21 @@
     <item
         android:id="@+id/action_create_public"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="Create public channel"
+        android:showAsAction="ifRoom"
+        android:title="@string/Create_public_channel"
         android:icon="@drawable/ic_action_content_add"/>
     <item
         android:id="@+id/action_create_private"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="Create private channel"
+        android:showAsAction="ifRoom"
+        android:title="@string/Create_private_channel"
         android:icon="@drawable/ic_action_content_add"/>
+    
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/logout"
+        android:icon="@drawable/ic_action_settings"/>
 
 </menu>

@@ -5,7 +5,6 @@ import java.util.Map;
 /**
  * Interface to report channel operations such as member join/leave and add/delete/update messages. 
  * 
- * @author kbagchi
  *
  */
 

@@ -10,11 +10,6 @@ public interface Constants {
 	/**
 	 * Key into an Intent's extras data that points to a {@link Message} object.
 	 */
-	public static final String EXTRA_MESSAGE = "com.twilio.ipmessaging.Message";
-	
-	/**
-	 * Key into an Intent's extras data that points to a {@link Message} object.
-	 */
 	public static final String EXTRA_ACTION = "channel.action";
 	
 	/**
@@ -25,7 +20,7 @@ public interface Constants {
 
 	/**
 	 * Interface for the listener object to pass to
-	 * {@link TwilioIPMessagingClient#initialize(Context, InitListener)}.
+	 * {@link TwilioIPMessagingSDK#initialize(Context, InitListener)}.
 	 */
 	public interface InitListener {
 		/**

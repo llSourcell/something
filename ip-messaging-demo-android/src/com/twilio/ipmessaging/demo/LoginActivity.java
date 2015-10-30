@@ -62,7 +62,6 @@ public class LoginActivity extends Activity implements LoginListener {
 				url.append(clientNameTextBox.getText().toString());
 				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
 				logger.e("url string : " + url.toString());
-				//new GetCapabilityTokenAsyncTask().execute(url.toString());
 				if(DevEnvV2) {
 					LoginActivity.this.chatClient.doLogin(devEnvToken, LoginActivity.this);
 				} else {
@@ -79,7 +78,7 @@ public class LoginActivity extends Activity implements LoginListener {
 			}
 		});
 
-		chatClient = TwilioApplication.get().getRtdJni();
+		chatClient = TwilioApplication.get().getBasicClient();
 	}
 
 	@Override
@@ -128,8 +127,7 @@ public class LoginActivity extends Activity implements LoginListener {
 
 	@Override
 	public void onLoginStarted() {
-		// TODO Auto-generated method stub
-
+		logger.d("Log in started");
 	}
 
 	@Override

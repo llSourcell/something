@@ -47,7 +47,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	//private static final int DESTROY = 1;
 
 	private ListView listView;
-	private BasicIPMessagingClient rtdJni;
+	private BasicIPMessagingClient basicClient;
 	private List<Channel> channels = new ArrayList<Channel>();
 	private EasyAdapter<Channel> adapter;
 	private AlertDialog createChannelDialog;
@@ -62,7 +62,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_channel);
-		rtdJni = TwilioApplication.get().getRtdJni();
+		basicClient = TwilioApplication.get().getBasicClient();
 		setupListView();
 	}
 
@@ -80,6 +80,12 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			break;
 		case R.id.action_create_private:
 			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
+			break;
+		case R.id.action_logout:
+			if(this.basicClient != null & this.basicClient.getIpMessagingClient() != null) {
+				this.basicClient.getIpMessagingClient().shutdown();
+				finish();
+			}
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -123,7 +129,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
 						logger.e(channelName);
-						Channels channelsLocal= rtdJni.getIpMessagingClient().getChannels();
+						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
 				            @Override
@@ -206,7 +212,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private void getChannels(String channelId) {
 		if (this.channels != null) {
 			//this.channels.clear();
-			channelsObject= rtdJni.getIpMessagingClient().getChannels();
+			channelsObject= basicClient.getIpMessagingClient().getChannels();
 			channelsObject.loadChannelsWithListener(new StatusListener() {
 
 				@Override

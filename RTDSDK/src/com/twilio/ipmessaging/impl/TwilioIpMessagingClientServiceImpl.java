@@ -1,8 +1,8 @@
 package com.twilio.ipmessaging.impl;
 
 
-import com.twilio.ipmessaging.TwilioIpMessagingClientService;
-import com.twilio.ipmessaging.TwilioIpMessagingClientService.TwilioBinder;
+import com.twilio.ipmessaging.TwilioIPMessagingClientService;
+import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,10 +16,10 @@ import android.net.wifi.WifiManager;
 
 public class TwilioIpMessagingClientServiceImpl
 {
-	private static final Logger logger = Logger.getLogger(TwilioIpMessagingClientService.class);
+	private static final Logger logger = Logger.getLogger(TwilioIPMessagingClientService.class);
 	
 	private Context context;
-	private TwilioIPMessagingClientImpl twilioIPMClient;
+	private TwilioIPMessagingSDKImpl twilioIPMSDKImpl;
 	private ConnectivityReceiver connectivityReceiver;
 	
 	private class ConnectivityReceiver extends BroadcastReceiver
@@ -148,7 +148,7 @@ public class TwilioIpMessagingClientServiceImpl
 		}
 
 		this.context = context;
-		twilioIPMClient = TwilioIPMessagingClientImpl.getInstance();
+		twilioIPMSDKImpl = TwilioIPMessagingSDKImpl.getInstance();
 		connectivityReceiver = new ConnectivityReceiver();
 		IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 		context.registerReceiver(connectivityReceiver, filter);
@@ -163,7 +163,7 @@ public class TwilioIpMessagingClientServiceImpl
 	{
 		context.unregisterReceiver(connectivityReceiver);
 		connectivityReceiver = null;
-		twilioIPMClient = null;
+		twilioIPMSDKImpl = null;
 		context = null;
 	}
 	
@@ -173,8 +173,8 @@ public class TwilioIpMessagingClientServiceImpl
 		//TODO - What is this event? Do we need to handle it in twilioRtc ?
 	}
 
-	public TwilioIPMessagingClientImpl getTwilioIPMessagingClient() {
-		return this.twilioIPMClient;
+	public TwilioIPMessagingSDKImpl getTwilioIPMessagingSDKImpl() {
+		return this.twilioIPMSDKImpl;
 	}
 
 }

@@ -5,7 +5,7 @@ import android.app.Application;
 public class TwilioApplication extends Application {
 
 	private static TwilioApplication instance;
-	private BasicIPMessagingClient rtdJni;
+	private BasicIPMessagingClient basicClient;
 	
 
 	public static TwilioApplication get() {
@@ -16,10 +16,10 @@ public class TwilioApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		TwilioApplication.instance = this;
-		rtdJni = new BasicIPMessagingClient(getApplicationContext());
+		basicClient = new BasicIPMessagingClient(getApplicationContext());
 	}
 	
-	public BasicIPMessagingClient getRtdJni() {
-		return this.rtdJni;
+	public BasicIPMessagingClient getBasicClient() {
+		return this.basicClient;
 	}
 }

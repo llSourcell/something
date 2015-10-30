@@ -12,6 +12,7 @@ import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
+import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
@@ -87,25 +88,32 @@ public class MessageActivity extends Activity implements ChannelListener{
 	
 	private void createUI() {
 		setContentView(R.layout.activity_message);
-		messageListView = (ListView) findViewById(R.id.message_list_view);
 		if(getIntent() != null) {
-			BasicIPMessagingClient rtdJni = TwilioApplication.get().getRtdJni();
+			BasicIPMessagingClient basicClient = TwilioApplication.get().getBasicClient();
 			String channelSid = getIntent().getStringExtra("C_SID");
-			channel = rtdJni.getIpMessagingClient().getChannels().getChannel(channelSid);
-			channel.setListener(MessageActivity.this);
+			Channels channelsObject = basicClient.getIpMessagingClient().getChannels();
+			if(channelsObject != null) {
+				channel = channelsObject.getChannel(channelSid);
+				if(channel != null) {
+					channel.setListener(MessageActivity.this);
+					this.setTitle("Name:"+channel.getFriendlyName() + " Type:" + ((channel.getType()==ChannelType.CHANNEL_TYPE_PUBLIC)? "Public":"Private"));
+				}
+			}
 		}
 	
-		setupListView(channel);		
-		this.setTitle("Name:"+channel.getFriendlyName() + " Type:" + ((channel.getType()==ChannelType.CHANNEL_TYPE_PUBLIC)? "Public":"Private"));
-		messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-		messageListView.setStackFromBottom(true);
-		adapter.registerDataSetObserver(new DataSetObserver() {
-			@Override
-			public void onChanged() {
-				super.onChanged();
-				messageListView.setSelection(adapter.getCount() - 1);
-			}
-		});
+		setupListView(channel);	
+		messageListView = (ListView) findViewById(R.id.message_list_view);
+		if(messageListView != null) {
+			messageListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+			messageListView.setStackFromBottom(true);
+			adapter.registerDataSetObserver(new DataSetObserver() {
+				@Override
+				public void onChanged() {
+					super.onChanged();
+					messageListView.setSelection(adapter.getCount() - 1);
+				}
+			});
+		}
 		setupInput();
 	}
 
@@ -387,20 +395,22 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private void setupListView(Channel channel) {
 		messageListView = (ListView) findViewById(R.id.message_list_view);
 		Messages messagesObject = channel.getMessages();
-		Message[] messagesArray = messagesObject.getMessages();
-		if(messagesArray.length > 0 ) {
-			messages = new ArrayList<Message>(Arrays.asList(messagesArray));
-			Collections.sort(messages, new CustomMessageComparator());
+		if(messagesObject != null) {
+			Message[] messagesArray = messagesObject.getMessages();
+			if(messagesArray.length > 0 ) {
+				messages = new ArrayList<Message>(Arrays.asList(messagesArray));
+				Collections.sort(messages, new CustomMessageComparator());
+			}
+			adapter = new EasyAdapter<Message>(this, MessageViewHolder.class, messages,
+					new MessageViewHolder.OnMessageClickListener() {
+						@Override
+						public void onMessageClicked(final Channel channel) {
+							
+						}
+					});
+			messageListView.setAdapter(adapter);
+			adapter.notifyDataSetChanged(); 
 		}
-		adapter = new EasyAdapter<Message>(this, MessageViewHolder.class, messages,
-				new MessageViewHolder.OnMessageClickListener() {
-					@Override
-					public void onMessageClicked(final Channel channel) {
-						
-					}
-				});
-		messageListView.setAdapter(adapter);
-		adapter.notifyDataSetChanged(); 
 	}
 
 

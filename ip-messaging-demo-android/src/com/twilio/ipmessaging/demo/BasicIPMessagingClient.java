@@ -6,6 +6,7 @@ import java.util.List;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.Constants.InitListener;
 
 import android.app.PendingIntent;
@@ -47,12 +48,12 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
 		
-		TwilioIPMessagingClient.initializeSDK(context, new InitListener()
+		TwilioIPMessagingSDK.initializeSDK(context, new InitListener()
         {
             @Override
             public void onInitialized()
             {
-            	ipMessagingClient = TwilioIPMessagingClient.initIPMessagingClientWithToken(capabilityToken, BasicIPMessagingClient.this);
+            	ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithToken(capabilityToken, BasicIPMessagingClient.this);
             	Intent intent = new Intent(context,ChannelActivity.class);
             	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             	ipMessagingClient.setIncomingIntent(pendingIntent);

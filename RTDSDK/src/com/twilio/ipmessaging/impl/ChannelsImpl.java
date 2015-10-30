@@ -19,9 +19,11 @@ public class ChannelsImpl implements Channels {
 	private long nativeChannelsHandler;
 	private Channel[] alllObjects;
 	private Handler handler;
+	private TwilioIPMessagingClientImpl ipmClient;
 
-	public ChannelsImpl(long handler) {
+	public ChannelsImpl(TwilioIPMessagingClientImpl client, long handler) {
 		super();
+		this.ipmClient = client;
 		this.nativeChannelsHandler = handler;
 	}
 	
@@ -51,8 +53,7 @@ public class ChannelsImpl implements Channels {
 
 	@Override
 	public Channel getChannel(String channelId) {
-		
-		return TwilioIPMessagingClientImpl.publicChannelMap.get(channelId);
+		return this.ipmClient.publicChannelMap.get(channelId);
 	}
 	
 	@Override
@@ -64,19 +65,19 @@ public class ChannelsImpl implements Channels {
 		Channel[] localCopyChannelArray;
 		localCopyChannelArray =  getChannelsNative(this.nativeChannelsHandler);
 	
-		if (TwilioIPMessagingClientImpl.publicChannelMap != null) {
-			logger.d("ChannelList Size : " + TwilioIPMessagingClientImpl.publicChannelMap.size());
+		if (this.ipmClient.publicChannelMap != null) {
+			logger.d("ChannelList Size : " + this.ipmClient.publicChannelMap.size());
 		}
 
 		if(localCopyChannelArray != null ) {
 			for(int i=0; i<localCopyChannelArray.length; i++) {
 				if(localCopyChannelArray[i] != null) {
-					TwilioIPMessagingClientImpl.publicChannelMap.put(localCopyChannelArray[i].getSid(), (ChannelImpl) localCopyChannelArray[i]);
+					this.ipmClient.publicChannelMap.put(localCopyChannelArray[i].getSid(), (ChannelImpl) localCopyChannelArray[i]);
 				}
 			}
 		}
 				
-		List<ChannelImpl> list = new ArrayList<ChannelImpl>(TwilioIPMessagingClientImpl.privateChannelList.values());
+		List<ChannelImpl> list = new ArrayList<ChannelImpl>(this.ipmClient.privateChannelList.values());
 		if(list != null && list.size() > 0) {
 			ChannelImpl[] privateChannel = list.toArray(new ChannelImpl[list.size()]);
 			int publicChannelArrayLength = localCopyChannelArray.length;
@@ -93,7 +94,6 @@ public class ChannelsImpl implements Channels {
 	
 	@Override
 	public void loadChannelsWithListener(StatusListener listener) {
-		//getChannels1();
 		setupListenerHandler();
 		new GetChannelsTask(listener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
@@ -112,13 +112,7 @@ public class ChannelsImpl implements Channels {
 			handler = null;
 		}
 	}
-
-	
-	private native void createChannelNative(String friendlyName, int type, long nativeChannelsContext);
-	private native void createChannelNativeWithListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener);
-	private native ChannelImpl getChannelNative(String channelId, long handle);
-	private native ChannelImpl[] getChannelsNative(long handle);
-	
+		
 	private class GetChannelsTask extends AsyncTask<Void, Void, Void> {
 		StatusListener listener;
 		
@@ -150,5 +144,11 @@ public class ChannelsImpl implements Channels {
 		}
 
 	}
+	
+	private native void createChannelNative(String friendlyName, int type, long nativeChannelsContext);
+	private native void createChannelNativeWithListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener);
+	private native ChannelImpl getChannelNative(String channelId, long handle);
+	private native ChannelImpl[] getChannelsNative(long handle);
+
 
 }

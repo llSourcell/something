@@ -5,10 +5,12 @@
 #include "ITMessage.h"
 #include "ITMMembers.h"
 #include "ITMMember.h"
+#include <Twilsock/ITNTwilsockClient.h>
 
 #include "TwilioIPMessagingConfigurationProvider.h"
 #include "TwilioIPMessagingNotificationClientListener.h"
 #include "TwilioIPMessagingClientListener.h"
+
 
 #define LOGD(tag, fmt, ...)  _tw_jni_log_printer(__func__, __LINE__, TW_LOG_LEVEL_DEBUG, tag, fmt, ##__VA_ARGS__)
 //#define LOGD(...) ((void)__android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__))
@@ -24,6 +26,7 @@ typedef struct IPMessagingClientContext {
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver;
 	std::shared_ptr<TwilioIPMessagingConfigurationProvider> configurationProvider;
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
+	ITNTwilsockClientPtr twilsock;
 	ITNNotificationClientPtr notificationClient;
 	ITMClientPtr messagingClient;
 	ITMChannelsPtr channels;
