@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging.demo;
 
+import java.net.URLEncoder;
+
 import com.twilio.example.R;
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 
@@ -45,10 +47,14 @@ public class LoginActivity extends Activity implements LoginListener {
 		this.login.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				String idChosen = clientNameTextBox.getText().toString();
+				String endpointIdFull = idChosen + "-" + LoginActivity.this.endpoint_id + "-android-"
+						+ getApplication().getPackageName();
 				StringBuilder url = new StringBuilder();
 				url.append(AUTH_PHP_SCRIPT);
-				url.append(clientNameTextBox.getText().toString());
-				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
+				url.append("?identity=");
+				url.append(URLEncoder.encode(idChosen));
+				url.append("&endpointId=" + URLEncoder.encode(endpointIdFull));
 				logger.e("url string : " + url.toString());
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
