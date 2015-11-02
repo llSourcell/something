@@ -206,7 +206,11 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 	}
 
 	public TwilioIPMessagingClientImpl createClientWithToken(String token, IPMessagingClientListener listener) {
-		return  new TwilioIPMessagingClientImpl(context, token, listener);	
+		if(token != null) {
+			return  new TwilioIPMessagingClientImpl(context, token, listener);	
+		} else {
+			return null;
+		}
 	}	
 	
 	private native void create();	

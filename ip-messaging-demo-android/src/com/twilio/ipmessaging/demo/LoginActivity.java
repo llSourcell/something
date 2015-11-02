@@ -21,10 +21,9 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
-	
-	private static final String AUTH_PHP_SCRIPT = "http://your.server/token";
-	private static final String DEFAULT_CLIENT_NAME = "UserName";
-				     
+	public  boolean DevEnvV2 = false; 
+	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
+	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
 	private Button login;
 	private Button logout;
@@ -48,13 +47,15 @@ public class LoginActivity extends Activity implements LoginListener {
 			@Override
 			public void onClick(View v) {
 				String idChosen = clientNameTextBox.getText().toString();
-				String endpointIdFull = idChosen + "-" + LoginActivity.this.endpoint_id + "-android-"
-						+ getApplication().getPackageName();
+				String endpointIdFull = idChosen + "-" + LoginActivity.this.endpoint_id + "-android-"+ getApplication().getPackageName();
+
 				StringBuilder url = new StringBuilder();
 				url.append(AUTH_PHP_SCRIPT);
-				url.append("?identity=");
+				url.append("&identity=");
 				url.append(URLEncoder.encode(idChosen));
 				url.append("&endpointId=" + URLEncoder.encode(endpointIdFull));
+				url.append(clientNameTextBox.getText().toString());
+				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
 				logger.e("url string : " + url.toString());
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
@@ -130,7 +131,8 @@ public class LoginActivity extends Activity implements LoginListener {
 	@Override
 	public void onLoginError(String errorMessage) {
 		LoginActivity.this.progressDialog.dismiss();
-		Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_SHORT).show();
+		logger.e("Error logging in : " + errorMessage);
+		Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
 	}
 
 	@Override

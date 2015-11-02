@@ -211,30 +211,32 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	
 	private void getChannels(String channelId) {
 		if (this.channels != null) {
-			//this.channels.clear();
+			//this.channels.clear();			
 			channelsObject= basicClient.getIpMessagingClient().getChannels();
-			channelsObject.loadChannelsWithListener(new StatusListener() {
-
-				@Override
-				public void onError(Exception error) {
-					
-				}
-
-				@Override
-				public void onSuccess() {
-					if(channels != null) {
-						channels.clear();
+			if(channelsObject != null) {
+				channelsObject.loadChannelsWithListener(new StatusListener() {
+	
+					@Override
+					public void onError(Exception error) {
+						
 					}
-					if (channelsObject != null) {
-						channelArray = channelsObject.getChannels();
-						setupListenersForChannel(channelArray);
-						ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-						Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
-						adapter.notifyDataSetChanged();
+	
+					@Override
+					public void onSuccess() {
+						if(channels != null) {
+							channels.clear();
+						}
+						if (channelsObject != null) {
+							channelArray = channelsObject.getChannels();
+							setupListenersForChannel(channelArray);
+							ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+							Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+							adapter.notifyDataSetChanged();
+						}
 					}
-				}
-      			
-      		});	     	
+	      			
+	      		});	     	
+			}
 		}
 	}
 
