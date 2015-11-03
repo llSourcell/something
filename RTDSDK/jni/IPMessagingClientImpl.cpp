@@ -198,7 +198,6 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
 	jobject channels = nullptr;
 
 	LOGW(TAG,"Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative : Checking nativeClientContext.");
-
 	if (nativeClientContext == 0) {
 			LOGW(TAG,"client context is null");
 			return 0;
