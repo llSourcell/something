@@ -146,7 +146,7 @@ function build_library {
 
 function copy_javadocs {
     # javadocs
-    docdest="${tarroot}/javadoc"
+    docdest="${tarroot}/docs"
     mkdir "${docdest}"
 
     for f in $JAVADOC_SOURCE_FILES; do

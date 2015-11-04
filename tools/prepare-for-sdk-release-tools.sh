@@ -24,7 +24,7 @@ PUBLIC_VERSION="$2"
 # paths
 WORKSPACE_ROOT_DIR=`pwd`
 PACKAGE_DIR="$WORKSPACE_ROOT_DIR/output"
-DOCS_DIR="$PACKAGE_DIR/twilio-ip-messaging-android/javadoc"
+DOCS_DIR="$PACKAGE_DIR/twilio-ip-messaging-android/docs"
 # The path should look like this: /Package/sdk/rtc/ios/conversations/releases/0.8.3.b54-deadbee/twilio-rtc-conversations.tar.bz2
 #/sdk/rtc/android/ip-messaging/releases/0.1.0.b41-15663c0/docs
 PLATFORM_NAME="android"
@@ -60,7 +60,7 @@ if [ ! -d "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}" ]; then
 mkdir -p "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}"
 fi
 mkdir -p "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}/docs"
-cp "${DOCS_DIR}/." "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}/docs/"
+mv "${DOCS_DIR}" "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}"
 cp "${PACKAGE_DIR}/${CI_TARBALL_NAME}" "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}/$ARTIFACT_NAME"
 
 
