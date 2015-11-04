@@ -40,15 +40,17 @@ exit 1
 fi
 
 # move the tarball and docs folder to the release directory
-#if [ ! -d "$DOCS_DIR" ]; then
-#	echo "Error: Couldn't find \"docs\" folder"
-#	exit 1
-#fi
+if [ ! -d "$DOCS_DIR" ]; then
+	echo "Error: Couldn't find \"docs\" folder"
+	exit 1
+fi
+
 echo "${PACKAGE_DIR}/${CI_TARBALL_NAME}"
 if [ ! -f "$PACKAGE_DIR/$CI_TARBALL_NAME" ]; then
 echo "Error: Couldn't find the tarball"
 exit 1
 fi
+
 echo $RELEASE_VERSION_PATH
 if [ -z "${RELEASE_VERSION_PATH}" ] || [ -z "${RELEASE_VERSION}" ]; then
 echo "Error: incorrect path variables"
@@ -58,7 +60,7 @@ if [ ! -d "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}" ]; then
 mkdir -p "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}"
 fi
 mkdir -p "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}/docs"
-#mv "${DOCS_DIR}" "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}"
+mv "${DOCS_DIR}" "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}"
 cp "${PACKAGE_DIR}/${CI_TARBALL_NAME}" "${RELEASE_VERSION_PATH}/${RELEASE_VERSION}/$ARTIFACT_NAME"
 
 
