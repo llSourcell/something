@@ -8,6 +8,9 @@ echo "CI_TARBALL_NAME not specified. Using \"package.tar.bz2\" as artifact filen
 CI_TARBALL_NAME=package.tar.bz2
 fi
 
+echo $echo "${CI_TARBALL_NAME}"
+
+
 # reading the arguments
 if [ "$#" -ne 2 ]; then
 echo "Error: Expecting 2 arguments: release-version and public-version"
