@@ -503,7 +503,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 			TextView typingIndc = (TextView) findViewById(R.id.typingIndicator);
 			String text = member.getIdentity() + " started typing .....";
 			typingIndc.setText(text);
-			typingIndc.setTextColor(Color.LTGRAY);
+			typingIndc.setTextColor(Color.RED);
 			logger.d(text);
 		}
 	}
