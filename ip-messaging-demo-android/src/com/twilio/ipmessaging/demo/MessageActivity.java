@@ -11,6 +11,7 @@ import java.util.Map;
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
@@ -170,14 +171,36 @@ public class MessageActivity extends Activity implements ChannelListener{
 				} else if(which == ADD_MEMBER) {
 					showAddMemberDialog();
 				} else if (which == LEAVE) {
-					channel.leave();
-					finish();
+					channel.leave(new StatusListener() {
+            			
+    					@Override
+    					public void onError(Exception error) {
+    						
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						finish();
+    					}
+    	      		});	     	
+					
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
 				} else if (which == CHANNEL_TYPE) {
 					showChangeChannelType();
 				}   else if (which == CHANNEL_DESTROY) {
-					channel.destroy();
+					channel.destroy(new StatusListener() {
+            			
+    					@Override
+    					public void onError(Exception error) {
+    						
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						finish();
+    					}
+    	      		});	     	
 				}  
 			}
 		});
@@ -199,7 +222,17 @@ public class MessageActivity extends Activity implements ChannelListener{
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
-						channel.setFriendlyName(friendlyName);
+						channel.setFriendlyName(friendlyName, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError(Exception error) {
+	    						
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -226,7 +259,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(topic);
 						Map<String,String> attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
-						channel.setAttributes(attrMap);
+						channel.setAttributes(attrMap, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError(Exception error) {
+	    						
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						finish();
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -330,12 +374,32 @@ public class MessageActivity extends Activity implements ChannelListener{
 				case 0:
 					// PUBLIC
 					logger.e("Setting channel type to public");
-					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC);
+					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC, new StatusListener() {
+            			
+    					@Override
+    					public void onError(Exception error) {
+    						
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    					}
+    	      		});	     	
 					break;
 				case 1:
 					// PRIVATE
 					logger.e("Setting channel type to private");
-					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE);
+					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE, new StatusListener() {
+            			
+    					@Override
+    					public void onError(Exception error) {
+    						
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    					}
+    	      		});	     	
 					break;
 				}
 				changeChannelTypeDialog.dismiss();

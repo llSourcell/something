@@ -133,17 +133,29 @@ public class ChannelActivity extends Activity implements ChannelListener {
 						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
 				            @Override
-				            public void onCreated(Channel newChannel)
+				            public void onCreated(final Channel newChannel)
 				            {
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
 				            		newChannel.setListener(ChannelActivity.this);
 				            		logger.e("channel Type is : " + type.toString());
-				            		newChannel.join();
-				            		Messages messagesObject = newChannel.getMessages();
-				        			Message message = messagesObject.createMessage("Test Message");
-				        			messagesObject.sendMessage(message);
+				            		newChannel.join(new StatusListener() {
+				            			
+				    					@Override
+				    					public void onError(Exception error) {
+				    						
+				    					}
+				    	
+				    					@Override
+				    					public void onSuccess() {
+				    						Messages messagesObject = newChannel.getMessages();
+						        			Message message = messagesObject.createMessage("Test Message");
+						        			messagesObject.sendMessage(message);
+				    					}
+				    	      			
+				    	      		});	     	
+				            		
 				            		runOnUiThread(new Runnable() {
 				            	        @Override
 				            	        public void run() {
@@ -198,7 +210,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == JOIN) {
 									dialog.cancel();
-									channel.join();
+									channel.join(new StatusListener() {
+				            			
+				    					@Override
+				    					public void onError(Exception error) {
+				    						
+				    					}
+				    	
+				    					@Override
+				    					public void onSuccess() {
+				    						
+				    					}
+				    	      			
+				    	      		});	     	
 								} 
 							}
 						});
@@ -276,7 +300,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                            	channel.join();
+                            	channel.join(new StatusListener() {
+			            			
+			    					@Override
+			    					public void onError(Exception error) {
+			    						
+			    					}
+			    	
+			    					@Override
+			    					public void onSuccess() {
+			    						
+			    					}
+			    	      			
+			    	      		});	     	
                                 incoingChannelInvite = null;
                             }
                         })
@@ -285,7 +321,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                               channel.declineInvitation();
+                               channel.declineInvitation(new StatusListener() {
+			            			
+			    					@Override
+			    					public void onError(Exception error) {
+			    						
+			    					}
+			    	
+			    					@Override
+			    					public void onSuccess() {
+			    						
+			    					}
+			    	      			
+			    	      		});	     	
                                incoingChannelInvite = null;
                             }
                         })

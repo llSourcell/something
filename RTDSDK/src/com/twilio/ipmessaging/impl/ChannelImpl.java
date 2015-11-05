@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Messages;
@@ -147,7 +148,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public void setAttributes(Map<String, String> updatedAttributes) {
+	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener) {
 		if(updatedAttributes != null) {
 			JSONObject jsonObj = new JSONObject(updatedAttributes);
 			if(jsonObj != null) { 
@@ -157,7 +158,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public void setFriendlyName(String friendlyName) {
+	public void setFriendlyName(String friendlyName, StatusListener listener) {
 		if (friendlyName != null && this.getSid() != null) {
 			synchronized(this) {
 				updateChannelName(this.nativeChannelContextHandle, this.getSid(), friendlyName);
@@ -166,7 +167,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 	
 	@Override
-	public void setType(ChannelType type) {
+	public void setType(ChannelType type, StatusListener listener) {
 		int channelType = 0;
 		switch (type) {
 		case CHANNEL_TYPE_PUBLIC:
@@ -182,7 +183,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public void join() {
+	public void join(StatusListener listener) {
 		logger.d("channelimpl join called");
 		if (this.getSid() != null) {
 			synchronized (this) {
@@ -192,7 +193,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public void leave() {
+	public void leave(StatusListener listener) {
 		logger.d("channelimpl leave called");
 	//	long nativeClientHandle = TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
 		if (this.getSid() != null) {
@@ -203,7 +204,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public void destroy() {
+	public void destroy(StatusListener listener) {
 		logger.d("channelimpl destroy called");
 		if(this.getSid() != null) {
 			synchronized(this) {
@@ -213,7 +214,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 	
 	@Override
-	public void declineInvitation() {
+	public void declineInvitation(StatusListener listener) {
 		logger.d("channelimpl decline called");
 		if(this.getSid() != null) {
 			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid());
@@ -375,16 +376,19 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	
-	private native Messages getMessagesObject(long nativeChannelContextHandle, String channel_sid);
-	private native int getStatus(long nativeChannelContextHandle, String channel_sid);   
+		
 	private native void joinChannel(long nativeChannelContextHandle, String channel_sid);
 	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid);
 	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid);
+	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
+	
 	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name);
 	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType);
-	private native Members getMembers(long nativeChannelContextHandle, String channel_sid);
 	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap);
-	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
+	
+	private native Messages getMessagesObject(long nativeChannelContextHandle, String channel_sid);
+	private native int getStatus(long nativeChannelContextHandle, String channel_sid);   
+	private native Members getMembers(long nativeChannelContextHandle, String channel_sid);
 	private native String getChannelSidNative(long nativeChannelContextHandle);
 	private native void typingStartNative(long nativeChannelContextHandle);
 	private native String getChannelAttributesNative(long nativeChannelContextHandle);
