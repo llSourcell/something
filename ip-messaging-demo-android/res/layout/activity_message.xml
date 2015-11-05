@@ -11,9 +11,18 @@
         android:id="@+id/message_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/listFooter"
+        android:layout_above="@+id/typingIndicator"
         android:layout_alignParentTop="true"
         android:transcriptMode="alwaysScroll" />
+  
+    <TextView
+        android:id="@+id/typingIndicator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/listFooter"
+        android:layout_alignRight="@+id/message_list_view"
+        android:lines="1"
+        android:singleLine="true" />
 
     <LinearLayout
         android:id="@+id/listFooter"

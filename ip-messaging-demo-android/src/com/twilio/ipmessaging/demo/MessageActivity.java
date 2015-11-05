@@ -17,6 +17,7 @@ import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
+import com.twilio.ipmessaging.impl.Logger;
 import com.twilio.ipmessaging.Constants;
 
 import android.app.Activity;
@@ -24,6 +25,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -66,6 +68,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
     private AlertDialog changeChannelTypeDialog;
+    private Toast typingToast;
 	
 	
 	@Override
@@ -352,17 +355,17 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				//channel.typing();
 			}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				//channel.typing();
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				//channel.typing();
+				if(channel != null ) {
+					channel.typing();
+				}
 			}
 		   
 		}); 
@@ -493,16 +496,23 @@ public class MessageActivity extends Activity implements ChannelListener{
 		toast.show(); 
 	}
 
+
 	@Override
 	public void onTypingStarted(Member member){
 		if(member != null) {
-			logger.d(member.getIdentity() + " started typing");
+			TextView typingIndc = (TextView) findViewById(R.id.typingIndicator);
+			String text = member.getIdentity() + " started typing .....";
+			typingIndc.setText(text);
+			typingIndc.setTextColor(Color.LTGRAY);
+			logger.d(text);
 		}
 	}
 	
 	@Override
 	public void onTypingEnded(Member member) {
 		if(member != null) {
+			TextView typingIndc = (TextView) findViewById(R.id.typingIndicator);
+			typingIndc.setText(null);
 			logger.d(member.getIdentity() + " ended typing");
 		}
 	}
