@@ -20,6 +20,52 @@
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    joinChannel
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
+(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jobject listener) {
+
+	LOGW(TAG,"joinChannel Entered ");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "joinChannel Entered ");
+	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
+
+	if(channelContext != nullptr) {
+		jobject j_statusListener_ = env->NewGlobalRef(listener);
+		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+
+		ITMChannelPtr channel = channelContext->channel;
+		if(channel != nullptr) {
+			LOGD(TAG, "Joining channel with sid : %s ", nativeString);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
+			channel->join([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+				JNIEnvAttacher jniAttacher;
+				if (result == rtd::TMResult::kTMResultSuccess) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel is successful");
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel failed");
+
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				}
+			});
+		} else {
+			__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
+		}
+	}
+	jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+	env->ReleaseStringUTFChars(channel_sid, nativeString);
+}
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
  * Method:    getMembers
  * Signature: (JLjava/lang/String;)Lcom/twilio/ipmessaging/Members;
  */
@@ -117,7 +163,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMessag
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChannel
-(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid) {
+(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jobject listener) {
 	LOGD(TAG,"destroyChannel: Entered ");
 	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
@@ -150,7 +196,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
-(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid) {
+(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jobject listener) {
 
 	LOGD(TAG,"leaveChannel Entered ");
 	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
@@ -171,37 +217,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
 	env->ReleaseStringUTFChars(channel_sid, nativeString);
 }
 
-/*
- * Class:     com_twilio_ipmessaging_impl_ChannelImpl
- * Method:    joinChannel
- * Signature: (JLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
-(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid) {
-
-	LOGW(TAG,"joinChannel Entered ");
-	__android_log_print(ANDROID_LOG_INFO, TAG, "joinChannel Entered ");
-	const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
-	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
-
-	if(channelContext != nullptr) {
-		ITMChannelPtr channel = channelContext->channel;
-		if(channel != nullptr) {
-			LOGD(TAG, "Joining channel with sid : %s ", nativeString);
-			__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
-			channel->join([](TMResult result){
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel is successful");
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel failed");
-				}
-			});
-		} else {
-			__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
-		}
-	}
-	env->ReleaseStringUTFChars(channel_sid, nativeString);
-}
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -235,17 +250,13 @@ JNIEXPORT jint JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus
 	env->ReleaseStringUTFChars(channel_sid, nativeString);
 }
 
-
-
-
-
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
  * Method:    updateChannelName
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelName
-  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring modifiedChannelName) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring modifiedChannelName, jobject listener) {
 
 	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
 	const char *nativeNameString = env->GetStringUTFChars(modifiedChannelName, JNI_FALSE);
@@ -276,7 +287,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelType
-  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, int type) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, int type, jobject listener) {
 
 	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
@@ -318,7 +329,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelAttributes
-  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring attrString) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring attrString, jobject listener) {
 
 	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
 	const char *nativeAttrString = env->GetStringUTFChars(attrString, JNI_FALSE);
@@ -348,7 +359,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChannelInvite
-(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid) {
+(JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jobject listener) {
 
 	LOGW(TAG,"declineChannelInvite app: Entered ");
 

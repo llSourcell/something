@@ -152,7 +152,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		if(updatedAttributes != null) {
 			JSONObject jsonObj = new JSONObject(updatedAttributes);
 			if(jsonObj != null) { 
-				this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString());
+				this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString(), listener);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void setFriendlyName(String friendlyName, StatusListener listener) {
 		if (friendlyName != null && this.getSid() != null) {
 			synchronized(this) {
-				updateChannelName(this.nativeChannelContextHandle, this.getSid(), friendlyName);
+				updateChannelName(this.nativeChannelContextHandle, this.getSid(), friendlyName, listener);
 			}
 		}
 	}
@@ -178,7 +178,7 @@ public class ChannelImpl implements Channel, Parcelable{
 			break;
 		}
 		synchronized(this) {
-			updateChannelType(this.nativeChannelContextHandle, this.getSid(), channelType);
+			updateChannelType(this.nativeChannelContextHandle, this.getSid(), channelType, listener);
 		}
 	}
 
@@ -187,7 +187,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		logger.d("channelimpl join called");
 		if (this.getSid() != null) {
 			synchronized (this) {
-				this.joinChannel(this.nativeChannelContextHandle, this.getSid());
+				this.joinChannel(this.nativeChannelContextHandle, this.getSid(), listener);
 			}
 		}
 	}
@@ -198,7 +198,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	//	long nativeClientHandle = TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
 		if (this.getSid() != null) {
 			synchronized (this) {
-				this.leaveChannel(this.nativeChannelContextHandle, this.getSid());
+				this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), listener);
 			}
 		}
 	}
@@ -208,7 +208,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		logger.d("channelimpl destroy called");
 		if(this.getSid() != null) {
 			synchronized(this) {
-				destroyChannel(this.nativeChannelContextHandle, this.getSid());
+				destroyChannel(this.nativeChannelContextHandle, this.getSid(), listener);
 			}
 		}
 	}
@@ -217,7 +217,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void declineInvitation(StatusListener listener) {
 		logger.d("channelimpl decline called");
 		if(this.getSid() != null) {
-			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid());
+			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), listener);
 		}
 	}
 
@@ -377,14 +377,23 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	
 		
-	private native void joinChannel(long nativeChannelContextHandle, String channel_sid);
+	/*private native void joinChannel(long nativeChannelContextHandle, String channel_sid);
 	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid);
 	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid);
 	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
 	
 	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name);
 	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType);
-	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap);
+	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap);*/
+	
+	private native void joinChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
+	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
+	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
+	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
+	
+	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name, StatusListener listener);
+	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType, StatusListener listener);
+	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap, StatusListener listener);
 	
 	private native Messages getMessagesObject(long nativeChannelContextHandle, String channel_sid);
 	private native int getStatus(long nativeChannelContextHandle, String channel_sid);   
