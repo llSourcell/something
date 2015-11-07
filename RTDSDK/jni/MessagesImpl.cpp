@@ -235,19 +235,33 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessageNative
-  (JNIEnv *env, jobject obj, jobject messageObj) {
+  (JNIEnv *env, jobject obj, jobject messageObj, jobject listener) {
 
 	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
 	if(messages != nullptr) {
+		jobject j_statusListener_ = env->NewGlobalRef(listener);
+		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
 		if(message != nullptr) {
-			 messages->send(message, [](TMResult result) {
-				   if (result == rtd::TMResult::kTMResultSuccess) {
-							__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully sent message.");
-				   } else {
-							__android_log_print(ANDROID_LOG_INFO, TAG, "Failed to send message.");
-					}
+			messages->send(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+				JNIEnvAttacher jniAttacher;
+				if (result == rtd::TMResult::kTMResultSuccess) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Sent message is successful. Calling java listener.");
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Sent message failed");
+
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				}
 			});
+		} else {
+			__android_log_print(ANDROID_LOG_INFO, TAG, "Sent message DeleteGlobalRef.");
+			env->DeleteGlobalRef(j_statusListener_);
 		}
 	}
 }
@@ -258,13 +272,33 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessageNative
-  (JNIEnv *env, jobject obj, jobject messageObj) {
+  (JNIEnv *env, jobject obj, jobject messageObj, jobject listener) {
 
 	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
 	if(messages != nullptr) {
+		jobject j_statusListener_ = env->NewGlobalRef(listener);
+		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+
 		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
 		if(message != nullptr) {
-			 messages->remove(message, [](TMResult result) {LOGD(TAG,"Messages remove command processed");});
+			 messages->remove(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+				JNIEnvAttacher jniAttacher;
+				if (result == rtd::TMResult::kTMResultSuccess) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Remove message is successful. Calling java listener.");
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Remove message failed");
+
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				}
+			});
+		} else {
+			env->DeleteGlobalRef(j_statusListener_);
 		}
 	}
 }

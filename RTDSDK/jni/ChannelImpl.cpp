@@ -298,6 +298,8 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
 				}
 			});
+		} else {
+			env->DeleteGlobalRef(j_statusListener_);
 		}
 	}
 	env->ReleaseStringUTFChars(channel_sid, nativeSidString);
@@ -342,6 +344,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 				}
 			});
 		} else {
+			env->DeleteGlobalRef(j_statusListener_);
 			LOGW(TAG,"declineChannelInvite ELEMENT NOT found");
 		}
 	}

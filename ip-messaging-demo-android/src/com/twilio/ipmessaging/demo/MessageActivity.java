@@ -199,7 +199,7 @@ public class MessageActivity extends Activity implements ChannelListener{
     	
     					@Override
     					public void onSuccess() {
-    						logger.e("Successfil at destroying channel");
+    						logger.e("Successful at destroying channel");
     						finish();
     					}
     	      		});	     	
@@ -381,12 +381,12 @@ public class MessageActivity extends Activity implements ChannelListener{
             			
     					@Override
     					public void onError() {
-    						logger.e("Error public channel name update");
+    						logger.e("Error public channel Type update");
     					}
     	
     					@Override
     					public void onSuccess() {
-    						logger.e("Successfull at public channel name update");
+    						logger.e("Successfull at public channel Type update");
     					}
     	      		});	     	
 					break;
@@ -493,7 +493,19 @@ public class MessageActivity extends Activity implements ChannelListener{
 			
 			Messages messagesObject = this.channel.getMessages();
 			Message message = messagesObject.createMessage(input);
-			messagesObject.sendMessage(message);
+			messagesObject.sendMessage(message, new StatusListener() {
+    			
+				@Override
+				public void onError() {
+					logger.e("Error sending message.");
+				}
+
+				@Override
+				public void onSuccess() {
+					logger.e("Successful at sending message.");
+					finish();
+				}
+      		});	     	
 			messages.add(message);
 			adapter.notifyDataSetChanged();
 			inputText.setText("");

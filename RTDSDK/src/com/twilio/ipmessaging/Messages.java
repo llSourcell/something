@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging;
 
+import com.twilio.ipmessaging.Constants.StatusListener;
+
 /**
  * Representation of an IP Messaging channel's message list.
  * 
@@ -19,8 +21,9 @@ public interface Messages
 	 * Sends a message to the channel.
 	 * 
 	 * @param message	The message to send.
+	 * @param listener  Status listener to report result of the operation.
 	 */
-	public void sendMessage(Message message);
+	public void sendMessage(Message message, StatusListener listener);
 	
 	/**
 	 * Returns messages received so far from backend, messages are loaded asynchronously so this may 
