@@ -174,12 +174,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 					channel.leave(new StatusListener() {
             			
     					@Override
-    					public void onError(Exception error) {
-    						
+    					public void onError() {
+    						logger.e("Error leaving channel");
     					}
     	
     					@Override
     					public void onSuccess() {
+    						logger.e("Successful at leaving channel");
     						finish();
     					}
     	      		});	     	
@@ -192,12 +193,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 					channel.destroy(new StatusListener() {
             			
     					@Override
-    					public void onError(Exception error) {
-    						
+    					public void onError() {
+    						logger.e("Error destroying channel");
     					}
     	
     					@Override
     					public void onSuccess() {
+    						logger.e("Successfil at destroying channel");
     						finish();
     					}
     	      		});	     	
@@ -225,12 +227,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 						channel.setFriendlyName(friendlyName, new StatusListener() {
 	            			
 	    					@Override
-	    					public void onError(Exception error) {
-	    						
+	    					public void onError() {
+	    						logger.e("Error changing name");
 	    					}
 	    	
 	    					@Override
 	    					public void onSuccess() {
+	    						logger.e("successfully changed name");
 	    					}
 	    	      		});	     	
 					}
@@ -262,13 +265,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 						channel.setAttributes(attrMap, new StatusListener() {
 	            			
 	    					@Override
-	    					public void onError(Exception error) {
-	    						
+	    					public void onError() {
+	    						logger.e("Error at channel setAttributes");
 	    					}
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						finish();
+	    						logger.e("Success at channel setAttributes");
 	    					}
 	    	      		});	     	
 					}
@@ -377,12 +380,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC, new StatusListener() {
             			
     					@Override
-    					public void onError(Exception error) {
-    						
+    					public void onError() {
+    						logger.e("Error public channel name update");
     					}
     	
     					@Override
     					public void onSuccess() {
+    						logger.e("Successfull at public channel name update");
     					}
     	      		});	     	
 					break;
@@ -392,12 +396,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE, new StatusListener() {
             			
     					@Override
-    					public void onError(Exception error) {
-    						
+    					public void onError() {
+    						logger.e("Failed at private channel name update");
     					}
     	
     					@Override
     					public void onSuccess() {
+    						logger.e("Successfull at private channel name update");
     					}
     	      		});	     	
 					break;

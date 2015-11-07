@@ -183,41 +183,41 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
-	public void join(StatusListener listener) {
+	public void join(StatusListener statusListener) {
 		logger.d("channelimpl join called");
 		if (this.getSid() != null) {
 			synchronized (this) {
-				this.joinChannel(this.nativeChannelContextHandle, this.getSid(), listener);
+				this.joinChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
 			}
 		}
 	}
 
 	@Override
-	public void leave(StatusListener listener) {
+	public void leave(StatusListener statusListener) {
 		logger.d("channelimpl leave called");
 	//	long nativeClientHandle = TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
 		if (this.getSid() != null) {
 			synchronized (this) {
-				this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), listener);
+				this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
 			}
 		}
 	}
 
 	@Override
-	public void destroy(StatusListener listener) {
+	public void destroy(StatusListener statusListener) {
 		logger.d("channelimpl destroy called");
 		if(this.getSid() != null) {
 			synchronized(this) {
-				destroyChannel(this.nativeChannelContextHandle, this.getSid(), listener);
+				destroyChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
 			}
 		}
 	}
 	
 	@Override
-	public void declineInvitation(StatusListener listener) {
+	public void declineInvitation(StatusListener statusListener) {
 		logger.d("channelimpl decline called");
 		if(this.getSid() != null) {
-			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), listener);
+			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), statusListener);
 		}
 	}
 
@@ -277,11 +277,12 @@ public class ChannelImpl implements Channel, Parcelable{
     };
     
 	private long getNativeClientContextHandle() {
-		return this.nativeChannelContextHandle;//TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
+		return this.nativeChannelContextHandle;
 	}
     
    
 	public void handleIncomingMessage(final MessageImpl message) {
+		logger.d("Kumkum +  setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
 		if (handler != null) {
 			handler.post(new Runnable() {
 				@Override
@@ -307,6 +308,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		} else {
 			handler = null;
 		}
+		logger.d("Kumkum +  setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler);
 	}
 
 	public void handleOnMemberJoin(final Member member) {

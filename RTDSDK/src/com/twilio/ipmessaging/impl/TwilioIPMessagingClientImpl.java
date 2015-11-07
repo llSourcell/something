@@ -25,8 +25,8 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
 	private long nativeClientParamContextHandle;
 	private PendingIntent incomingIntent;
-	protected final  Map<String, ChannelImpl> publicChannelMap = new HashMap<String, ChannelImpl>();
-	protected final  Map<String, ChannelImpl> privateChannelList = new HashMap<String,ChannelImpl>();
+	protected final Map<String, ChannelImpl> publicChannelMap = new HashMap<String, ChannelImpl>();
+	protected final Map<String, ChannelImpl> privateChannelList = new HashMap<String,ChannelImpl>();
 
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {

@@ -23,9 +23,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 	public  boolean DevEnvV2 = false; 
 	
-	//test with shared instance 
-    private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC96ccc904753b3364f24211e8d9746a93&auth_token=647e1a16c9e5285b4188ca36e4aca150&service_sid=IS388ffb847f314e289175d682cc24cd72&identity=";
-	
+	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC522a45bc9300658950cebbac64f2bf78&auth_token=3e9b9f7d914c4b8e1e59ff29331d86df&service_sid=ISf24591d8f4a84fc7b0c99dff0ee3124b&identity=";	
 	//private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
 	
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";

@@ -22,6 +22,7 @@ import com.twilio.ipmessaging.Constants.StatusListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	
 	private static final Handler handler = new Handler();
 	private AlertDialog incoingChannelInvite;
+	private ProgressDialog progressDialog;
 
 	
 	@Override
@@ -143,15 +145,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            		newChannel.join(new StatusListener() {
 				            			
 				    					@Override
-				    					public void onError(Exception error) {
-				    						
+				    					public void onError() {
+				    						logger.e("failed to join channel");
 				    					}
 				    	
 				    					@Override
 				    					public void onSuccess() {
-				    						Messages messagesObject = newChannel.getMessages();
-						        			Message message = messagesObject.createMessage("Test Message");
-						        			messagesObject.sendMessage(message);
+				    						runOnUiThread(new Runnable() {
+						            	        @Override
+						            	        public void run() {
+						            	        	adapter.notifyDataSetChanged();
+						            	        }
+						            	    });
+				    						logger.d("Successfully joined channel");
 				    					}
 				    	      			
 				    	      		});	     	
@@ -213,13 +219,19 @@ public class ChannelActivity extends Activity implements ChannelListener {
 									channel.join(new StatusListener() {
 				            			
 				    					@Override
-				    					public void onError(Exception error) {
-				    						
+				    					public void onError() {
+				    						logger.e("failed to join channel");
 				    					}
 				    	
 				    					@Override
 				    					public void onSuccess() {
-				    						
+				    						runOnUiThread(new Runnable() {
+						            	        @Override
+						            	        public void run() {
+						            	        	adapter.notifyDataSetChanged();
+						            	        }
+						            	    });
+				    						logger.e("Successfully joined channel");
 				    					}
 				    	      			
 				    	      		});	     	
@@ -238,15 +250,17 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			//this.channels.clear();			
 			channelsObject= basicClient.getIpMessagingClient().getChannels();
 			if(channelsObject != null) {
+				
 				channelsObject.loadChannelsWithListener(new StatusListener() {
 	
 					@Override
-					public void onError(Exception error) {
-						
+					public void onError() {
+						logger.e("Failed to loadChannelsWithListener");
 					}
 	
 					@Override
 					public void onSuccess() {
+						logger.e("Successfully loadChannelsWithListener.");
 						if(channels != null) {
 							channels.clear();
 						}
@@ -258,7 +272,6 @@ public class ChannelActivity extends Activity implements ChannelListener {
 							adapter.notifyDataSetChanged();
 						}
 					}
-	      			
 	      		});	     	
 			}
 		}
@@ -303,15 +316,20 @@ public class ChannelActivity extends Activity implements ChannelListener {
                             	channel.join(new StatusListener() {
 			            			
 			    					@Override
-			    					public void onError(Exception error) {
-			    						
+			    					public void onError() {
+			    						logger.d("Failed to join channel");
 			    					}
-			    	
+			    					
 			    					@Override
 			    					public void onSuccess() {
-			    						
+			    						runOnUiThread(new Runnable() {
+					            	        @Override
+					            	        public void run() {
+					            	        	adapter.notifyDataSetChanged();
+					            	        }
+					            	    });
+			    						logger.d("Successfully joined channel");
 			    					}
-			    	      			
 			    	      		});	     	
                                 incoingChannelInvite = null;
                             }
@@ -324,13 +342,13 @@ public class ChannelActivity extends Activity implements ChannelListener {
                                channel.declineInvitation(new StatusListener() {
 			            			
 			    					@Override
-			    					public void onError(Exception error) {
-			    						
+			    					public void onError() {
+			    						logger.d("Failed to decline channel invite");
 			    					}
 			    	
 			    					@Override
 			    					public void onSuccess() {
-			    						
+			    						logger.e("Successfully to declined channel invite");
 			    					}
 			    	      			
 			    	      		});	     	
