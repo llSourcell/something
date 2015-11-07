@@ -300,7 +300,19 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(memberName);
 						
 						Members membersObject = channel.getMembers();
-						membersObject.inviteByIdentity(memberName);
+						membersObject.inviteByIdentity(memberName, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error inviteByIdentity");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at inviteByidentityl");
+	    						finish();
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -327,7 +339,19 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(memberName);
 						
 						Members membersObject = channel.getMembers();
-						membersObject.addByIdentity(memberName);
+						membersObject.addByIdentity(memberName, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error addByIdentity");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at addByIdentity");
+	    						finish();
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -355,7 +379,19 @@ public class MessageActivity extends Activity implements ChannelListener{
 				new MemberViewHolder.OnMemberClickListener() {
 					@Override
 					public void onMemberClicked(Member member) {
-						membersObject.removeMember(member);
+						membersObject.removeMember(member, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error at removeMember operation");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at removeMember operation");
+	    						finish();
+	    					}
+	    	      		});	     	
 						memberListDialog.dismiss();
 					}
 				});

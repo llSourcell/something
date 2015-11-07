@@ -76,7 +76,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getM
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
-  (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext) {
+  (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext, jobject listener) {
 
 	LOGD(TAG, "invite : Entered.");
 
@@ -117,7 +117,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
  * Signature: (Lcom/twilio/ipmessaging/Member;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
-  (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext) {
+  (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext, jobject listener) {
 
 	LOGD(TAG,"add member : Entered.");
 	const char *nativeString = env->GetStringUTFChars(memberIdentity, JNI_FALSE);
@@ -149,7 +149,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
  * Signature: (Lcom/twilio/ipmessaging/Member;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
-  (JNIEnv *env, jobject obj, jlong nativeMemberContext, jlong nativeMembersContext) {
+  (JNIEnv *env, jobject obj, jlong nativeMemberContext, jlong nativeMembersContext, jobject listener) {
 
 	LOGD(TAG,"Remove member : Entered.");
 
