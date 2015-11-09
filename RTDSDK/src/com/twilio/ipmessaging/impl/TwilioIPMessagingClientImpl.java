@@ -1,14 +1,14 @@
 package com.twilio.ipmessaging.impl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
-import com.twilio.ipmessaging.Channel.ChannelType;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -25,8 +25,8 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
 	private long nativeClientParamContextHandle;
 	private PendingIntent incomingIntent;
-	protected final  Map<String, ChannelImpl> publicChannelMap = new HashMap<String, ChannelImpl>();
-	protected final  Map<String, ChannelImpl> privateChannelList = new HashMap<String,ChannelImpl>();
+	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
+	protected final Map<String, ChannelImpl> privateChannelList = new ConcurrentHashMap<String,ChannelImpl>();
 
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {

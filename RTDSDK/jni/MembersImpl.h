@@ -21,7 +21,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getM
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
-  (JNIEnv *, jobject, jstring, jlong);
+  (JNIEnv *, jobject, jstring, jlong, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_MembersImpl
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
  * Signature: Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
-  (JNIEnv *, jobject, jstring, jlong);
+  (JNIEnv *, jobject, jstring, jlong, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_MembersImpl
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
  * Signature: (Lcom/twilio/ipmessaging/Member;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
-  (JNIEnv *, jobject, jlong, jlong);
+  (JNIEnv *, jobject, jlong, jlong, jobject);
 
 #ifdef __cplusplus
 }

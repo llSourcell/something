@@ -49,12 +49,10 @@ public interface Constants {
 		public void onCreated(Channel newChannel);
 
 		/**
-		 * Called if there is an error creating a channel.
+		 * Method to report back create channel failure.
 		 * 
-		 * @param error
-		 *            An exception describing the error that occurred
 		 */
-		public void onError(Exception error);
+		public void onError();
 	}
 
 	
@@ -64,17 +62,15 @@ public interface Constants {
 	 
 	public interface StatusListener {
 		/**
-		 * Callback to report success status of an asynchronous call to the backend.
+		 * Callback to report success status of an asynchronous call to the back end.
 		 * 
 		 */
 		public void onSuccess();
 
 		/**
-		 * Callback to report error status of an asynchronous call to the backend.
+		 * Callback to report error status of an asynchronous call to the back end.
 		 * 
-		 * @param error
-		 *            An exception describing the error that occurred
 		 */
-		public void onError(Exception error);
+		public void onError();
 	}
 }
