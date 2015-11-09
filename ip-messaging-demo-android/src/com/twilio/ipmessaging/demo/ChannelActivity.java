@@ -137,6 +137,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            @Override
 				            public void onCreated(final Channel newChannel)
 				            {
+				            	logger.e("Successfully created a channel");
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
@@ -172,7 +173,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            }
 
 				            @Override
-				            public void onError(Exception error)
+				            public void onError()
 				            {
 				               
 				            }
@@ -247,32 +248,31 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	
 	private void getChannels(String channelId) {
 		if (this.channels != null) {
-			//this.channels.clear();			
+			if(basicClient != null && basicClient.getIpMessagingClient() != null) {
 			channelsObject= basicClient.getIpMessagingClient().getChannels();
-			if(channelsObject != null) {
-				
-				channelsObject.loadChannelsWithListener(new StatusListener() {
-	
-					@Override
-					public void onError() {
-						logger.e("Failed to loadChannelsWithListener");
-					}
-	
-					@Override
-					public void onSuccess() {
-						logger.e("Successfully loadChannelsWithListener.");
-						if(channels != null) {
-							channels.clear();
+				if(channelsObject != null) {
+					channelsObject.loadChannelsWithListener(new StatusListener() {
+						@Override
+						public void onError() {
+							logger.e("Failed to loadChannelsWithListener");
 						}
-						if (channelsObject != null) {
-							channelArray = channelsObject.getChannels();
-							setupListenersForChannel(channelArray);
-							ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-							Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
-							adapter.notifyDataSetChanged();
+		
+						@Override
+						public void onSuccess() {
+							logger.e("Successfully loadChannelsWithListener.");
+							if(channels != null) {
+								channels.clear();
+							}
+							if (channelsObject != null) {
+								channelArray = channelsObject.getChannels();
+								setupListenersForChannel(channelArray);
+								ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+								Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+								adapter.notifyDataSetChanged();
+							}
 						}
-					}
-	      		});	     	
+		      		});	     	
+				}
 			}
 		}
 	}

@@ -43,7 +43,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 		if (channelsPtr != nullptr) {
 			jobject j_createChanneListener_ = env->NewGlobalRef(listener);
 			jmethodID j_onCreated_ = tw_jni_get_method(env, j_createChanneListener_, "onCreated", "(Lcom/twilio/ipmessaging/Channel;)V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_createChanneListener_, "onError", "(Ljava/lang/Exception;)V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_createChanneListener_, "onError", "()V");
 
 			const char *nativeNameString = env->GetStringUTFChars(friendlyName, JNI_FALSE);
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();

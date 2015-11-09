@@ -282,7 +282,7 @@ public class ChannelImpl implements Channel, Parcelable{
     
    
 	public void handleIncomingMessage(final MessageImpl message) {
-		logger.d("Kumkum +  setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
+		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
 		if (handler != null) {
 			handler.post(new Runnable() {
 				@Override
@@ -308,7 +308,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		} else {
 			handler = null;
 		}
-		logger.d("Kumkum +  setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler);
+		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler);
 	}
 
 	public void handleOnMemberJoin(final Member member) {

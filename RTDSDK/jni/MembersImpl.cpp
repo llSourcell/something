@@ -14,15 +14,15 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getM
 	LOGD(TAG,"Java_com_twilio_ipmessaging_impl_MembersImpl_getMembersNative : Checking nativeMessagesContext.");
 
 	if (nativeMembersContext == 0) {
-			LOGW(TAG,"nativeMembersContext is null");
-			return nullptr;
+		LOGW(TAG,"nativeMembersContext is null");
+		return nullptr;
 	} else {
 
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
 
 		LOGD(TAG, "client context is recreated.");
 
-		if(membersContextRecreate == nullptr) {
+		if (membersContextRecreate == nullptr) {
 			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MembersImpl_getMembersNative : membersContextRecreate is NULL.");
 			return nullptr;
 		}
@@ -78,34 +78,47 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getM
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
   (JNIEnv *env, jobject obj, jstring memberIdentity, jlong nativeMembersContext, jobject listener) {
 
-	LOGD(TAG, "invite : Entered.");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "invite : Entered.");
 
 	const char *nativeString = env->GetStringUTFChars(memberIdentity, JNI_FALSE);
-	//jlong nativeMembersContext = tw_jni_fetch_long(env, obj, "nativeMembersHandler");
 
 	if (nativeMembersContext == 0) {
-		LOGD(TAG,"nativeMembersContext is null");
+		__android_log_print(ANDROID_LOG_INFO, TAG, "nativeMembersContext is null.");
 		return;
 	} else {
-
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
 		LOGD(TAG, "client context is recreated.");
+		jobject j_statusListener_ = env->NewGlobalRef(listener);
+		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+		if(membersContextRecreate != nullptr && membersContextRecreate->members != nullptr) {
 
-		if(membersContextRecreate == nullptr) {
-			LOGW(TAG,"invite : membersContextRecreate is NULL.");
-			return;
+			ITMMembersPtr members = membersContextRecreate->members;
+			ITMMemberPtr memberPtr = members->createMember(nativeString);
+			members->invite(memberPtr, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+				JNIEnvAttacher jniAttacher;
+				if (result == rtd::TMResult::kTMResultSuccess) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Invite sent successfully. Calling java listener.");
+					//Call Java
+					if(j_statusListener_) {
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Invite resulted in error.");
+					//Call Java
+					if(j_statusListener_) {
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				}
+			});
+		} else {
+			if(j_statusListener_) {
+				env->DeleteGlobalRef(j_statusListener_);
+				j_statusListener_ = NULL;
+			}
 		}
-
-		if(membersContextRecreate->members == nullptr) {
-			LOGW(TAG,"invite : ITMMembers is NULL.");
-			return;
-		}
-
-		ITMMembersPtr members = membersContextRecreate->members;
-		ITMMemberPtr memberPtr = members->createMember(nativeString);
-		members->invite(memberPtr, [](TMResult result) {LOGD(TAG,"Members invite command processed");});
-
-		LOGD(TAG,"Invite sent.");
 	}
 
 	env->ReleaseStringUTFChars(memberIdentity, nativeString);
@@ -130,14 +143,36 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
 
 		if(membersContextRecreate != nullptr) {
-			if(membersContextRecreate->members == nullptr) {
-				LOGW(TAG, "Member add : ITMMembers is NULL.");
-				return;
-			} else {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			if(membersContextRecreate->members != nullptr) {
 				ITMMembersPtr members = membersContextRecreate->members;
 				ITMMemberPtr memberPtr = members->createMember(nativeString);
-				members->add(memberPtr, [](TMResult result) {LOGD(TAG,"Members add command processed");});
-				LOGD(TAG,"add : Member added.");
+				members->add(memberPtr, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "member add was successful. Calling java listener.");
+						//Call Java
+						if(j_statusListener_ != nullptr) {
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "member add failed. Calling java listener.");
+
+						//Call Java
+						if(j_statusListener_ != nullptr) {
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					}
+				});
+			} else {
+				if(j_statusListener_ != nullptr) {
+					env->DeleteGlobalRef(j_statusListener_);
+					j_statusListener_ = nullptr;
+				}
 			}
 		}
 	}
@@ -157,27 +192,40 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
 		LOGW(TAG,"nativeMembersContext is null");
 		return;
 	} else {
-
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
-
 		if(membersContextRecreate != nullptr) {
-			if (nativeMemberContext == 0) {
-				LOGW(TAG, "nativeMemberContext is null");
-				return;
-			} else {
-				MemberContext *memberContextRecreate = reinterpret_cast<MemberContext *>(nativeMemberContext);
-				LOGD(TAG,"memberContext is recreated.");
-				if(memberContextRecreate == nullptr) {
-					LOGW(TAG,"membersContextRecreate is NULL.");
-					return;
-				}
-				if(memberContextRecreate->member == nullptr) {
-					LOGW(TAG,"ITMMembers is NULL.");
-					return;
-				}
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			MemberContext *memberContextRecreate = reinterpret_cast<MemberContext *>(nativeMemberContext);
+			LOGD(TAG,"memberContext is recreated.");
+			if(memberContextRecreate->member != nullptr) {
 				ITMMembersPtr members = membersContextRecreate->members;
 				ITMMemberPtr memberPtr = memberContextRecreate->member;
-				members->remove(memberPtr, [](TMResult result) {LOGD(TAG,"Members remove command processed");});
+				members->remove(memberPtr, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "member remove was successful. Calling java listener.");
+						//Call Java
+						if(j_statusListener_) {
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "member remove failed. Calling java listener.");
+
+						//Call Java
+						if(j_statusListener_) {
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					}
+				});
+			} else {
+				if(j_statusListener_) {
+					env->DeleteGlobalRef(j_statusListener_);
+					j_statusListener_ = NULL;
+				}
 			}
 		}
 	}

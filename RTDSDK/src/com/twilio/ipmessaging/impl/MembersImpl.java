@@ -1,8 +1,12 @@
 package com.twilio.ipmessaging.impl;
 
+import java.util.Arrays;
+
 import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
+
+import android.util.Log;
 
 public class MembersImpl implements Members{
 	
@@ -19,12 +23,34 @@ public class MembersImpl implements Members{
 	}
 
 	@Override
-	public void addByIdentity(String member, StatusListener listener) {
-		this.add(member, this.nativeMembersContextHandle, listener);
+	public void addByIdentity(String identity, StatusListener listener) {
+		Member[] memeberList = getMembers();
+		for (Member member : memeberList) {
+			if(member != null) {
+				if (member.getIdentity().compareTo(identity) == 0) {
+					if (listener != null) {
+						listener.onError();
+						return;
+					}
+				}
+			}
+		}
+		this.add(identity, this.nativeMembersContextHandle, listener);
 	}
 
 	@Override
 	public void inviteByIdentity(String identity, StatusListener listener) {
+		Member[] memeberList = getMembers();
+		for (Member member : memeberList) {
+			if(member != null) {
+				if (member.getIdentity().compareTo(identity) == 0) {
+					if (listener != null) {
+						listener.onError();
+						return;
+					}
+				}
+			}
+		}
 		this.invite(identity, this.nativeMembersContextHandle, listener);
 	}
 
