@@ -1,7 +1,12 @@
 package com.twilio.ipmessaging.impl;
 
+import java.util.Arrays;
+
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
+
+import android.util.Log;
 
 public class MembersImpl implements Members{
 	
@@ -18,27 +23,49 @@ public class MembersImpl implements Members{
 	}
 
 	@Override
-	public void addByIdentity(String member) {
-		this.add(member, this.nativeMembersContextHandle);
+	public void addByIdentity(String identity, StatusListener listener) {
+		Member[] memeberList = getMembers();
+		for (Member member : memeberList) {
+			if(member != null) {
+				if (member.getIdentity().compareTo(identity) == 0) {
+					if (listener != null) {
+						listener.onError();
+						return;
+					}
+				}
+			}
+		}
+		this.add(identity, this.nativeMembersContextHandle, listener);
 	}
 
 	@Override
-	public void inviteByIdentity(String identity) {
-		this.invite(identity, this.nativeMembersContextHandle);
+	public void inviteByIdentity(String identity, StatusListener listener) {
+		Member[] memeberList = getMembers();
+		for (Member member : memeberList) {
+			if(member != null) {
+				if (member.getIdentity().compareTo(identity) == 0) {
+					if (listener != null) {
+						listener.onError();
+						return;
+					}
+				}
+			}
+		}
+		this.invite(identity, this.nativeMembersContextHandle, listener);
 	}
 
 	@Override
-	public void removeMember(Member member) {
+	public void removeMember(Member member, StatusListener listener) {
 		long nativeMemberContextHandle = ((MemberImpl)member).getNativeMemberHandler();
 		if(member != null) {
-			remove(nativeMemberContextHandle, this.nativeMembersContextHandle);
+			remove(nativeMemberContextHandle, this.nativeMembersContextHandle, listener);
 		}
 		
 	}
 	
 	private native Member[] getMembersNative(long nativeMembersHandle);
-	private native void invite(String member, long nativeMembersHandle);
-	private native void add(String member, long nativeMembersHandle);
-	private native void remove(long nativeMemberHandle, long nativeMembersHandle);
+	private native void invite(String member, long nativeMembersHandle, StatusListener listener);
+	private native void add(String member, long nativeMembersHandle, StatusListener listener);
+	private native void remove(long nativeMemberHandle, long nativeMembersHandle, StatusListener listener);
 
 }

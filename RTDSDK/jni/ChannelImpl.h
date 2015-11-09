@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -37,7 +37,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jobject);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    declineChannelInvite
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChannelInvite
+  (JNIEnv *, jobject, jlong, jstring, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -45,7 +53,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
  * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChannel
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -53,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelName
-  (JNIEnv *, jobject, jlong, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jobject);
 
 
 /*
@@ -62,7 +70,16 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelType
-(JNIEnv *, jobject, jlong, jstring, int type);
+(JNIEnv *, jobject, jlong, jstring, int type, jobject);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    updateChannelAttributes
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelAttributes
+  (JNIEnv *, jobject, jlong, jstring, jstring, jobject);
+
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -72,22 +89,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMembers
   (JNIEnv *, jobject, jlong, jstring);
 
-/*
- * Class:     com_twilio_ipmessaging_impl_ChannelImpl
- * Method:    updateChannelAttributes
- * Signature: (JLjava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelAttributes
-  (JNIEnv *, jobject, jlong, jstring, jstring);
-
-
-/*
- * Class:     com_twilio_ipmessaging_impl_ChannelImpl
- * Method:    declineChannelInvite
- * Signature: (JLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChannelInvite
-  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl

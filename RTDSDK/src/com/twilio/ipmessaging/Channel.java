@@ -2,6 +2,8 @@ package com.twilio.ipmessaging;
 
 import java.util.Map;
 
+import com.twilio.ipmessaging.Constants.StatusListener;
+
 
 /**
  *  Container for channel object.
@@ -101,44 +103,44 @@ public interface Channel {
 	 * 
 	 * @param updatedAttributes
 	 */
-	public void setAttributes(Map<String, String> updatedAttributes);
+	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener);
 	
 	/**
 	 * Updates the friendly name for this channel.
 	 * 
 	 * @param friendlyName updated friendly name.
 	 */
-	public void setFriendlyName(String friendlyName);
+	public void setFriendlyName(String friendlyName, StatusListener listener);
 	
 	/**
 	 * Updates the channel type for this channel.
 	 * 
 	 * @param type updated channel type.
 	 */
-	public void setType(ChannelType type);
+	public void setType(ChannelType type, StatusListener listener);
 	
 	/**
 	 * Joins the current user to the channel.
 	 * 
 	 */
-	public void join();
+	public void join(StatusListener listener);
 	
 	/**
 	 * Leaves the current channel.
 	 */
-	public void leave();
+	public void leave(StatusListener listener);
 	
 	/**
 	 * Destroys the current channel.
 	 * 
 	 */
-	public void destroy();	
+	public void destroy(StatusListener listener);	
 
 	/**
 	 * Declines an invite on this channel.
 	 * 
 	 */
-	public void declineInvitation();
+	public void declineInvitation(StatusListener listener);
 	
 	/**
 	 * Called when Member starts typing on this channel.

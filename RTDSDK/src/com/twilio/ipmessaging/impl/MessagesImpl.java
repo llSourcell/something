@@ -3,6 +3,7 @@ package com.twilio.ipmessaging.impl;
 import java.nio.charset.Charset;
 import java.util.Formatter;
 
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
 
@@ -27,8 +28,8 @@ public class MessagesImpl implements Messages , Parcelable{
 	}
 
 	@Override
-	public void sendMessage(Message message) {
-		sendMessageNative(message);
+	public void sendMessage(Message message, StatusListener listener) {
+		sendMessageNative(message, listener);
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class MessagesImpl implements Messages , Parcelable{
 	
 	private native Message createMessageNative(String message);
 	private native Message createMessageNativeBuffer(byte[] message);
-	private native void sendMessageNative(Message message);
+	private native void sendMessageNative(Message message, StatusListener listener);
 	private native void removeMessageNative(Message message);
 	private native Message[] getMessagesNative(long handle);
 

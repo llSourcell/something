@@ -11,6 +11,7 @@ import java.util.Map;
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
@@ -170,14 +171,38 @@ public class MessageActivity extends Activity implements ChannelListener{
 				} else if(which == ADD_MEMBER) {
 					showAddMemberDialog();
 				} else if (which == LEAVE) {
-					channel.leave();
-					finish();
+					channel.leave(new StatusListener() {
+            			
+    					@Override
+    					public void onError() {
+    						logger.e("Error leaving channel");
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						logger.e("Successful at leaving channel");
+    						finish();
+    					}
+    	      		});	     	
+					
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
 				} else if (which == CHANNEL_TYPE) {
 					showChangeChannelType();
 				}   else if (which == CHANNEL_DESTROY) {
-					channel.destroy();
+					channel.destroy(new StatusListener() {
+            			
+    					@Override
+    					public void onError() {
+    						logger.e("Error destroying channel");
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						logger.e("Successful at destroying channel");
+    						finish();
+    					}
+    	      		});	     	
 				}  
 			}
 		});
@@ -199,7 +224,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
-						channel.setFriendlyName(friendlyName);
+						channel.setFriendlyName(friendlyName, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error changing name");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("successfully changed name");
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -226,7 +262,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(topic);
 						Map<String,String> attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
-						channel.setAttributes(attrMap);
+						channel.setAttributes(attrMap, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error at channel setAttributes");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Success at channel setAttributes");
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -253,7 +300,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(memberName);
 						
 						Members membersObject = channel.getMembers();
-						membersObject.inviteByIdentity(memberName);
+						membersObject.inviteByIdentity(memberName, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error inviteByIdentity");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at inviteByidentityl");
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -280,7 +338,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(memberName);
 						
 						Members membersObject = channel.getMembers();
-						membersObject.addByIdentity(memberName);
+						membersObject.addByIdentity(memberName, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error addByIdentity");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at addByIdentity");
+	    					}
+	    	      		});	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -308,7 +377,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 				new MemberViewHolder.OnMemberClickListener() {
 					@Override
 					public void onMemberClicked(Member member) {
-						membersObject.removeMember(member);
+						membersObject.removeMember(member, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error at removeMember operation");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at removeMember operation");
+	    					}
+	    	      		});	     	
 						memberListDialog.dismiss();
 					}
 				});
@@ -330,12 +410,34 @@ public class MessageActivity extends Activity implements ChannelListener{
 				case 0:
 					// PUBLIC
 					logger.e("Setting channel type to public");
-					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC);
+					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC, new StatusListener() {
+            			
+    					@Override
+    					public void onError() {
+    						logger.e("Error public channel Type update");
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						logger.e("Successfull at public channel Type update");
+    					}
+    	      		});	     	
 					break;
 				case 1:
 					// PRIVATE
 					logger.e("Setting channel type to private");
-					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE);
+					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE, new StatusListener() {
+            			
+    					@Override
+    					public void onError() {
+    						logger.e("Failed at private channel Type update");
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						logger.e("Successfull at private channel Type update");
+    					}
+    	      		});	     	
 					break;
 				}
 				changeChannelTypeDialog.dismiss();
@@ -424,7 +526,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 			
 			Messages messagesObject = this.channel.getMessages();
 			Message message = messagesObject.createMessage(input);
-			messagesObject.sendMessage(message);
+			messagesObject.sendMessage(message, new StatusListener() {
+    			
+				@Override
+				public void onError() {
+					logger.e("Error sending message.");
+				}
+
+				@Override
+				public void onSuccess() {
+					logger.e("Successful at sending message.");
+				}
+      		});	     	
 			messages.add(message);
 			adapter.notifyDataSetChanged();
 			inputText.setText("");
