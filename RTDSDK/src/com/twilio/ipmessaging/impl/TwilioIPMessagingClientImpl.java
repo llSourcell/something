@@ -109,6 +109,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
 					privateChannelList.put(channel.getSid(),channel);
 				} 
+				logger.d("*****Adding channle cid" +channel.getSid() + " hashCode is: " + channel.hashCode());
 				publicChannelMap.put(channel.getSid(), channel);
 			}
 			this.ipMessagingListener.onChannelAdd(channel);
@@ -117,11 +118,39 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
 	public void handleChannelChanged(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
+			ChannelImpl existingChannel;
 			if(channel != null) {
 				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
-					privateChannelList.put(channel.getSid(),channel);
-				} 
-				publicChannelMap.put(channel.getSid(), channel);
+					 existingChannel = publicChannelMap.get(channel.getSid());
+					if(existingChannel != null) {
+						logger.d("*****EXISTING Changed channle cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						existingChannel.friendlyName = channel.friendlyName;
+						existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
+						existingChannel.status = channel.status;
+						existingChannel.type = channel.type;
+						this.ipMessagingListener.onChannelChange(existingChannel);
+					} else {
+						logger.d("*****Changed channle cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						privateChannelList.put(channel.getSid(),channel);
+						publicChannelMap.put(channel.getSid(), channel);
+						this.ipMessagingListener.onChannelChange(channel);
+					}
+					
+				} else if(channel.getType() == ChannelType.CHANNEL_TYPE_PUBLIC) {
+					existingChannel = publicChannelMap.get(channel.getSid());
+					if(existingChannel != null) {
+						logger.d("*****EXISTING Changed channle cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						existingChannel.friendlyName = channel.friendlyName;
+						existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
+						existingChannel.status = channel.status;
+						existingChannel.type = channel.type;
+						this.ipMessagingListener.onChannelChange(existingChannel);
+					} else {
+						logger.d("*****Changed channle cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						publicChannelMap.put(channel.getSid(), channel);
+						this.ipMessagingListener.onChannelChange(channel);
+					}
+				}
 			}
 			this.ipMessagingListener.onChannelChange(channel);
 		}

@@ -29,7 +29,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	private String sid;
 
 	/** The friendly name for this channel. */
-	private String friendlyName;
+	protected String friendlyName;
 
 	/** The messages list object for this channel. */
 	Messages messages;
@@ -38,11 +38,11 @@ public class ChannelImpl implements Channel, Parcelable{
 	Members members;
 
 	/** The current user's status on this channel. */
-	ChannelStatus status;
+	protected ChannelStatus status;
 
 	/** The channel's visibility type. */
-	private ChannelType type;
-	private long nativeChannelContextHandle;
+	protected ChannelType type;
+	protected long nativeChannelContextHandle;
 	
 	private Handler handler;
 	
@@ -308,7 +308,7 @@ public class ChannelImpl implements Channel, Parcelable{
 		} else {
 			handler = null;
 		}
-		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler);
+		logger.d("*****setupListenerHandler for channel: " + this.getSid() + ", handler is " + handler);
 	}
 
 	public void handleOnMemberJoin(final Member member) {
