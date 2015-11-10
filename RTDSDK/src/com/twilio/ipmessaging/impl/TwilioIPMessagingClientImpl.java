@@ -152,7 +152,6 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 					}
 				}
 			}
-			this.ipMessagingListener.onChannelChange(channel);
 		}
 	}
 	

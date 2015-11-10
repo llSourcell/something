@@ -109,6 +109,7 @@ public class ChannelsImpl implements Channels {
 		} else if((looper = Looper.getMainLooper()) != null) {
 			handler = new Handler(looper);
 		} else {
+			//TODO :: throw exception
 			handler = null;
 		}
 	}
