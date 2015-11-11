@@ -14,7 +14,8 @@ Member.java
 Members.java
 Message.java
 Messages.java
-TwilioIPMessagingClient.java"
+TwilioIPMessagingClient.java
+TwilioIPMessagingSDK.java"
 TWILIO_HOWTOS="
 android-ip-messaging-demo-android"
 #TWILIO_HELPER_LIBS="
