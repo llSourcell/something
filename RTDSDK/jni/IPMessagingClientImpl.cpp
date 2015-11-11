@@ -58,7 +58,7 @@ std::map<std::string, std::string> configMap;
 
 class LogListener: public ITLLogListener {
 public :
-	void onNewEntry(const char * c, const char* prefix) {
+	void onNewEntry(const char * c, const char* prefix, TLLogLevel level) {
 		__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", c, prefix);
 	}
 

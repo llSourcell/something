@@ -15,6 +15,7 @@ import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.Constants.CreateChannelListener;
 import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -84,10 +85,12 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
 			break;
 		case R.id.action_logout:
-			if(this.basicClient != null & this.basicClient.getIpMessagingClient() != null) {
-				this.basicClient.getIpMessagingClient().shutdown();
-				finish();
-			}
+			basicClient.getIpMessagingClient().shutdown();
+			finish();
+			break;
+		case R.id.action_shutdown:
+			TwilioIPMessagingSDK.shutdown();
+			finish();
 			break;
 		}
 		return super.onOptionsItemSelected(item);

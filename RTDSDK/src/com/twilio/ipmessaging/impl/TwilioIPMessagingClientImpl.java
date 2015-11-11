@@ -1,6 +1,7 @@
 package com.twilio.ipmessaging.impl;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.twilio.ipmessaging.Channel;
@@ -27,7 +28,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private PendingIntent incomingIntent;
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
 	protected final Map<String, ChannelImpl> privateChannelList = new ConcurrentHashMap<String,ChannelImpl>();
-
+	private final UUID uuid = UUID.randomUUID();
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {
 		this.context = context2;
@@ -38,7 +39,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 
 
-	public long getNativeClientParam() {
+	protected long getNativeClientParam() {
 		return nativeClientParamContextHandle;
 	}
 	
@@ -167,6 +168,11 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		if(this.ipMessagingListener != null) {
 			this.ipMessagingListener.onAttributesChange(attribute);
 		}
+	}
+	
+	UUID getUUID()
+	{
+		return uuid;
 	}
 	
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);

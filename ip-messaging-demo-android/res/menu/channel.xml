@@ -24,6 +24,12 @@
                 android:orderInCategory="100"
                 android:showAsAction="ifRoom"
                 android:title="@string/logout"/>
+            <item
+                android:id="@+id/action_shutdown"
+                android:icon="@drawable/ic_action_settings"
+                android:orderInCategory="100"
+                android:showAsAction="ifRoom"
+                android:title="@string/shutdownlib"/>
             </menu>
     </item>
 

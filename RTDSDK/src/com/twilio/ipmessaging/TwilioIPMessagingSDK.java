@@ -12,6 +12,22 @@ import android.content.Context;
 public class TwilioIPMessagingSDK {
 	
 	/**
+	 * Determines if the Twilio IPMessaging SDK has been initialized or not.
+	 * 
+	 * If you expect your application to run in the background when the user has
+	 * switched to other applications, you will want to check the return value of
+	 * this method on startup.  The Android OS may have killed your application
+	 * due to memory pressure, but the SDK may still be running in the background.
+	 * 
+	 * @return true if the SDK is currently initialized, false otherwise
+	 *
+	 */
+	public static boolean isInitialized()
+	{
+		return TwilioIPMessagingSDKImpl.getInstance().isInitialized();
+	}
+	
+	/**
 	 * Initialize the TwilioIPMessagingSDK.
 	 * 
 	 * @param inContext
@@ -39,4 +55,19 @@ public class TwilioIPMessagingSDK {
 	public static TwilioIPMessagingClient createIPMessagingClientWithToken(String token, IPMessagingClientListener listener) {
 		return TwilioIPMessagingSDKImpl.getInstance().createClientWithToken(token, listener);
 	}
+	
+	/**
+	 * Shuts down the Twilio IPMessaging SDK.
+	 * 
+	 * This will terminate all connections, release all Device objects, and
+	 * release any resources used by the SDK.
+	 * 
+	 * Note that any attempt to access existing Device or Connection objects
+	 * after calling this method may cause an exception to be thrown, or a crash.
+	 */
+	public static void shutdown()
+	{
+		TwilioIPMessagingSDKImpl.getInstance().shutdown();
+	}
+
 }
