@@ -195,7 +195,6 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public void leave(StatusListener statusListener) {
 		logger.d("channelimpl leave called");
-	//	long nativeClientHandle = TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
 		if (this.getSid() != null) {
 			synchronized (this) {
 				this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
@@ -307,6 +306,7 @@ public class ChannelImpl implements Channel, Parcelable{
 			handler = new Handler(looper);
 		} else {
 			handler = null;
+			throw new IllegalArgumentException("Channel Listener must have a Looper.");
 		}
 		logger.d("*****setupListenerHandler for channel: " + this.getSid() + ", handler is " + handler);
 	}
@@ -376,17 +376,6 @@ public class ChannelImpl implements Channel, Parcelable{
 			});
 		}	
 	}
-
-	
-		
-	/*private native void joinChannel(long nativeChannelContextHandle, String channel_sid);
-	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid);
-	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid);
-	private native void declineChannelInvite(long nativeChannelContextHandle, String channel_sid);
-	
-	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name);
-	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType);
-	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap);*/
 	
 	private native void joinChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);

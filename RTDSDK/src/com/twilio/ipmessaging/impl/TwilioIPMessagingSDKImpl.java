@@ -1,22 +1,19 @@
 package com.twilio.ipmessaging.impl;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
-import com.twilio.ipmessaging.Channel;
-import com.twilio.ipmessaging.Channel.ChannelType;
-import com.twilio.ipmessaging.Channels;
+import com.twilio.ipmessaging.Constants.InitListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
-import com.twilio.ipmessaging.TwilioIPMessagingSDK;
-import com.twilio.ipmessaging.Constants.InitListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
-import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +23,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 
-public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
+public class TwilioIPMessagingSDKImpl {
 	
 	static {
 		System.loadLibrary("twilio-rtd-native"); 
@@ -34,6 +31,9 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 	
 	private static final Logger logger = Logger.getLogger(TwilioIPMessagingSDKImpl.class);
 	private static final String TWILIO_IPMESSAGING_SERVICE_NAME = "com.twilio.ipmessaging.TwilioIPMessagingClientService";
+	private enum State {
+		UNINITIALIZED, INITIALIZING, INITIALIZED, SHUTDOWN
+	}
 	
 	private static final String[] requiredPermissions = {
 			"android.permission.INTERNET",
@@ -43,16 +43,16 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 	
 	private static TwilioIPMessagingSDKImpl instance = null;
 	private static Context context;	
-	
+	private final AtomicReference<State> state = new AtomicReference<State>(State.UNINITIALIZED);
 	private long nativeObserverHandle;
 	private InitListener listener;	
-	
-	
 	private boolean sdkIniting;
 	private ServiceConnection serviceConn;
 	protected TwilioBinder twBinder;
 	private IPMessagingClientListener ipMessagingListener;
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
+	
+	protected final Map<UUID, WeakReference<TwilioIPMessagingClientImpl>> clients = new HashMap<UUID, WeakReference<TwilioIPMessagingClientImpl>>();
 
 		
 	private TwilioIPMessagingSDKImpl() {
@@ -77,8 +77,8 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 	public void initialize(Context inContext, final InitListener inListener) {
 		TwilioIPMessagingSDKImpl.context = inContext;
 		this.listener = inListener;
-
-		if (isInitialized())
+	
+		if (!state.compareAndSet(State.UNINITIALIZED, State.INITIALIZING))
 		{
 			inListener.onError(new RuntimeException("Twilio.initialize() already called"));
 			return;
@@ -162,8 +162,10 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 				TwilioIPMessagingSDKImpl twilioIpMessagingClient = twBinder.getTwiloIPMessagingSDKImpl();
 				if (twilioIpMessagingClient != null &&inListener!= null)
 				{
+					state.set(State.INITIALIZED);
 					inListener.onInitialized();
 				} else {
+					state.set(State.UNINITIALIZED);
 					onServiceDisconnected(name);
 					inListener.onError(null);
 				}
@@ -172,6 +174,7 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 			@Override
 			public void onServiceDisconnected(ComponentName name)
 			{
+				state.set(State.UNINITIALIZED);
 				sdkIniting = sdkInited = false;
 				twBinder = null;
 				context = null;
@@ -185,33 +188,74 @@ public class TwilioIPMessagingSDKImpl extends TwilioIPMessagingSDK {
 		if (!context.bindService(service, serviceConn, Context.BIND_AUTO_CREATE))
 		{
 			context = null;
+			state.set(State.UNINITIALIZED);
 			inListener.onError(new RuntimeException("Failed to start TwiloRTCService.  Please ensure it is declared in AndroidManifest.xml"));
 		}
 
-		
-		/*if(inListener != null) {
-			inListener.onInitialized();
-		}*/
 	}
 
 
-	private boolean isInitializing() {
-		// TODO Auto-generated method stub
-		return false;
+	protected boolean isInitializing()
+	{
+		return state.get() == State.INITIALIZING;
 	}
 
 
-	private boolean isInitialized() {
-		return false;
+	public boolean isInitialized()
+	{
+		return state.get() == State.INITIALIZED;
 	}
+
 
 	public TwilioIPMessagingClientImpl createClientWithToken(String token, IPMessagingClientListener listener) {
 		if(token != null) {
-			return  new TwilioIPMessagingClientImpl(context, token, listener);	
+
+			final TwilioIPMessagingClientImpl client = new TwilioIPMessagingClientImpl(context, token, listener);	
+			synchronized (clients)
+			{
+				//TODO:: Change the key to Identity after Access Manager integration.
+				clients.put(client.getUUID(), new WeakReference<TwilioIPMessagingClientImpl>(client));
+			}
+			return client;
 		} else {
 			return null;
 		}
-	}	
+	}
+	
+	
+	public void shutdown()
+	{
+		if (!state.compareAndSet(State.INITIALIZED, State.SHUTDOWN))
+		{
+			if (isInitializing())
+				logger.w("Twilio.shutdown() called before Twilio.initialize() has finished");
+			else
+				logger.e("Twilio.shutdown() called before Twilio.initialize()");
+			return;
+		}
+		
+		synchronized (clients)
+		{
+			for (Map.Entry<UUID, WeakReference<TwilioIPMessagingClientImpl>> entry : clients.entrySet())
+			{
+				WeakReference<TwilioIPMessagingClientImpl> clientRef = entry.getValue();
+				TwilioIPMessagingClientImpl client = clientRef.get();
+				if (client != null)
+					client.shutdown(); // calls disconnectAll() internally.
+			}
+			
+		}
+		
+		twBinder = null;
+		context.unbindService(serviceConn);
+		context.stopService(new Intent(context, TwilioIPMessagingClientService.class));
+		serviceConn = null;
+		context = null;
+		
+		instance = null;
+		state.set(State.UNINITIALIZED);
+
+	}
 	
 	private native void create();	
 }

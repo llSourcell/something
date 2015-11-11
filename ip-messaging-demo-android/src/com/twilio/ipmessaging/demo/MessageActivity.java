@@ -54,7 +54,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
 	private Channel channel;
-	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy"};
+	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy", "get attribute"};
 	
 	private static final int NAME_CHANGE = 0;
 	private static final int TOPIC_CHANGE = 1;
@@ -65,11 +65,12 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private static final int LEAVE = 6;
 	private static final int CHANNEL_TYPE = 7;
 	private static final int CHANNEL_DESTROY = 8;
+	private static final int CHANNEL_ATTRIBUTE = 9;
 	
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
     private AlertDialog changeChannelTypeDialog;
-    private Toast typingToast;
+    
 	
 	
 	@Override
@@ -203,7 +204,10 @@ public class MessageActivity extends Activity implements ChannelListener{
     						finish();
     					}
     	      		});	     	
-				}  
+				} if (which == CHANNEL_ATTRIBUTE) {
+					Map<String,String> attrs = channel.getAttributes();
+					showToast(attrs.toString());
+				} 
 			}
 		});
 		
