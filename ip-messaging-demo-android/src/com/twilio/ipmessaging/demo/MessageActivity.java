@@ -530,6 +530,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 			
 			Messages messagesObject = this.channel.getMessages();
 			Message message = messagesObject.createMessage(input);
+		
 			messagesObject.sendMessage(message, new StatusListener() {
     			
 				@Override

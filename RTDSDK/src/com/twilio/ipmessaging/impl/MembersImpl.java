@@ -5,11 +5,13 @@ import java.util.Arrays;
 import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
+import com.twilio.ipmessaging.TwilioIPMessagingClientService;
 
 import android.util.Log;
 
 public class MembersImpl implements Members{
 	
+	private static final Logger logger = Logger.getLogger(MembersImpl.class);
 	private long nativeMembersContextHandle;
 
 	public MembersImpl(long handler) {
@@ -35,7 +37,11 @@ public class MembersImpl implements Members{
 				}
 			}
 		}
-		this.add(identity, this.nativeMembersContextHandle, listener);
+		if(listener != null) {
+			this.add(identity, this.nativeMembersContextHandle, listener);
+		} else {
+			logger.e("Listener is null.");
+		}
 	}
 
 	@Override
@@ -51,14 +57,22 @@ public class MembersImpl implements Members{
 				}
 			}
 		}
-		this.invite(identity, this.nativeMembersContextHandle, listener);
+		if(listener != null) {
+			this.invite(identity, this.nativeMembersContextHandle, listener);
+		} else {
+			logger.e("Listener is null.");
+		}
 	}
 
 	@Override
 	public void removeMember(Member member, StatusListener listener) {
 		long nativeMemberContextHandle = ((MemberImpl)member).getNativeMemberHandler();
 		if(member != null) {
-			remove(nativeMemberContextHandle, this.nativeMembersContextHandle, listener);
+			if(listener != null) {
+				remove(nativeMemberContextHandle, this.nativeMembersContextHandle, listener);
+			} else {
+				logger.e("Listener is null.");
+			}
 		}
 		
 	}

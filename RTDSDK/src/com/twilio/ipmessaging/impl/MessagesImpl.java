@@ -10,7 +10,9 @@ import com.twilio.ipmessaging.Messages;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MessagesImpl implements Messages , Parcelable{
+public class MessagesImpl implements Messages , Parcelable {
+
+	private static final Logger logger = Logger.getLogger(MessagesImpl.class);
 	
 	private long nativeMessagesContextHandler;
 
@@ -29,7 +31,11 @@ public class MessagesImpl implements Messages , Parcelable{
 
 	@Override
 	public void sendMessage(Message message, StatusListener listener) {
-		sendMessageNative(message, listener);
+		if(listener != null) {
+			sendMessageNative(message, listener);
+		} else {
+			logger.e("StatusListener is null.");
+		}
 	}
 
 	@Override
@@ -70,6 +76,5 @@ public class MessagesImpl implements Messages , Parcelable{
 	private native void sendMessageNative(Message message, StatusListener listener);
 	private native void removeMessageNative(Message message);
 	private native Message[] getMessagesNative(long handle);
-
 
 }

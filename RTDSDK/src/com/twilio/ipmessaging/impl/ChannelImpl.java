@@ -150,9 +150,13 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener) {
 		if(updatedAttributes != null) {
-			JSONObject jsonObj = new JSONObject(updatedAttributes);
-			if(jsonObj != null) { 
-				this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString(), listener);
+			if (listener != null) {
+				JSONObject jsonObj = new JSONObject(updatedAttributes);
+				if(jsonObj != null) { 
+					this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString(), listener);
+				}
+			} else {
+				logger.e("StatusListener is null.");
 			}
 		}
 	}
@@ -168,55 +172,75 @@ public class ChannelImpl implements Channel, Parcelable{
 	
 	@Override
 	public void setType(ChannelType type, StatusListener listener) {
-		int channelType = 0;
-		switch (type) {
-		case CHANNEL_TYPE_PUBLIC:
-			channelType = 0;
-			break;
-		case CHANNEL_TYPE_PRIVATE:
-			channelType = 1;
-			break;
-		}
-		synchronized(this) {
-			updateChannelType(this.nativeChannelContextHandle, this.getSid(), channelType, listener);
+		if (listener != null) {
+			int channelType = 0;
+			switch (type) {
+			case CHANNEL_TYPE_PUBLIC:
+				channelType = 0;
+				break;
+			case CHANNEL_TYPE_PRIVATE:
+				channelType = 1;
+				break;
+			}
+			synchronized(this) {
+				updateChannelType(this.nativeChannelContextHandle, this.getSid(), channelType, listener);
+			}
+		} else {
+			logger.e("StatusListener is null.");
 		}
 	}
 
 	@Override
 	public void join(StatusListener statusListener) {
 		logger.d("channelimpl join called");
-		if (this.getSid() != null) {
-			synchronized (this) {
-				this.joinChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
-			}
+		if (statusListener != null) {
+			if (this.getSid() != null) {
+				synchronized (this) {
+					this.joinChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
+				}
+			} 
+		} else {
+			logger.e("StatusListener is null.");
 		}
 	}
 
 	@Override
 	public void leave(StatusListener statusListener) {
 		logger.d("channelimpl leave called");
-		if (this.getSid() != null) {
-			synchronized (this) {
-				this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
+		if (statusListener != null) {
+			if (this.getSid() != null) {
+				synchronized (this) {
+					this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
+				}
 			}
+		} else {
+			logger.e("StatusListener is null.");
 		}
 	}
 
 	@Override
 	public void destroy(StatusListener statusListener) {
 		logger.d("channelimpl destroy called");
-		if(this.getSid() != null) {
-			synchronized(this) {
-				destroyChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
+		if (statusListener != null) {
+			if (this.getSid() != null) {
+				synchronized (this) {
+					destroyChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
+				}
 			}
+		} else {
+			logger.e("StatusListener is null.");
 		}
 	}
 	
 	@Override
 	public void declineInvitation(StatusListener statusListener) {
 		logger.d("channelimpl decline called");
-		if(this.getSid() != null) {
-			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), statusListener);
+		if (statusListener != null) {
+			if (this.getSid() != null) {
+				this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), statusListener);
+			}
+		} else {
+			logger.e("StatusListener is null.");
 		}
 	}
 
