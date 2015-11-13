@@ -3,6 +3,7 @@ package com.twilio.ipmessaging.demo;
 import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Message;
+import com.twilio.ipmessaging.demo.ChannelViewHolder.OnChannelClickListener;
 
 import android.view.Gravity;
 import android.view.View;
@@ -33,6 +34,18 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 	}
 
 	@Override
+	public void onSetListeners() {
+		view.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				OnMessageClickListener listener = getListener(OnMessageClickListener.class);
+				if (listener != null) {
+					listener.onMessageClicked(getItem());
+				}
+			}
+		});
+	}
+	@Override
 	public void onSetValues(Message message, PositionInfo pos) {
 		StringBuffer textInfo = new StringBuffer();
 		String dateString = message.getTimeStamp();
@@ -53,7 +66,7 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 	}
 	
 	public interface OnMessageClickListener {
-		void onMessageClicked(Channel channel);
+		void onMessageClicked(Message message);
 	}
 
 }

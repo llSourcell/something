@@ -14,7 +14,6 @@ import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
-import com.twilio.ipmessaging.Messages;
 import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.Constants.CreateChannelListener;
 import com.twilio.ipmessaging.Constants;
