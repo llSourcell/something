@@ -26,6 +26,15 @@ public interface Messages
 	public void sendMessage(Message message, StatusListener listener);
 	
 	/**
+	 * Removes a message to the channel.
+	 * 
+	 * @param message	The message to remove.
+	 * @param listener  Status listener to report result of the operation.
+	 */
+	public void removeMessage(Message message, StatusListener listener);
+	
+	
+	/**
 	 * Returns messages received so far from backend, messages are loaded asynchronously so this may 
 	 * not fully represent all history available for channel.
 	 * 

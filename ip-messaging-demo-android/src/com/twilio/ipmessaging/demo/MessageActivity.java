@@ -46,11 +46,11 @@ import uk.co.ribot.easyadapter.EasyAdapter;
 
 public class MessageActivity extends Activity implements ChannelListener{
 
+	private static final String[] MESSAGE_OPTIONS = { "Remove", "Edit" };
 	private static final Logger logger = Logger.getLogger(MessageActivity.class);
 	private ListView messageListView;
 	private EditText inputText;
 	private EasyAdapter<Message> adapter;
-	
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
 	private Channel channel;
@@ -66,6 +66,9 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private static final int CHANNEL_TYPE = 7;
 	private static final int CHANNEL_DESTROY = 8;
 	private static final int CHANNEL_ATTRIBUTE = 9;
+	
+	private static final int REMOVE = 0;
+	private static final int EDIT = 1;
 	
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
@@ -503,7 +506,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 	private void setupListView(Channel channel) {
 		messageListView = (ListView) findViewById(R.id.message_list_view);
-		Messages messagesObject = channel.getMessages();
+		final Channel thisChannel = this.channel;
+		final Messages messagesObject = channel.getMessages();
 		if(messagesObject != null) {
 			Message[] messagesArray = messagesObject.getMessages();
 			if(messagesArray.length > 0 ) {
@@ -513,8 +517,38 @@ public class MessageActivity extends Activity implements ChannelListener{
 			adapter = new EasyAdapter<Message>(this, MessageViewHolder.class, messages,
 					new MessageViewHolder.OnMessageClickListener() {
 						@Override
-						public void onMessageClicked(final Channel channel) {
+						public void onMessageClicked(final Message message) {
+							AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+							builder.setTitle("Select an option").setItems(MESSAGE_OPTIONS,
+									new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									if (which == REMOVE) {
+										dialog.cancel();
+										messagesObject.removeMessage(message, new StatusListener() {
+							    			
+											@Override
+											public void onError() {
+												logger.e("Error removing message.");
+											}
 							
+											@Override
+											public void onSuccess() {
+												logger.e("Successful at removing message. It should be GONE!!");
+												runOnUiThread(new Runnable() {
+							            	        @Override
+							            	        public void run() {
+							            	        	messages.remove(message);
+							            	        	adapter.notifyDataSetChanged();
+							            	        }
+							            	    });
+											}
+										});	     	
+									} else if (which == EDIT){
+										//::TODO
+									}
+								}
+							});
+							builder.show();
 						}
 					});
 			messageListView.setAdapter(adapter);
@@ -528,8 +562,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 		String input = inputText.getText().toString();
 		if (!input.equals("")) {
 			
-			Messages messagesObject = this.channel.getMessages();
-			Message message = messagesObject.createMessage(input);
+			final Messages messagesObject = this.channel.getMessages();
+			final Message message = messagesObject.createMessage(input);
 		
 			messagesObject.sendMessage(message, new StatusListener() {
     			
@@ -541,12 +575,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 				@Override
 				public void onSuccess() {
 					logger.e("Successful at sending message.");
+					runOnUiThread(new Runnable() {
+            	        @Override
+            	        public void run() {
+             				adapter.notifyDataSetChanged();
+            				inputText.setText("");
+            	        }
+            	    });
 				}
-      		});	     	
-			messages.add(message);
-			adapter.notifyDataSetChanged();
-			inputText.setText("");
+      		});	  
+		
 		}
+	
 		inputText.requestFocus();
 	}
 

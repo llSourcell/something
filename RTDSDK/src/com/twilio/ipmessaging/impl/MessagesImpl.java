@@ -37,6 +37,17 @@ public class MessagesImpl implements Messages , Parcelable {
 			logger.e("StatusListener is null.");
 		}
 	}
+	
+	@Override
+	public void removeMessage(Message message, StatusListener listener) {
+		if(listener != null) {
+			removeMessageNative(message, listener);
+		} else {
+			logger.e("StatusListener is null.");
+		}
+		
+	}
+
 
 	@Override
 	public Message[] getMessages() {
@@ -74,7 +85,8 @@ public class MessagesImpl implements Messages , Parcelable {
 	private native Message createMessageNative(String message);
 	private native Message createMessageNativeBuffer(byte[] message);
 	private native void sendMessageNative(Message message, StatusListener listener);
-	private native void removeMessageNative(Message message);
+	private native void removeMessageNative(Message message, StatusListener listener);
 	private native Message[] getMessagesNative(long handle);
 
+	
 }
