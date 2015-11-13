@@ -1,6 +1,6 @@
 package com.twilio.ipmessaging.demo;
 
-import com.twilio.example.R;
+import com.twilio.rtd.demoapp.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelStatus;
 

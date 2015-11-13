@@ -8,18 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
-import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
+import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
 import com.twilio.ipmessaging.impl.Logger;
-import com.twilio.ipmessaging.Constants;
+import com.twilio.rtd.demoapp.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
