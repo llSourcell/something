@@ -1,9 +1,9 @@
 package com.twilio.ipmessaging.demo;
 
-import com.twilio.example.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.demo.ChannelViewHolder.OnChannelClickListener;
+import com.twilio.rtd.demoapp.R;
 
 import android.view.Gravity;
 import android.view.View;

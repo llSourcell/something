@@ -2,7 +2,7 @@ package com.twilio.ipmessaging.demo;
 
 import java.net.URLEncoder;
 
-import com.twilio.example.R;
+import com.twilio.rtd.demoapp.R;
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 
 import android.app.Activity;
