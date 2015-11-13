@@ -544,7 +544,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 											}
 										});	     	
 									} else if (which == EDIT){
-										
+										//::TODO
 									}
 								}
 							});
@@ -578,14 +578,15 @@ public class MessageActivity extends Activity implements ChannelListener{
 					runOnUiThread(new Runnable() {
             	        @Override
             	        public void run() {
-            	        	messages.add(message);
-        					adapter.notifyDataSetChanged();
-        					inputText.setText("");
+             				adapter.notifyDataSetChanged();
+            				inputText.setText("");
             	        }
             	    });
 				}
-      		});	     	
+      		});	  
+		
 		}
+	
 		inputText.requestFocus();
 	}
 
