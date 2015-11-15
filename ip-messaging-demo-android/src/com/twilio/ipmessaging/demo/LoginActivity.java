@@ -68,7 +68,7 @@ public class LoginActivity extends Activity implements LoginListener {
 				url.append(clientNameTextBox.getText().toString());
 				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
 				logger.e("url string : " + url.toString());
-				getRegId();
+				//getRegId();
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
 		});
