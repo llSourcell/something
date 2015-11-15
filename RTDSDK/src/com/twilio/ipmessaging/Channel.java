@@ -109,6 +109,8 @@ public interface Channel {
 	 * Updates the friendly name for this channel.
 	 * 
 	 * @param friendlyName updated friendly name.
+	 * @param listener Listener that will receive callback with the result.
+	 *  	
 	 */
 	public void setFriendlyName(String friendlyName, StatusListener listener);
 	
@@ -116,29 +118,35 @@ public interface Channel {
 	 * Updates the channel type for this channel.
 	 * 
 	 * @param type updated channel type.
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void setType(ChannelType type, StatusListener listener);
 	
 	/**
 	 * Joins the current user to the channel.
 	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void join(StatusListener listener);
 	
 	/**
 	 * Leaves the current channel.
+	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void leave(StatusListener listener);
 	
 	/**
 	 * Destroys the current channel.
 	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void destroy(StatusListener listener);	
 
 	/**
 	 * Declines an invite on this channel.
 	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void declineInvitation(StatusListener listener);
 	

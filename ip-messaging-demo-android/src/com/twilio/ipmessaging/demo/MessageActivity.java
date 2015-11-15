@@ -19,7 +19,7 @@ import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
 import com.twilio.ipmessaging.impl.Logger;
-import com.twilio.rtd.demoapp.R;
+import com.twilio.rtd.demo.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -506,7 +506,6 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 	private void setupListView(Channel channel) {
 		messageListView = (ListView) findViewById(R.id.message_list_view);
-		final Channel thisChannel = this.channel;
 		final Messages messagesObject = channel.getMessages();
 		if(messagesObject != null) {
 			Message[] messagesArray = messagesObject.getMessages();

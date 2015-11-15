@@ -8,6 +8,7 @@ import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
@@ -175,9 +176,24 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		return uuid;
 	}
 	
+	@Override
+	public void registerWithToken(String token, StatusListener listener) {
+		//::TODO listener implementation
+		registerWithToken(this.nativeClientParamContextHandle, token, listener);
+	}
+
+
+	@Override
+	public void unregisterWithToken(String token, StatusListener listener) {
+		//::TODO listener implementation
+		unRegisterWithToken(this.nativeClientParamContextHandle, token, listener);
+	}
+	
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
 	private native void updateToken(String token, long nativeClientParam);
 	private native void shutDownNative(long nativeClientParam);
+	private native void registerWithToken(long nativeClientParam, String token, StatusListener listener);
+	private native void unRegisterWithToken(long nativeClientParam, String token, StatusListener listener);
 }

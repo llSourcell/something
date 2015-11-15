@@ -13,14 +13,14 @@ public interface Channels {
 	 * 
 	 * @param friendlyName	Friendly name of the new channel.
 	 * @param channelType  Channel type
-	 * @param listener 		listener that receives this channel related events.
+	 * @param listener 		listener that receives callback reporting create channel completes.
 	 */
 	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
 	
 	
-	/** Requesting loading of all channels from server to be delivered via callbacks.
+	/** Request loading of all channels from server to be delivered via callback.
 	 * 
-	 *  @param listener Listener that will receive callback of the result.
+	 *  @param listener Listener that will receive callback with the result.
 	 */
 	public void loadChannelsWithListener(StatusListener listener);
 	

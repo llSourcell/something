@@ -27,6 +27,6 @@
      <string name="Options">Options</string>
     <string name="Create_public_channel">Create public channel</string>
     <string name="Create_private_channel">Create private channel</string>
-    
+    <string name="RegId">Reg Id:</string>
 
 </resources>

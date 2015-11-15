@@ -9,9 +9,6 @@
 #define TwilioIPMessagingClientListener_cpp
 
 #include <Poco/Foundation.h>
-
-//#include <Common/TLLogger.h>
-
 #include <android/log.h>
 
 #include "ITMClient.h"
@@ -26,7 +23,7 @@ using namespace rtd;
 class TwilioIPMessagingClientListener : public ITMClientListener
 {
 public:
-    TwilioIPMessagingClientListener(JNIEnv* env,jobject obj,jobject j_ipmessagingclient);
+    TwilioIPMessagingClientListener(JNIEnv* env,jobject obj,jobject j_listenert);
     virtual ~TwilioIPMessagingClientListener();
 
     void onMessage(TMAction action, ITMessagePtr message);

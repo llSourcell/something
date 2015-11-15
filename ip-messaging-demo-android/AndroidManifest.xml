@@ -1,15 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.twilio.rtd.demoapp"
+    package="com.twilio.rtd.demo"
     android:versionCode="18"
     android:versionName="1.2" >
-     <uses-sdk
+
+    <uses-sdk
         android:minSdkVersion="19"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+  
     <application
         android:name="com.twilio.ipmessaging.demo.TwilioApplication"
         android:allowBackup="true"
@@ -31,12 +32,14 @@
         </activity>
         <activity
             android:name="com.twilio.ipmessaging.demo.MessageActivity"
-            android:label="@string/title_activity_message" android:launchMode="singleTop">
+            android:label="@string/title_activity_message"
+            android:launchMode="singleTop" >
         </activity>
-        
+
         <service
             android:name="com.twilio.ipmessaging.TwilioIPMessagingClientService"
             android:exported="false" />
+
     </application>
 
 </manifest>
