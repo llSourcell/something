@@ -37,7 +37,7 @@ public interface IPMessagingClientListener {
 	public void onError(int errorCode, String errorText);
 	
 	/**
-	 * Called when an attribute change.
+	 * Called when an attribute has changed.
 	 * 
 	 * @param attributes The updated attributes string.
 	 */

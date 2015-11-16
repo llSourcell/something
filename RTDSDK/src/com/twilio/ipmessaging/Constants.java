@@ -8,12 +8,12 @@ public interface Constants {
 	public static final String EXTRA_CHANNEL = "com.twilio.ipmessaging.Channel";
 	
 	/**
-	 * Key into an Intent's extras data that points to a {@link Message} object.
+	 * Key into an Intent's extras data that indicates an action is requested from the user.
 	 */
 	public static final String EXTRA_ACTION = "channel.action";
 	
 	/**
-	 * Key into an Intent's extras data that points to a {@link Message} object.
+	 * Key into an Intent's extras data that indicates an action type.
 	 */
 	public static final String EXTRA_ACTION_INVITE = "channel.action.invite";
 	

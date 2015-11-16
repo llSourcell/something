@@ -10,6 +10,13 @@ public interface TwilioIPMessagingClient {
 	 * @return the unique id for this TwilioIPMessagingClient.
 	 */
 	public String getIdentity();
+		
+	/**
+	 * Method to retrieve listener for this TwilioIPMessagingClient.
+	 * 
+	 * @return IPMessagingClientListener the listener for this TwilioIPMessagingClient.
+	 */
+	public IPMessagingClientListener getListener();
 	
 	/**
 	 * Method to set listener for this TwilioIPMessagingClient.
@@ -17,13 +24,6 @@ public interface TwilioIPMessagingClient {
 	 * @param listener	the listener for this TwilioIPMessagingClient.
 	 */
 	public void setListener(IPMessagingClientListener listener);
-	
-	/**
-	 * Method to retrieve listener for this TwilioIPMessagingClient.
-	 * 
-	 * @return IPMessagingClientListener the listener for this TwilioIPMessagingClient.
-	 */
-	public IPMessagingClientListener getListener();
 	
 	/**
 	 * Method to update the authentication token for this client.
@@ -46,7 +46,7 @@ public interface TwilioIPMessagingClient {
 	public void setIncomingIntent(PendingIntent inIntent);
 	
 	/**
-	 * Cleanly shut down the messaging subsystem when you are done with it. 
+	 * Cleanly shuts down the messaging subsystem when you are done with it. 
 	 * 
 	 */
 	public void shutdown();

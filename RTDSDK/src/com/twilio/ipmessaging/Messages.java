@@ -8,7 +8,6 @@ import com.twilio.ipmessaging.Constants.StatusListener;
  */
 public interface Messages
 {
-	
 	/**
 	 * Method to createMessage.
 	 * 
@@ -32,7 +31,6 @@ public interface Messages
 	 * @param listener  Status listener to report result of the operation.
 	 */
 	public void removeMessage(Message message, StatusListener listener);
-	
 	
 	/**
 	 * Returns messages received so far from backend, messages are loaded asynchronously so this may 

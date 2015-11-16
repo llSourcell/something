@@ -12,7 +12,7 @@ import android.content.Context;
 public class TwilioIPMessagingSDK {
 	
 	/**
-	 * Determines if the Twilio IPMessaging SDK has been initialized or not.
+	 * Determines if the Twilio IP Messaging SDK has been initialized or not.
 	 * 
 	 * If you expect your application to run in the background when the user has
 	 * switched to other applications, you will want to check the return value of
@@ -57,12 +57,12 @@ public class TwilioIPMessagingSDK {
 	}
 	
 	/**
-	 * Shuts down the Twilio IPMessaging SDK.
+	 * Shuts down the Twilio IP Messaging SDK.
 	 * 
-	 * This will terminate all connections, release all Device objects, and
+	 * This will terminate all connections, release all TwilioIPMessagingClient objects, and
 	 * release any resources used by the SDK.
 	 * 
-	 * Note that any attempt to access existing Device or Connection objects
+	 * Note that any attempt to access existing TwilioIPMessagingClient
 	 * after calling this method may cause an exception to be thrown, or a crash.
 	 */
 	public static void shutdown()

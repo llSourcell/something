@@ -18,7 +18,7 @@ public interface Channels {
 	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
 	
 	
-	/** Requesting loading of all channels from server to be delivered via callbacks.
+	/** Request loading of all channels from server to be delivered via callbacks.
 	 * 
 	 *  @param listener Listener that will receive callback of the result.
 	 */

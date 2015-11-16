@@ -1,8 +1,7 @@
 package com.twilio.ipmessaging.impl;
 
-import java.util.Date;
-
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Message;
 
 import android.os.Parcel;
@@ -116,6 +115,6 @@ public class MessageImpl implements Message, Parcelable {
     };
     
     private native String getChannelSidNative(long nativeMessageContextHandle);
-
+    private native void setBodyNative(long nativeMessageContextHandle, StatusListener listener);
 
 }
