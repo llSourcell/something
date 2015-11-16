@@ -13,6 +13,7 @@ import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
 import com.twilio.ipmessaging.TwilioIPMessagingSDK;
+import com.twilio.ipmessaging.Version;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -258,4 +259,8 @@ public class TwilioIPMessagingSDKImpl {
 	}
 	
 	private native void create();	
+
+	public String getVersion() {
+		return Version.SDK_VERSION;
+	}
 }
