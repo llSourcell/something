@@ -3,7 +3,7 @@
 export SDK_NAME_STEM="twilio-ip-messaging-android"
 
 get_sdk_version_prefix() {
-    version_prefix=$(cat sdk-version.txt)
+    version_prefix=$(sed -n '/android:versionName=/s/.*"\(.*\)"[^"]*/\1/p' AndroidManifest.xml)
     [ -n "$version_prefix" ] || return 1
     echo "${version_prefix}"
     return 0
