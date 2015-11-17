@@ -262,6 +262,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		 dest.writeString(this.sid);
 		 dest.writeString(this.friendlyName);
+		 dest.writeLong(this.nativeChannelContextHandle);
 	}
 
 
@@ -273,7 +274,8 @@ public class ChannelImpl implements Channel, Parcelable{
         {
             String sid = in.readString();
             String friendlyName = in.readString();
-            ChannelImpl chImpl = new ChannelImpl(friendlyName, sid);
+            long nativeHandleContext = in.readLong();
+            ChannelImpl chImpl = new ChannelImpl(friendlyName, sid, nativeHandleContext);
             return chImpl;
         }
 

@@ -33,13 +33,14 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 
 	if(channelContext != nullptr) {
 		if(listener!= nullptr) {
+			LOGW(TAG, "Join channel listener is not null.");
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
 			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
 			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
 			ITMChannelPtr channel = channelContext->channel;
 			if(channel != nullptr) {
-				LOGD(TAG, "Joining channel with sid : %s ", nativeString);
+				LOGW(TAG, "Joining channel with sid : %s ", nativeString);
 				__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
 				channel->join([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
 					JNIEnvAttacher jniAttacher;
@@ -50,7 +51,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
 					} else {
 						__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel failed");
-
+						LOGW(TAG, "Join channel failed.");
 						//Call Java
 						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
 						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
@@ -58,16 +59,19 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 				});
 			} else {
 				env->DeleteGlobalRef(j_statusListener_);
+				LOGW(TAG, "Channel is null");
 				__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
 			}
 		} else {
 			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			LOGW(TAG, "join channel listener is null.");
 			ITMChannelPtr channel = channelContext->channel;
 			if(channel != nullptr) {
 				LOGD(TAG, "Joining channel with sid : %s ", nativeString);
 				__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
 				channel->join(nullptr);
 			} else {
+				LOGW(TAG, "channel is null.");
 				__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
 			}
 		}

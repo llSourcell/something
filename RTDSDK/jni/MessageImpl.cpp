@@ -55,19 +55,16 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_setBodyNativ
 	LOGD(TAG,"getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
 	if (nativeMessageContext == 0) {
 		LOGW(TAG, "nativeMessageContext is null");
-		return nullptr;
 	} else {
 		MessageContext *messageContextRecreate = reinterpret_cast<MessageContext *>(nativeMessageContext);
 		LOGD(TAG, "nativeMessageContext context is recreated.");
 
 		if(messageContextRecreate == nullptr) {
 			LOGW(TAG,"Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative : MessageContextRecreate is null.");
-			return 0;
 		}
 
 		if(messageContextRecreate->message == nullptr) {
 			LOGW(TAG,"MessageContextRecreate : ITMessagesPtr is null.");
-			return 0;
 		}
 
 		messagePtr = messageContextRecreate->message;
