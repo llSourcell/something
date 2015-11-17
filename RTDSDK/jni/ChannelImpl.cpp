@@ -32,32 +32,44 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+		if(listener!= nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
-		ITMChannelPtr channel = channelContext->channel;
-		if(channel != nullptr) {
-			LOGD(TAG, "Joining channel with sid : %s ", nativeString);
-			__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
-			channel->join([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel failed");
+			ITMChannelPtr channel = channelContext->channel;
+			if(channel != nullptr) {
+				LOGD(TAG, "Joining channel with sid : %s ", nativeString);
+				__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
+				channel->join([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Join channel failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+				__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
-			__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			ITMChannelPtr channel = channelContext->channel;
+			if(channel != nullptr) {
+				LOGD(TAG, "Joining channel with sid : %s ", nativeString);
+				__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
+				channel->join(nullptr);
+			} else {
+				__android_log_print(ANDROID_LOG_INFO, TAG, "channel is null.");
+			}
 		}
 	}
 	env->ReleaseStringUTFChars(channel_sid, nativeString);
@@ -77,32 +89,41 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
-
 		ITMChannelPtr channel = channelContext->channel;
+		if(listener!= nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
-		if(channel != nullptr) {
-			LOGD(TAG,"Leaving channel with sid : %s ", nativeString);
-			channel->leave([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "leave channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "leave channel failed");
+			if(channel != nullptr) {
+				LOGD(TAG,"Leaving channel with sid : %s ", nativeString);
+				channel->leave([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "leave channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "leave channel failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+				LOGW(TAG,"channel is null");
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
-			LOGW(TAG,"channel is null");
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			if(channel != nullptr) {
+				LOGD(TAG,"Leaving channel with sid : %s ", nativeString);
+				channel->leave(nullptr);
+			} else {
+				LOGW(TAG,"channel is null");
+			}
 		}
 	} else {
 		LOGW(TAG,"channels is null");
@@ -123,31 +144,45 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 		ITMChannelPtr channel = channelContext->channel;
-		if(channel != nullptr) {
-			LOGW(TAG, "Destroying channel with sid : %s ", nativeString);
-			channel->destroy([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed");
+		if(listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+			if(channel != nullptr) {
+				LOGW(TAG, "Destroying channel with sid : %s ", nativeString);
+				channel->destroy([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed");
+						if(j_onError_ == NULL) {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed j_onError_ is null.");
+						}
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null");
+				LOGW(TAG, "channel is null");
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			if(channel != nullptr) {
+				LOGW(TAG, "Destroying channel with sid : %s ", nativeString);
+				channel->destroy(nullptr);
+			} else {
 			__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null");
 			LOGW(TAG, "channel is null");
+			}
 		}
 	} else {
 		__android_log_print(ANDROID_LOG_INFO, TAG, "Channels is null");
@@ -171,30 +206,41 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
+		ITMChannelPtr channel = channelContext->channel;
+
+		if(listener != nullptr) {
 		jobject j_statusListener_ = env->NewGlobalRef(listener);
 		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
 		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
-		ITMChannelPtr channel = channelContext->channel;
 
 		if(channel != nullptr) {
-			LOGW("Update Name for channel with sid : %s ", nativeSidString);
-			channel->setFriendlyName(nativeNameString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Update Name for channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Update Name for channel failed");
+				LOGW("Update Name for channel with sid : %s ", nativeSidString);
+				channel->setFriendlyName(nativeNameString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Update Name for channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Update Name for channel failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			if(channel != nullptr) {
+				LOGW("Update Name for channel with sid : %s ", nativeSidString);
+				channel->setFriendlyName(nativeNameString, nullptr);
+			} else {
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null.");
+			}
 		}
 	}
 	env->ReleaseStringUTFChars(channel_sid, nativeSidString);
@@ -213,50 +259,68 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
-
 		ITMChannelPtr channel = channelContext->channel;
-		if(channel != nullptr) {
-			LOGW("Update channel Type for channel with sid : %s ", nativeSidString);
-			if(type == rtd::kTMChannelTypePublic) {
-				__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to public");
-				channel->setType(rtd::kTMChannelTypePublic, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-					JNIEnvAttacher jniAttacher;
-					if (result == rtd::TMResult::kTMResultSuccess) {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel is successful. Calling java listener.");
-						//Call Java
-						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-					} else {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed");
 
-						//Call Java
-						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-					}
-				});
+		if(listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+
+			if(channel != nullptr) {
+				LOGW("Update channel Type for channel with sid : %s ", nativeSidString);
+				if(type == rtd::kTMChannelTypePublic) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to public");
+					channel->setType(rtd::kTMChannelTypePublic, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+						JNIEnvAttacher jniAttacher;
+						if (result == rtd::TMResult::kTMResultSuccess) {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel is successful. Calling java listener.");
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						} else {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed");
+
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					});
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to private");
+					channel->setType(rtd::kTMChannelTypePrivate, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+						JNIEnvAttacher jniAttacher;
+						if (result == rtd::TMResult::kTMResultSuccess) {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel is successful. Calling java listener.");
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						} else {
+							__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed");
+
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					});
+				}
 			} else {
-				__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to private");
-				channel->setType(rtd::kTMChannelTypePrivate, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-					JNIEnvAttacher jniAttacher;
-					if (result == rtd::TMResult::kTMResultSuccess) {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel is successful. Calling java listener.");
-						//Call Java
-						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-					} else {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "Destroy channel failed");
-
-						//Call Java
-						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-					}
-				});
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null.");
+				env->DeleteGlobalRef(j_statusListener_);
 			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			if(channel != nullptr) {
+				LOGW("Update channel Type for channel with sid : %s ", nativeSidString);
+				if(type == rtd::kTMChannelTypePublic) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to public");
+					channel->setType(rtd::kTMChannelTypePublic, nullptr);
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Setting Channel Type to private");
+					channel->setType(rtd::kTMChannelTypePrivate, nullptr);
+				}
+			} else {
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null.");
+			}
 		}
 		env->ReleaseStringUTFChars(channel_sid, nativeSidString);
 	}
@@ -276,30 +340,40 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
-
 		ITMChannelPtr channel = channelContext->channel;
-		if(channel != nullptr) {
-			LOGW("Update Attribute for channel with sid : %s ", nativeSidString);
-			channel->setAttributes(nativeAttrString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Update Attribute for channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Update Attribute for channel failed");
+		if(listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+			if(channel != nullptr) {
+				LOGW("Update Attribute for channel with sid : %s ", nativeSidString);
+				channel->setAttributes(nativeAttrString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Update Attribute for channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Update Attribute for channel failed");
+
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			if(channel != nullptr) {
+				LOGW("Update Attribute for channel with sid : %s ", nativeSidString);
+				channel->setAttributes(nativeAttrString, nullptr);
+			} else {
+				__android_log_print(ANDROID_LOG_INFO, TAG, "Channel is null.");
+			}
 		}
 	}
 	env->ReleaseStringUTFChars(channel_sid, nativeSidString);
@@ -320,32 +394,41 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
-
 		ITMChannelPtr channel = channelContext->channel;
+		if (listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
-		if(channel != nullptr) {
-			LOGD(TAG,"Decline invite for channel with sid : %s ", nativeSidString);
-			channel->declineInvitation([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Decline invite for channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					__android_log_print(ANDROID_LOG_INFO, TAG, "Decline invite for channel failed");
+			if(channel != nullptr) {
+				LOGD(TAG,"Decline invite for channel with sid : %s ", nativeSidString);
+				channel->declineInvitation([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Decline invite for channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "Decline invite for channel failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+				LOGW(TAG,"declineChannelInvite ELEMENT NOT found");
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
-			LOGW(TAG,"declineChannelInvite ELEMENT NOT found");
+			__android_log_print(ANDROID_LOG_INFO, TAG, "StatusListener passed is null.");
+			if(channel != nullptr) {
+				LOGD(TAG,"Decline invite for channel with sid : %s ", nativeSidString);
+				channel->declineInvitation(nullptr);
+			} else {
+				LOGW(TAG,"declineChannelInvite channel is null.");
+			}
 		}
 	}
 	env->ReleaseStringUTFChars(channel_sid, nativeSidString);

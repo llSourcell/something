@@ -454,6 +454,60 @@ public class MessageActivity extends Activity implements ChannelListener{
 		changeChannelTypeDialog.show();
 	}
 	
+	
+	private void showUpdateMessageDialog(final Message message) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_edit_message, null))
+				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String updatedMsg = ((EditText) editTextDialog.findViewById(R.id.update_message)).getText()
+								.toString();
+						message.updateMessageBody(updatedMsg, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error at updating message");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Success at updating message");
+	    						runOnUiThread(new Runnable() {
+			            	        @Override
+			            	        public void run() {
+			            	        	final Channel thisChannel = MessageActivity.this.channel;
+			            	    		final Messages messagesObject = channel.getMessages();
+			            	    		if(messagesObject != null) {
+			            	    			Message[] messagesArray = messagesObject.getMessages();
+			            	    			if(messagesArray.length > 0 ) {
+			            	    				messages = new ArrayList<Message>(Arrays.asList(messagesArray));
+			            	    				Collections.sort(messages, new CustomMessageComparator());
+			            	    			}
+			            	    		}
+
+			            	    	    adapter.getItems().clear();
+			            	    	    adapter.getItems().addAll(messages);
+			            	        	adapter.notifyDataSetChanged();
+			            	        }
+			            	    });
+	    					}
+	    	      		});	     	
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		editTextDialog = builder.create();
+		editTextDialog.show();
+	}
+	
 
 	private void setupInput() {
 		// Setup our input methods. Enter key on the keyboard or pushing the
@@ -544,7 +598,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 											}
 										});	     	
 									} else if (which == EDIT){
-										//::TODO
+										showUpdateMessageDialog(message);
 									}
 								}
 							});

@@ -122,6 +122,7 @@ public interface Channel {
 	
 	/**
 	 * Joins the current user to the channel.
+	 * @param listener
 	 * 
 	 */
 	public void join(StatusListener listener);
@@ -139,6 +140,7 @@ public interface Channel {
 
 	/**
 	 * Declines an invite on this channel.
+	 * @param 
 	 * 
 	 */
 	public void declineInvitation(StatusListener listener);

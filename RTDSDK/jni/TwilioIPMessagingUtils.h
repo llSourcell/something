@@ -65,3 +65,4 @@ ITMessagePtr getMessagePtrFromNativeHandle(JNIEnv *env, jobject obj) {
 	return message;
 }
 
+

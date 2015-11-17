@@ -138,10 +138,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_createMe
 
 	if(messages != nullptr) {
 		ITMessagePtr messageLocal = messages->createMessage();
-
-		 const char *msgTextStr = jstring2str(env, msgText).c_str();
-		//const char *msgTextStr = env->GetStringUTFChars(msgText, 0);
-
+		const char *msgTextStr = jstring2str(env, msgText).c_str();
 		messageLocal->setBody(msgTextStr, [](TMResult result) {LOGD(TAG,"Message setBody command processed");});
 
 		jclass java_message_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessageImpl");
