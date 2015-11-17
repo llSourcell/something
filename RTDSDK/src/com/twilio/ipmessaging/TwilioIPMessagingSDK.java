@@ -70,4 +70,13 @@ public class TwilioIPMessagingSDK {
 		TwilioIPMessagingSDKImpl.getInstance().shutdown();
 	}
 
+	/**
+	 * Returns the version of the TwilioIPMessagingSDK.
+	 *
+	 *@return The version of the SDK.
+	 */
+	public static String getVersion() {
+		return TwilioIPMessagingSDKImpl.getInstance().getVersion();
+	}
+
 }

@@ -3,10 +3,13 @@ package com.twilio.ipmessaging.demo;
 import java.net.URLEncoder;
 
 import com.twilio.rtd.demoapp.R;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -83,10 +86,23 @@ public class LoginActivity extends Activity implements LoginListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		if (id == R.id.action_about) {
+			showAboutDialog();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void showAboutDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+		builder.setTitle("About").setMessage("Version: " + TwilioIPMessagingSDK.getVersion()).setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+
+		AlertDialog aboutDialog = builder.create();
+		aboutDialog.show();
 	}
 
 	private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String> {
