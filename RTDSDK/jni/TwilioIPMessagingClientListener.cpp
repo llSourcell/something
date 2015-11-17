@@ -54,7 +54,7 @@ jobject createChannelObject(ITMChannelPtr channelPtr) {
 	channelContext_->channel = channelPtr;
 	jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 
-	LOGW(TAG, "Kumkum channelContextHandle is %d ", channelContextHandle);
+	LOGW(TAG, "channelContextHandle is %d ", channelContextHandle);
 
 	jstring nameString = jniAttacher.get()->NewStringUTF(name);
 	jstring sidString = jniAttacher.get()->NewStringUTF(sid);

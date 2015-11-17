@@ -33,14 +33,14 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 
 	if(channelContext != nullptr) {
 		if(listener!= nullptr) {
-			LOGW(TAG, "Join channel listener is not null.");
+			LOGD(TAG, "Join channel listener is not null.");
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
 			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
 			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
 			ITMChannelPtr channel = channelContext->channel;
 			if(channel != nullptr) {
-				LOGW(TAG, "Joining channel with sid : %s ", nativeString);
+				LOGD(TAG, "Joining channel with sid : %s ", nativeString);
 				__android_log_print(ANDROID_LOG_INFO, TAG, "joining channel.");
 				channel->join([j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
 					JNIEnvAttacher jniAttacher;
@@ -109,7 +109,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
 						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
 						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
 					} else {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "leave channel failed");
+						__android_log_print(ANDROID_LOG_WARN, TAG, "leave channel failed");
 
 						//Call Java
 						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);

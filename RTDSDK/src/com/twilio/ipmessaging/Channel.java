@@ -140,7 +140,7 @@ public interface Channel {
 
 	/**
 	 * Declines an invite on this channel.
-	 * @param 
+	 * @param listener StatusListener to report status of the async operation via callback.
 	 * 
 	 */
 	public void declineInvitation(StatusListener listener);
