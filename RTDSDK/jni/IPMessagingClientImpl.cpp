@@ -246,7 +246,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 
 	if (nativeClientContext == 0) {
 		LOGW(TAG,"client context is null");
-		return 0;
 	} else {
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
@@ -276,7 +275,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
   (JNIEnv *env, jobject obj, jlong nativeClientContext) {
 	if (nativeClientContext == 0) {
 		LOGW(TAG,"client context is null");
-		return 0;
 	} else {
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 		if(clientParamsRecreate != nullptr) {

@@ -12,8 +12,8 @@ public interface Channels {
 	 * Method to create channel with attributes.
 	 * 
 	 * @param friendlyName	Friendly name of the new channel.
-	 * @param channelType  Channel type
-	 * @param listener 		listener that receives this channel related events.
+	 * @param channelType   Channel type
+	 * @param listener 		Listener that receives the status of create channel action.
 	 */
 	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
 	

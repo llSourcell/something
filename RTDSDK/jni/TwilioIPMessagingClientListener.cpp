@@ -54,6 +54,8 @@ jobject createChannelObject(ITMChannelPtr channelPtr) {
 	channelContext_->channel = channelPtr;
 	jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 
+	LOGW(TAG, "channelContextHandle is %d ", channelContextHandle);
+
 	jstring nameString = jniAttacher.get()->NewStringUTF(name);
 	jstring sidString = jniAttacher.get()->NewStringUTF(sid);
 	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
@@ -170,7 +172,6 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						JNIEnvAttacher jniAttacher;
 						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelInvite_, channel);
-						//jniAttacher.get()->DeleteGlobalRef(channel);
 						LOGW(TAG,"Calling java");
 						break;
 					}
@@ -185,7 +186,6 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 						JNIEnvAttacher jniAttacher;
 						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
-						//jniAttacher.get()->DeleteGlobalRef(channel);
 						break;
 					}
 				}

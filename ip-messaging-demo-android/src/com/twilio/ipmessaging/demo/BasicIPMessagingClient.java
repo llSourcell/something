@@ -60,7 +60,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 	            @Override
 	            public void onError(Exception error)
 	            {
-	               
+	               logger.e("Error initializing the SDK :" + error.getMessage());
 	            }
 	        });
 		} else {

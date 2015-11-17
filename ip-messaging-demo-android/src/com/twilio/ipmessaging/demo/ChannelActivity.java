@@ -56,7 +56,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private Channel[] channelArray;
 	
 	private static final Handler handler = new Handler();
-	private AlertDialog incoingChannelInvite;
+	private AlertDialog incomingChannelInvite;
 	private ProgressDialog progressDialog;
 
 	
@@ -306,8 +306,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
             @Override
             public void run()
             {
-                if (incoingChannelInvite == null) {
-                    incoingChannelInvite = new AlertDialog.Builder(ChannelActivity.this)
+                if (incomingChannelInvite == null) {
+                    incomingChannelInvite = new AlertDialog.Builder(ChannelActivity.this)
                         .setTitle(R.string.incoming_call)
                         .setMessage(R.string.incoming_call_message)
                         .setPositiveButton(R.string.join, new DialogInterface.OnClickListener()
@@ -333,7 +333,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			    						logger.d("Successfully joined channel");
 			    					}
 			    	      		});	     	
-                                incoingChannelInvite = null;
+                                incomingChannelInvite = null;
                             }
                         })
                         .setNegativeButton(R.string.decline, new DialogInterface.OnClickListener()
@@ -354,11 +354,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			    					}
 			    	      			
 			    	      		});	     	
-                               incoingChannelInvite = null;
+                               incomingChannelInvite = null;
                             }
                         })
                         .create();
-                    incoingChannelInvite.show();
+                    incomingChannelInvite.show();
                 }
             }
         });

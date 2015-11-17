@@ -128,14 +128,16 @@ public class TwilioIPMessagingSDKImpl {
 					if (service.name.equals(TWILIO_IPMESSAGING_SERVICE_NAME))
 					{
 						serviceFound = true;
-						if (service.exported)
+						if (service.exported) {
 							throw new RuntimeException(TWILIO_IPMESSAGING_SERVICE_NAME+" is exported.  You must add android:exported=\"false\" to the <service> declaration in AndroidManifest.xml");
+						}
 					}
 				}
 			}
 
-			if (!serviceFound)
+			if (!serviceFound) {
 				throw new RuntimeException(TWILIO_IPMESSAGING_SERVICE_NAME + " is not declared in AndroidManifest.xml");
+			}
 		} catch (Exception e) {
 			inListener.onError(e);
 			sdkIniting = false;
