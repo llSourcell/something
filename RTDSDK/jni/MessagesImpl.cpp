@@ -237,8 +237,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
 	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
 	if(messages != nullptr) {
 		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+		jclass cls = (env)->GetObjectClass(j_statusListener_);
+		jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+		jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+
 		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
 		if(message != nullptr) {
 			messages->send(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
@@ -274,8 +276,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessa
 	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
 	if(messages != nullptr) {
 		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+		jclass cls = (env)->GetObjectClass(j_statusListener_);
+		jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+		jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
 		if(message != nullptr) {

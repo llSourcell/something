@@ -73,10 +73,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_setBodyNativ
 
 			if(listener != nullptr) {
 				jobject j_statusListener_ = env->NewGlobalRef(listener);
-				jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-				jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+				jclass cls = (env)->GetObjectClass(j_statusListener_);
+				jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+				jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
-				messagePtr->setBody(msgTextStr, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+				messagePtr->setBody(msgTextStr, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result) {
 					JNIEnvAttacher jniAttacher;
 					if (result == rtd::TMResult::kTMResultSuccess) {
 						__android_log_print(ANDROID_LOG_INFO, TAG, "Successfully set body of the message. Calling java listener.");

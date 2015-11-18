@@ -58,7 +58,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private static final Handler handler = new Handler();
 	private AlertDialog incomingChannelInvite;
 	private ProgressDialog progressDialog;
-
+	private StatusListener joinListener;
+	private StatusListener declineInvitationListener;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -219,7 +220,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == JOIN) {
 									dialog.cancel();
-									channel.join(new StatusListener() {
+									joinListener = new StatusListener() {
 				            			
 				    					@Override
 				    					public void onError() {
@@ -237,7 +238,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				    						logger.e("Successfully joined channel");
 				    					}
 				    	      			
-				    	      		});	     	
+				    	      		};
+									channel.join(joinListener);	     	
 								} 
 							}
 						});
@@ -338,22 +340,24 @@ public class ChannelActivity extends Activity implements ChannelListener {
                         })
                         .setNegativeButton(R.string.decline, new DialogInterface.OnClickListener()
                         {
-                            @Override
+
+							@Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                               channel.declineInvitation(new StatusListener() {
-			            			
-			    					@Override
-			    					public void onError() {
-			    						logger.d("Failed to decline channel invite");
-			    					}
-			    	
-			    					@Override
-			    					public void onSuccess() {
-			    						logger.e("Successfully to declined channel invite");
-			    					}
-			    	      			
-			    	      		});	     	
+							declineInvitationListener = new StatusListener() {
+
+								@Override
+								public void onError() {
+									logger.d("Failed to decline channel invite");
+								}
+
+								@Override
+								public void onSuccess() {
+									logger.e("Successfully to declined channel invite");
+								}
+
+							};
+                               channel.declineInvitation(declineInvitationListener);	     	
                                incomingChannelInvite = null;
                             }
                         })
