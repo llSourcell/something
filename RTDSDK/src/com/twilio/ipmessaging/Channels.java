@@ -32,6 +32,14 @@ public interface Channels {
 	 */
 	public Channel getChannel(String channelId);
 	
+	/** Retrieves a channel with the unique name. 
+	 * 
+	 * @param uniqueName Unique name for the channel.
+	 * @return The channel.
+	 */
+	public Channel getChannelByUniqueName(String uniqueName);
+
+	
 	/** 
 	 * Request a list of all channels loaded so far.  Will be an incomplete list until loading completes.
 	 * 

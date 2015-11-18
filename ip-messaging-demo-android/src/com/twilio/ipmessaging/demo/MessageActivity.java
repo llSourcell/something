@@ -54,7 +54,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
 	private Channel channel;
-	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy", "get attribute"};
+	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy", "get attribute", "Change Unique Name", "Get Unique Name"};
 	
 	private static final int NAME_CHANGE = 0;
 	private static final int TOPIC_CHANGE = 1;
@@ -66,6 +66,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private static final int CHANNEL_TYPE = 7;
 	private static final int CHANNEL_DESTROY = 8;
 	private static final int CHANNEL_ATTRIBUTE = 9;
+	private static final int SET_CHANNEL_UNIQUE_NAME = 10;
+	private static final int GET_CHANNEL_UNIQUE_NAME = 11;
 	
 	private static final int REMOVE = 0;
 	private static final int EDIT = 1;
@@ -213,10 +215,15 @@ public class MessageActivity extends Activity implements ChannelListener{
     					}
     	      		};
 					channel.destroy(destroyListener);	     	
-				} if (which == CHANNEL_ATTRIBUTE) {
-					Map<String,String> attrs = channel.getAttributes();
+				} else if (which == CHANNEL_ATTRIBUTE) {
+					Map<String, String> attrs = channel.getAttributes();
 					showToast(attrs.toString());
-				} 
+				} else if (which == SET_CHANNEL_UNIQUE_NAME) {
+					showChangeUniqueNameDialog();
+				} else if (which == GET_CHANNEL_UNIQUE_NAME) {
+					String uniquName = channel.getUniqueName();
+					showToast(uniquName);
+				}
 			}
 		});
 		
@@ -735,5 +742,38 @@ public class MessageActivity extends Activity implements ChannelListener{
 			typingIndc.setText(null);
 			logger.d(member.getIdentity() + " ended typing");
 		}
+	}
+	
+	private void showChangeUniqueNameDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_edit_unique_name, null))
+				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String uniqueName = ((EditText) editTextDialog.findViewById(R.id.update_unique_name)).getText()
+								.toString();
+						logger.e(uniqueName);
+						channel.setUniqueName(uniqueName, new StatusListener() {
+
+							@Override
+							public void onError() {
+								logger.e("Error changing name");
+							}
+
+							@Override
+							public void onSuccess() {
+								logger.e("successfully changed name");
+							}
+						});
+					}
+				});
+		editTextDialog = builder.create();
+		editTextDialog.show();
 	}
 }

@@ -48,6 +48,14 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getMyChannelsNative
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
+ * Method:    getChannelNativeWithUniqueName
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelNativeWithUniqueName
+  (JNIEnv *, jobject, jstring, jlong);
+
 #ifdef __cplusplus
 }
 #endif
