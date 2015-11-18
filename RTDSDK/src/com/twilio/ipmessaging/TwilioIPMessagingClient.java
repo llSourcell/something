@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging;
 
+import java.util.Map;
+
 import com.twilio.ipmessaging.Constants.StatusListener;
 
 import android.app.PendingIntent;
@@ -54,16 +56,25 @@ public interface TwilioIPMessagingClient {
 	 * 				it can receive messages.
 	 * @param listener Listener that will receive callback with the result.
 	 */
-	 public void registerWithToken(String token, StatusListener listener);
+	 public void registerGCMToken(String token, StatusListener listener);
 
-	/** Unregister push notification updates.
+	/** Unregister from push notification updates.
 	 * 
 	 * @param token The registration token provided for GCM push notification registration.
 	 * @param listener Listener that will receive callback with the result.
 	 * 
 	 */
-	public void unregisterWithToken(String token, StatusListener listener);
+	public void unregisterGCMToken(String token, StatusListener listener);
 	
+	
+	/**
+	 * Queue the incoming notification with the messaging library for processing.
+	 * By overriding the method GcmListenerService.onMessageReceived, you can perform actions based on the received message.
+ 	 * 
+ 	 * @param notification Notification received from GCM
+	 */
+	public void handleNotification(Map<String, String> notification);
+
 	
 	/**
 	 * Cleanly shut down the messaging subsystem when you are done with it. 

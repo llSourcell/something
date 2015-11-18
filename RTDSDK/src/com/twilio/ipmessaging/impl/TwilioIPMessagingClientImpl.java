@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONObject;
+
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
@@ -177,16 +179,24 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 	
 	@Override
-	public void registerWithToken(String token, StatusListener listener) {
+	public void registerGCMToken(String token, StatusListener listener) {
 		//::TODO listener implementation
 		registerWithToken(this.nativeClientParamContextHandle, token, listener);
 	}
 
 
 	@Override
-	public void unregisterWithToken(String token, StatusListener listener) {
+	public void unregisterGCMToken(String token, StatusListener listener) {
 		//::TODO listener implementation
 		unRegisterWithToken(this.nativeClientParamContextHandle, token, listener);
+	}
+	
+	@Override
+	public void handleNotification(Map<String, String> notification) {
+		JSONObject jsonObj = new JSONObject(notification);	
+		if(jsonObj != null) {
+			handleNotificationNative(this.nativeClientParamContextHandle, jsonObj.toString());
+		}
 	}
 	
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
@@ -196,4 +206,6 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private native void shutDownNative(long nativeClientParam);
 	private native void registerWithToken(long nativeClientParam, String token, StatusListener listener);
 	private native void unRegisterWithToken(long nativeClientParam, String token, StatusListener listener);
+	private native void handleNotificationNative(long nativeClientParam, String notification);
+
 }

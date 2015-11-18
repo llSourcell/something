@@ -63,6 +63,14 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_unRegisterWithToken
   (JNIEnv *, jobject, jlong, jstring, jobject);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    handleNotificationNative
+ * Signature: (JLjava/lang/String)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_handleNotificationNative
+  (JNIEnv *, jobject, jlong, jstring);
+
 
 
 #ifdef __cplusplus

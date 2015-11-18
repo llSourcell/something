@@ -371,5 +371,25 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 			}
 		}
 	}
+}
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    handleNotificationNative
+ * Signature: (JLjava/lang/String)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_handleNotificationNative
+  (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring notification) {
+	if (nativeClientContext == 0) {
+			LOGW(TAG,"client context is null");
+	} else {
+		const char *notificationString = env->GetStringUTFChars(notification, 0);
+		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
+		if(clientParamsRecreate != nullptr) {
+			ITNNotificationClientPtr notificationClient = clientParamsRecreate->notificationClient;
+			if(notificationClient != nullptr) {
+				notificationClient->ReceivedNotification(TNChannelType::GCM, std::string(notificationString));
+			}
+		}
+	}
 }
