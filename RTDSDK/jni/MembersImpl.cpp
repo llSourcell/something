@@ -89,8 +89,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_invite
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
 		LOGD(TAG, "client context is recreated.");
 		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+		jclass cls = (env)->GetObjectClass(j_statusListener_);
+		jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+		jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+
 		if(membersContextRecreate != nullptr && membersContextRecreate->members != nullptr) {
 
 			ITMMembersPtr members = membersContextRecreate->members;
@@ -144,8 +146,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_add
 
 		if(membersContextRecreate != nullptr) {
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+
 			if(membersContextRecreate->members != nullptr) {
 				ITMMembersPtr members = membersContextRecreate->members;
 				ITMMemberPtr memberPtr = members->createMember(nativeString);
@@ -195,8 +199,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
 		MembersContext *membersContextRecreate = reinterpret_cast<MembersContext *>(nativeMembersContext);
 		if(membersContextRecreate != nullptr) {
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+
 			MemberContext *memberContextRecreate = reinterpret_cast<MemberContext *>(nativeMemberContext);
 			LOGD(TAG,"memberContext is recreated.");
 			if(memberContextRecreate->member != nullptr) {

@@ -42,8 +42,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 
 		if (channelsPtr != nullptr) {
 			jobject j_createChanneListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onCreated_ = tw_jni_get_method(env, j_createChanneListener_, "onCreated", "(Lcom/twilio/ipmessaging/Channel;)V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_createChanneListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_createChanneListener_);
+			jmethodID j_onCreated_ = (env)->GetMethodID(cls, "onCreated", "(Lcom/twilio/ipmessaging/Channel;)V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			const char *nativeNameString = env->GetStringUTFChars(friendlyName, JNI_FALSE);
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
@@ -339,18 +340,14 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			int type = 0;
 			switch (channelPtr->getType()) {
 				case rtd::TMChannelType::kTMChannelTypePublic:
-					//__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePublic");
 					type = 0;
 					break;
 				case rtd::TMChannelType::kTMChannelTypePrivate:
-					//__android_log_print(ANDROID_LOG_INFO, TAG, "getChannelsNative:Setting type to kTMChannelTypePrivate");
 					type = 1;
 					break;
 				default:
 					break;
 			}
-
-			//__android_log_print(ANDROID_LOG_INFO, TAG, "Channel type %d: ", type);
 
 			ChannelContext* channelContext_ = new ChannelContext();
 			channelContext_->channel = channelPtr;

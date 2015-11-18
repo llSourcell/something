@@ -35,8 +35,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 		if(listener!= nullptr) {
 			LOGD(TAG, "Join channel listener is not null.");
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			ITMChannelPtr channel = channelContext->channel;
 			if(channel != nullptr) {
@@ -95,9 +96,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
 	if(channelContext != nullptr) {
 		ITMChannelPtr channel = channelContext->channel;
 		if(listener!= nullptr) {
+
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			if(channel != nullptr) {
 				LOGD(TAG,"Leaving channel with sid : %s ", nativeString);
@@ -151,8 +154,10 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
 		ITMChannelPtr channel = channelContext->channel;
 		if(listener != nullptr) {
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+
 
 			if(channel != nullptr) {
 				LOGW(TAG, "Destroying channel with sid : %s ", nativeString);
@@ -213,11 +218,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 		ITMChannelPtr channel = channelContext->channel;
 
 		if(listener != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
-		if(channel != nullptr) {
+			if(channel != nullptr) {
 				LOGW("Update Name for channel with sid : %s ", nativeSidString);
 				channel->setFriendlyName(nativeNameString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
 					JNIEnvAttacher jniAttacher;
@@ -267,8 +273,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 
 		if(listener != nullptr) {
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			if(channel != nullptr) {
 				LOGW("Update channel Type for channel with sid : %s ", nativeSidString);
@@ -347,8 +354,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 		ITMChannelPtr channel = channelContext->channel;
 		if(listener != nullptr) {
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			if(channel != nullptr) {
 				LOGW("Update Attribute for channel with sid : %s ", nativeSidString);
@@ -401,8 +409,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 		ITMChannelPtr channel = channelContext->channel;
 		if (listener != nullptr) {
 			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			if(channel != nullptr) {
 				LOGD(TAG,"Decline invite for channel with sid : %s ", nativeSidString);
