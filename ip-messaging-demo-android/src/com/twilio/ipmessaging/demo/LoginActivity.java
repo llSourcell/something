@@ -25,9 +25,12 @@ import android.widget.Toast;
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 		
-	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
+	//private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
 	
-	private static final String DEFAULT_CLIENT_NAME = "TestUser";
+	//PROD TDL
+	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC96ccc904753b3364f24211e8d9746a93&auth_token=647e1a16c9e5285b4188ca36e4aca150&service_sid=IS2f100be24f76492abdc40352aa22e367&identity=";
+	
+			private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
 	private Button login;
 	private Button logout;
