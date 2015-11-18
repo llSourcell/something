@@ -1,8 +1,8 @@
 To build the project:
 
 1. Run `git submodule update --init` to get `twilio-jni` depedency.
-2. Run `./Script/combine-dependencies.sh` to get RTD libraries and their dependencies.
-3. Run `ndk-build` to build the shared library.
+2. Run `./RTDSDK/Script/combine-dependencies.sh` to get RTD libraries and their dependencies.
+3. Run `ndk-build` in `./RTDSDK/jni` directory to build the shared library.
 
 
 
