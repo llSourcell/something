@@ -39,6 +39,9 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	/** The current user's status on this channel. */
 	protected ChannelStatus status;
+	
+	/** The unique name for this channel. */
+	protected String uniqueName;
 
 	/** The channel's visibility type. */
 	protected ChannelType type;
@@ -195,6 +198,16 @@ public class ChannelImpl implements Channel, Parcelable{
 		} else {
 			logger.e("StatusListener is null.");
 		}
+	}
+	
+	@Override
+	public String getUniqueName() {
+		return getUniqueName(this.nativeChannelContextHandle);
+	}
+	
+	@Override
+	public void setUniqueName(String uniqueName, StatusListener listener) {
+		this.updateUniqueName(this.nativeChannelContextHandle,this.getSid(), uniqueName, listener);
 	}
 
 	@Override
@@ -397,6 +410,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name, StatusListener listener);
 	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType, StatusListener listener);
 	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap, StatusListener listener);
+	private native void updateUniqueName(long nativeChannelContextHandle, String channel_sid, String name, StatusListener listener);
 	
 	private native Messages getMessagesObject(long nativeChannelContextHandle, String channel_sid);
 	private native int getStatus(long nativeChannelContextHandle, String channel_sid);   
@@ -404,5 +418,6 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native String getChannelSidNative(long nativeChannelContextHandle);
 	private native void typingStartNative(long nativeChannelContextHandle);
 	private native String getChannelAttributesNative(long nativeChannelContextHandle);
+	private native String getUniqueName(long nativeChannelContextHandle);
 
 }

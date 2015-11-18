@@ -632,3 +632,68 @@ JNIEXPORT jint JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus
 	env->ReleaseStringUTFChars(channel_sid, nativeString);
 }
 
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    updateChannelName
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUniqueName
+  (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring modifiedChannelName, jobject listener) {
+
+	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+	const char *nativeNameString = env->GetStringUTFChars(modifiedChannelName, JNI_FALSE);
+	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
+
+	if(channelContext != nullptr) {
+		jobject j_statusListener_ = env->NewGlobalRef(listener);
+		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
+		ITMChannelPtr channel = channelContext->channel;
+
+		if(channel != nullptr) {
+			LOGD("Update Unique Name for channel with sid : %s ", nativeSidString);
+			channel->setUniqueName(nativeNameString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+				JNIEnvAttacher jniAttacher;
+				if (result == rtd::TMResult::kTMResultSuccess) {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Update unique name for channel is successful. Calling java listener.");
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				} else {
+					__android_log_print(ANDROID_LOG_INFO, TAG, "Update Unique Name for channel failed");
+
+					//Call Java
+					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+				}
+			});
+		} else {
+			env->DeleteGlobalRef(j_statusListener_);
+		}
+	}
+	env->ReleaseStringUTFChars(channel_sid, nativeSidString);
+	env->ReleaseStringUTFChars(channel_sid, nativeNameString);
+}
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getUniqueName
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getUniqueName
+(JNIEnv *env, jobject obj, jlong nativeChannelContext) {
+	__android_log_print(ANDROID_LOG_INFO, TAG, "Entered getChannelAttributesNative");
+	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
+	jstring attrString;
+	if(clientChannelContext != nullptr) {
+		ITMChannelPtr channel = clientChannelContext->channel;
+		if(channel != nullptr) {
+			const char* attr = channel->getUniqueName().c_str();
+			attrString = env->NewStringUTF(attr);
+		}
+	}
+	return attrString;
+}
+

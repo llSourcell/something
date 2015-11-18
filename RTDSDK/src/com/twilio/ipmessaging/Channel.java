@@ -121,6 +121,22 @@ public interface Channel {
 	public void setType(ChannelType type, StatusListener listener);
 	
 	/**
+	 * Method that returns the unique Name of the channel.
+	 * 
+	 * @return the unique Name.
+	 */
+	public String getUniqueName();
+	
+	/**
+	 * Updates the unique name for this channel.
+	 * 
+	 * @param uniqueName	The new unique name for this channel.
+	 * @param listener		Listener that will receive callback with the result.
+	 * 
+	 */
+	public void setUniqueName(String uniqueName, StatusListener listener);
+	
+	/**
 	 * Joins the current user to the channel.
 	 * @param listener
 	 * 

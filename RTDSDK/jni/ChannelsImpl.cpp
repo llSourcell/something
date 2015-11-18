@@ -271,6 +271,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
 
 				} else {
 					LOGW(TAG, "Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel channels is null");
+					return nullptr;
 				}
 			}
 		}
@@ -361,6 +362,98 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 	return channelsArray ;
 
+}
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
+ * Method:    getChannelNativeWithUniqueName
+ * Signature: (Ljava/lang/String;J)V
+ */
+JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelNativeWithUniqueName
+  (JNIEnv *env, jobject obj, jstring channel_sid, jlong nativeChannelsContext) {
+
+	jobject channel;
+
+	if(channel_sid != nullptr) {
+		const char *nativeString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
+		LOGD( TAG, "getChannelNativeWithUniqueName : Checking nativeChannelsContext.");
+
+		if (nativeChannelsContext == 0) {
+			LOG_W(TAG, "nativeChannelsContext is null");
+			return nullptr;
+		} else {
+			ChannelsContext *channelsContextRecreate = reinterpret_cast<ChannelsContext *>(nativeChannelsContext);
+			LOGD(TAG, "client context is recreated.");
+
+			if(channelsContextRecreate == nullptr) {
+				LOG_W(TAG,"createChannelNative : channelsContextRecreate is NULL.");
+				return 0;
+			}
+
+			if(channelsContextRecreate->channels == nullptr) {
+				LOG_W(TAG, "createChannelNative : ITChannelsPtr is NULL.");
+				return 0;
+			}
+
+			ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
+			if(channelsPtr != nullptr) {
+				ITMChannelPtr channelPtr = channelsPtr->getChannelByUniqueName(nativeString);
+				if(channelPtr != nullptr) {
+					LOGD(TAG, "Creating channel with sid : %s ", nativeString);
+					//Create channel context
+					ChannelContext* channelContext_ = new ChannelContext();
+					channelContext_->channel = channelPtr;
+					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
+
+					const char* sid = channelPtr->getSid().c_str();
+					const char* name = channelPtr->getFriendlyName().c_str();
+
+					LOGD(TAG, "Channel Name  : %s.", name );
+					LOGD(TAG, "Channel Sid %s", sid);
+
+					jstring nameString = env->NewStringUTF(name);
+					jstring sidString = env->NewStringUTF(sid);
+					int status = 0;
+					switch (channelPtr->getStatus()) {
+						case rtd::TMChannelStatus::kTMChannelStatusInvited:
+							status = 0;
+							break;
+						case rtd::TMChannelStatus::kTMChannelStatusJoined:
+							status = 1;
+							break;
+						case rtd::TMChannelStatus::kTMChannelStatusNotParticipating:
+							status = 2;
+							break;
+						default:
+							break;
+					}
+
+					int type = 0;
+					switch (channelPtr->getType()) {
+						case rtd::TMChannelType::kTMChannelTypePublic:
+							type = 0;
+							break;
+						case rtd::TMChannelType::kTMChannelTypePrivate:
+							type = 1;
+							break;
+						default:
+							break;
+					}
+
+					//create channel object
+					jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
+					jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
+					channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
+					LOGD(TAG, "Created Channel Object.");
+
+				} else {
+					LOGW(TAG, "Channel by unique name %s not found", nativeString);
+					return nullptr;
+				}
+			}
+		}
+	}
+	return channel;
 }
 
 

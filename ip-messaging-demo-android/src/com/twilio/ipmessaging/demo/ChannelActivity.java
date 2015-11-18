@@ -84,6 +84,9 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		case R.id.action_create_private:
 			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
 			break;
+		case R.id.action_search_by_unique_name:
+			showSearchChannelDialog();
+			break;
 		case R.id.action_logout:
 			basicClient.getIpMessagingClient().shutdown();
 			finish();
@@ -191,6 +194,43 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		createChannelDialog = builder.create();
 		createChannelDialog.show();
 	}
+	
+	
+	private void showSearchChannelDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+		String title = "Enter unique channel name";
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_search_channel, null)).setTitle(title)
+				.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						
+						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
+								.toString();
+						logger.e(channelName);
+						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+						final Channel channel = channelsLocal.getChannelByUniqueName(channelName);
+				            		
+	            		runOnUiThread(new Runnable() {
+	            	        @Override
+	            	        public void run() {
+	            	        	if(channel !=null ) {
+	            	        		showToast(channel.getSid()+":"+channel.getFriendlyName());
+	            	        	} else {
+	            	        		showToast("Channel not found.");
+	            	        	}
+	            	        }
+	            	    });
+					}
+				});
+		createChannelDialog = builder.create();
+		createChannelDialog.show();
+	}
+
 
 	private void setupListView() {
 		listView = (ListView) findViewById(R.id.channel_list);

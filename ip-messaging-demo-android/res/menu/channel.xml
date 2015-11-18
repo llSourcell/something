@@ -19,6 +19,12 @@
                 android:showAsAction="ifRoom"
                 android:title="@string/Create_private_channel"/>
             <item
+                android:id="@+id/action_search_by_unique_name"
+                android:icon="@drawable/ic_action_content_add"
+                android:orderInCategory="100"
+                android:showAsAction="ifRoom"
+                android:title="@string/Search_channel_by_unique_name"/>
+            <item
                 android:id="@+id/action_logout"
                 android:icon="@drawable/ic_action_settings"
                 android:orderInCategory="100"

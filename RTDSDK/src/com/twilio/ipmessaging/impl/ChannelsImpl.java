@@ -57,6 +57,11 @@ public class ChannelsImpl implements Channels {
 	}
 	
 	@Override
+	public Channel getChannelByUniqueName(String uniqueName) {
+		return this.getChannelNativeWithUniqueName(uniqueName, this.nativeChannelsHandler);
+	}
+	
+	@Override
 	public Channel[] getChannels() {	
 		return this.alllObjects;
 	}
@@ -150,6 +155,6 @@ public class ChannelsImpl implements Channels {
 	private native void createChannelNativeWithListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener);
 	private native ChannelImpl getChannelNative(String channelId, long handle);
 	private native ChannelImpl[] getChannelsNative(long handle);
-
+	private native ChannelImpl getChannelNativeWithUniqueName(String uniqueChannelName, long handle);
 
 }
