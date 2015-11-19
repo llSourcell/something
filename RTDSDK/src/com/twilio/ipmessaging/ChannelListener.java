@@ -74,7 +74,7 @@ public interface ChannelListener {
 	public void onTypingEnded(Member member);
 	
 	/**
-	 * Called when Messages synchronization for this Channel completes.
+	 * Called when Message synchronization for this Channel completes.
 	 * 
 	 */
 	public void onChannelHistoryLoaded();

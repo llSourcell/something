@@ -43,7 +43,7 @@ public interface IPMessagingClientListener {
 	public void onAttributesChange(String attributes);
 	
 	/**
-	 * Called when Messages synchronization for this Channel completes.
+	 * Called when Message synchronization for this Channel completes.
 	 * 
 	 */
 	public void onChannelHistoryLoaded(Channel channel);
