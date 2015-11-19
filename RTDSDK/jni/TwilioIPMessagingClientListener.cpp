@@ -339,13 +339,12 @@ void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannel
 void TwilioIPMessagingClientListener::onChannelSynchronization(
 		TMSynchronization event, ITMChannelPtr channelPtr) {
 	if (event == TMSynchronization::kTMSynchronizationCompleted) {
-		__android_log_print(ANDROID_LOG_INFO, TAG,
-				"onChannelSynchronization:: KKKKKKKKKKKKKKKKKK");
+		__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::kTMSynchronizationCompleted");
 		auto messages = channelPtr->getMessages();
 		messages->fetchLastMessages(
 				[this,channelPtr, messages](TMResult result, std::vector<uint64_t> indexes) {
 					if (result == TMResult::kTMResultSuccess) {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization:: SUCCCCCCCESSSSSS");
+						__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::fetchLastMessages::kTMResultSuccess");
 						JNIEnvAttacher jniAttacher;
 						jobject channel;
 						for (auto& it: indexes) {
