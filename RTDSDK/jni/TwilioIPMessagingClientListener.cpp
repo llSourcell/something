@@ -347,13 +347,14 @@ void TwilioIPMessagingClientListener::onChannelSynchronization(
 						__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::fetchLastMessages::kTMResultSuccess");
 						JNIEnvAttacher jniAttacher;
 						jobject channel;
-						for (auto& it: indexes) {
-							auto message = messages->getMessageByIndex(it);
+						auto messages = channelPtr->getMessages();
+						if (messages == nullptr) {
+							return;
+						} else {
+							channel = createChannelObject(channelPtr);
+							__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::calling channelListener:j_onChannelSync_.");
+							jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onChannelSync_, channel);
 						}
-
-						channel = createChannelObject(channelPtr);
-						__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::calling channelListener:j_onChannelSync_.");
-						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onChannelSync_, channel);
 					}
 				}, 2000000000);
 	}
