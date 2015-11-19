@@ -310,9 +310,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
 							if (channelsObject != null) {
 								channelArray = channelsObject.getChannels();
 								setupListenersForChannel(channelArray);
-								ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-								Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
-								adapter.notifyDataSetChanged();
+								if(ChannelActivity.this.channels != null && channelArray != null ) {
+									ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+									Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+									adapter.notifyDataSetChanged();
+								}
 							}
 						}
 		      		});	     	
