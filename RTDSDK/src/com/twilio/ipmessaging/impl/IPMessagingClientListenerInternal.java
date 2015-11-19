@@ -64,7 +64,6 @@ public class IPMessagingClientListenerInternal {
 		}
 	}
 
-
 	public void onMemberDelete(Member member, Channel channel) {
 		logger.d("Entered onMemberDelete");
 		if(channel != null) {
@@ -133,6 +132,21 @@ public class IPMessagingClientListenerInternal {
 			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
 				channelImpl.handleOnTypingEnded(member);
+			}
+		}
+	}
+	
+	public void onChannelSync(ChannelImpl channel) {
+		logger.d("Entered onChannelSync");
+		if(channel != null) {
+			String cSid = channel.getSid();
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleOnChannelSync();
+			}
+			
+			if(this.ipmClient != null) {
+				this.ipmClient.handleOnChannelSync(channel);
 			}
 		}
 	}

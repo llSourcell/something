@@ -776,4 +776,9 @@ public class MessageActivity extends Activity implements ChannelListener{
 		editTextDialog = builder.create();
 		editTextDialog.show();
 	}
+
+	@Override
+	public void onChannelHistoryLoaded() {
+		logger.d("Received onChannelSynchronization callback");
+	}
 }
