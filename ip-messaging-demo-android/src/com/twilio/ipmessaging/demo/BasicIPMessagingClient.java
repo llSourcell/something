@@ -134,6 +134,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 	private void createClientWithToken(LoginListener listener) {
 		ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithToken(capabilityToken, BasicIPMessagingClient.this);
     	if(ipMessagingClient != null) {
+    		ipMessagingClient.setListener(this);
         	Intent intent = new Intent(context,ChannelActivity.class);
         	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         	ipMessagingClient.setIncomingIntent(pendingIntent);
@@ -143,5 +144,10 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
     	} else {
     		listener.onLoginError("ipMessagingClient is null");
     	}
+	}
+
+	@Override
+	public void onChannelHistoryLoaded(Channel channel) {
+		logger.d("Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
 	}
 }

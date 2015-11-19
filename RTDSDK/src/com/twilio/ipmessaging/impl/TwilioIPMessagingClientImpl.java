@@ -170,6 +170,12 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		}
 	}
 	
+	public void handleOnChannelSync(ChannelImpl channel) {
+		if(this.ipMessagingListener != null) {
+			this.ipMessagingListener.onChannelHistoryLoaded(channel);
+		}
+	}
+	
 	UUID getUUID()
 	{
 		return uuid;

@@ -82,7 +82,8 @@ TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,job
     j_onTypingStarted_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onTypingStarted", "(Lcom/twilio/ipmessaging/Channel;Lcom/twilio/ipmessaging/Member;)V");
     j_onTypingEnded_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onTypingEnded", "(Lcom/twilio/ipmessaging/Channel;Lcom/twilio/ipmessaging/Member;)V");
     j_onError_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onError", "(ILjava/lang/String;)V");
-	env_ = env;
+    j_onChannelSync_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelSync", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
+    env_ = env;
 }
 
 TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
@@ -332,6 +333,30 @@ void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannel
    			break;
    		}
    	}
+}
+
+
+void TwilioIPMessagingClientListener::onChannelSynchronization(
+		TMSynchronization event, ITMChannelPtr channelPtr) {
+	if (event == TMSynchronization::kTMSynchronizationCompleted) {
+		__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::kTMSynchronizationCompleted");
+		auto messages = channelPtr->getMessages();
+		messages->fetchLastMessages(
+				[this,channelPtr, messages](TMResult result, std::vector<uint64_t> indexes) {
+					if (result == TMResult::kTMResultSuccess) {
+						__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::fetchLastMessages::kTMResultSuccess");
+						JNIEnvAttacher jniAttacher;
+						jobject channel;
+						for (auto& it: indexes) {
+							auto message = messages->getMessageByIndex(it);
+						}
+
+						channel = createChannelObject(channelPtr);
+						__android_log_print(ANDROID_LOG_INFO, TAG, "onChannelSynchronization::calling channelListener:j_onChannelSync_.");
+						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_,j_onChannelSync_, channel);
+					}
+				}, 2000000000);
+	}
 }
 
 

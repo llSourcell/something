@@ -34,6 +34,8 @@ public:
     void onMember(TMAction action, ITMMemberPtr member);
     void onError(const std::string& error);
 
+    void onChannelSynchronization(TMSynchronization event, ITMChannelPtr channel);
+
     void onToastNotification(const std::string& channelId, const std::string& messageId);
     void onToastSubscribed();
     void onToastFailed(TNError code);
@@ -54,6 +56,7 @@ private:
     jmethodID j_onTypingStarted_;
     jmethodID j_onTypingEnded_;
 	jmethodID j_onError_;
+	jmethodID j_onChannelSync_;
 	JNIEnv* env_;
 };
 

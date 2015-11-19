@@ -472,4 +472,9 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			logger.d(member.getIdentity() + " ended typing");
 		}
 	}
+	
+	@Override
+	public void onChannelHistoryLoaded() {
+		logger.d("Received onChannelHistoryLoaded callback");
+	}
 }

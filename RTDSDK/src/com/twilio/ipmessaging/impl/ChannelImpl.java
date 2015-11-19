@@ -402,6 +402,19 @@ public class ChannelImpl implements Channel, Parcelable{
 		}	
 	}
 	
+	public void handleOnChannelSync() {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onChannelHistoryLoaded();
+					}
+				}
+			});
+		}		
+	}
+	
 	private native void joinChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);

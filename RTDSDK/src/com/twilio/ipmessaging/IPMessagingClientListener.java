@@ -27,7 +27,6 @@ public interface IPMessagingClientListener {
 	 */
 	public void onChannelDelete(Channel channel);
 	
-
 	/**
 	 * Called when an error condition occurs.
 	 * 
@@ -42,5 +41,11 @@ public interface IPMessagingClientListener {
 	 * @param attributes The updated attributes string.
 	 */
 	public void onAttributesChange(String attributes);
-
+	
+	/**
+	 * Called when Message synchronization for this Channel completes.
+	 * 
+	 */
+	public void onChannelHistoryLoaded(Channel channel);
+	
 }
