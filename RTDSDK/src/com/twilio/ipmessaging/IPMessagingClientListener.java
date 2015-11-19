@@ -45,6 +45,7 @@ public interface IPMessagingClientListener {
 	/**
 	 * Called when Message synchronization for this Channel completes.
 	 * 
+	 * @param channel Callback for this Channel.
 	 */
 	public void onChannelHistoryLoaded(Channel channel);
 	
