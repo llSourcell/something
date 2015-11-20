@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 import com.twilio.rtd.demo.R;
 
@@ -38,10 +40,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private BasicIPMessagingClient chatClient;
 	private String endpoint_id = "";
 	public static String local_author = DEFAULT_CLIENT_NAME;
-	private String regid;
-	//https://console.developers.google.com/home/dashboard?project=ip-messaging-android-demo
     private String PROJECT_NUMBER = "215048275735";
-    private GoogleCloudMessaging gcm;
     private EditText etRegId;
 	
 	@Override
@@ -68,8 +67,8 @@ public class LoginActivity extends Activity implements LoginListener {
 				url.append(clientNameTextBox.getText().toString());
 				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
 				logger.e("url string : " + url.toString());
-				//getRegId();
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
+				//getRegId();
 			}
 		});
 
@@ -133,8 +132,12 @@ public class LoginActivity extends Activity implements LoginListener {
 		logger.d("Log in started");
 	}
 
+	
+	
 	@Override
 	public void onLoginFinished() {
+//		?setUp();
+		getRegId();
 		LoginActivity.this.progressDialog.dismiss();
 		Intent intent = new Intent(this, ChannelActivity.class);
 		this.startActivity(intent);
@@ -153,29 +156,51 @@ public class LoginActivity extends Activity implements LoginListener {
 
 	}
 	
+	public void setUp(){
+		InstanceID instanceID = InstanceID.getInstance(getApplicationContext());
+		try {
+			instanceID.getToken(PROJECT_NUMBER, "/topics/global", null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 	 public void getRegId(){
 	        new AsyncTask<Void, Void, String>() {
 	            @Override
 	            protected String doInBackground(Void... params) {
-	                String msg = "";
+	                String token = "";
+	                InstanceID instanceId = InstanceID.getInstance(getApplicationContext());
 	                try {
-	                    if (gcm == null) {
-	                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-	                    }
-	                    regid = gcm.register(PROJECT_NUMBER);
-	                    msg = "Device registered, registration ID=" + regid;
-	                    Log.i("GCM",  msg);
-
-	                } catch (IOException ex) {
-	                    msg = "Error :" + ex.getMessage();
-
-	                }
-	                return msg;
+	                	Log.e("LA", "GCM - Getting Token");
+						token = instanceId.getToken(PROJECT_NUMBER, null);
+						Log.e("LA", "GCM - Token: " + token);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	                return token; 
 	            }
 
 	            @Override
-	            protected void onPostExecute(String msg) {
-	                etRegId.setText(msg + "\n");
+	            protected void onPostExecute(String token) {
+	            	etRegId.setText(token);
+	            	Log.e("LA", "GCM - registering with native library");
+	            	chatClient.getIpMessagingClient().registerGCMToken(token, new StatusListener() {
+            			
+    					@Override
+    					public void onError() {
+    						Log.e("LA", "GCM - onError()");
+    					}
+    	
+    					@Override
+    					public void onSuccess() {
+    						Log.e("LA", "GCM - onSuccess()");
+    					}
+    	      		});
 	            }
 	        }.execute(null, null, null);
 	    }

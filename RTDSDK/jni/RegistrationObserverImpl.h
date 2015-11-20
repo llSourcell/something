@@ -25,9 +25,9 @@ class RegistrationObserverImpl : public ITNRegistrationObserver
 public:
 	RegistrationObserverImpl(JNIEnv* env,jobject obj,jobject j_listener);
 	virtual ~RegistrationObserverImpl();
-    void onRegStateChanged(const TNChannelType& type, const TNNotificationID& nId, TNRegistrationStates state) = 0;
-    void onError(const TNErrorDescription& message, TNError code) = 0;
-    void onFatalError(const TNErrorDescription& message, TNError code) = 0;
+    void onRegStateChanged(const TNChannelType& type, const TNNotificationID& nId, TNRegistrationStates state);
+    void onError(const TNErrorDescription& message, TNError code);
+    void onFatalError(const TNErrorDescription& message, TNError code);
 
 private:
     jobject j_statusListener_;

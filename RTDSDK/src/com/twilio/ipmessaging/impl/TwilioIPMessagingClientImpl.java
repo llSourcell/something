@@ -18,11 +18,12 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
 	private static final Logger logger = Logger.getLogger(TwilioIPMessagingClientImpl.class);
-	
+	private static final String TAG = "TwilioIPMessagingClientImpl-java";
 	private Context context;	
 	private String identity;
 	private IPMessagingClientListener ipMessagingListener;
@@ -181,6 +182,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	@Override
 	public void registerGCMToken(String token, StatusListener listener) {
 		//::TODO listener implementation
+		Log.e(TAG, "GCM - registerGCMToken");
 		registerWithToken(this.nativeClientParamContextHandle, token, listener);
 	}
 
