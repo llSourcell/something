@@ -10,8 +10,6 @@
 
 #include <Poco/Foundation.h>
 
-//#include <Common/TLLogger.h>
-
 #include <android/log.h>
 
 #include "ITMClient.h"

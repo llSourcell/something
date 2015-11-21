@@ -15,6 +15,15 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl_create
   (JNIEnv *, jobject);
 
+/*
+ * Class:	  com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl
+ * Method:	  setLogLevelNative
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl_setLogLevelNative
+  (JNIEnv *env, jobject obj, jint level);
+
+
 #ifdef __cplusplus
 }
 #endif

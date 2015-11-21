@@ -6,13 +6,15 @@
 #include <android/log.h>
 #include <array>
 #include <Notification/ITNNotificationClient.h>
+#include <Common/TLLoggerInitializer.h>
 #include <Poco/Net/SSLManager.h>
 #include <Poco/Net/Context.h>
 #include <Poco/Net/PrivateKeyPassphraseHandler.h>
 #include <Poco/UUIDGenerator.h>
-//#include <Common/TLLoggerInitializer.h>
-#include <twilio-jni/twilio-jni.h>
-//#include <Twilsock/ITNTwilsockClient.h>
+#include <twilio-jni/JNIEnvAttacher.h>
+#include <twilio-jni/tw-jni.h>
+#include <twilio-jni/tw-jni-compat.h>
+
 
 #include "ITMClient.h"
 #include "ITMChannels.h"
@@ -23,6 +25,8 @@
 #include "ITMMember.h"
 #include "TwilioIPMessagingSDKImpl.h"
 #include "TwilioIPMessagingClientContextDefines.h"
+#include "TwilioIPMessagingLogger.h"
+
 
 
 #define TAG  "TwilioIPMessagingSDK(native)"
@@ -54,18 +58,25 @@ using namespace rtd;
 #define TEST_TWILSOCK_SERVICE "https://tsock.dev-us1.twilio.com"
 #define TEST_DATA_SERVICE "https://cds.dev-us1.twilio.com"
 #define TEST_SUBSCRIPTIONS_SERVICE "https://cds.dev-us1.twilio.com"
-#endif
-
+#endif*/
 
 class LogListener: public ITLLogListener {
 public :
-	void onNewEntry(const char * c, const char* prefix) {
-		__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", c, prefix);
+	void onNewEntry(const char * c, const char* prefix, TLLogLevel level) {
+		if( level == TLLogLevel::Debug) {
+			LOG_DEBUG(TAG, "%s", c);
+		} else if( level == TLLogLevel::Info ) {
+			LOG_INFO(TAG, "%s", c);
+		} else if( level == TLLogLevel::Warning ) {
+			LOG_WARN(TAG, "%s", c);
+		} else if( level == TLLogLevel::Critical || level == TLLogLevel::Fatal) {
+			LOG_ERROR(TAG, "%s", c);
+		}
 	}
 
 };
 
-static LogListener logger; */
+static LogListener logger;
 
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl
@@ -76,7 +87,10 @@ static LogListener logger; */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl_create
   (JNIEnv *env, jobject obj) {
 
-	LOGD(TAG, "Entered TwilioIPMessagingClientImpl_create()");
+	LOG_DEBUG(TAG, "Entered TwilioIPMessagingClientImpl_create()");
+
+	rtd::TLLogger::instance().SetLogListener(&logger);
+	LOG_DEBUG(TAG, "Set ITDLogger to true.");
 
 	static const char *class_names[] = {
 			"com/twilio/ipmessaging/impl/MessageImpl",
@@ -95,6 +109,31 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl
 		}
 		classes_precached = true;
 	}
+}
+
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl_setLogLevelNative
+	(JNIEnv *env, jobject obj, jint level) {
+
+	switch (level) {
+		case 7:
+			tipm_jni_set_log_level(TIPMLogLevel::TIPM_LOG_LEVEL_NONE);
+			break;
+		case 6:
+			tipm_jni_set_log_level(TIPMLogLevel::TIPM_LOG_LEVEL_ERROR);
+			break;
+		case 5:
+			tipm_jni_set_log_level(TIPMLogLevel::TIPM_LOG_LEVEL_WARN);
+			break;
+		case 4:
+			tipm_jni_set_log_level(TIPMLogLevel::TIPM_LOG_LEVEL_INFO);
+			break;
+		case 3:
+			tipm_jni_set_log_level(TIPMLogLevel::TIPM_LOG_LEVEL_DEBUG);
+			break;
+		default:
+			tipm_jni_set_log_level(TIPMLogLevel::TIPM_LOG_LEVEL_ERROR);
+	}
+
 }
 
 

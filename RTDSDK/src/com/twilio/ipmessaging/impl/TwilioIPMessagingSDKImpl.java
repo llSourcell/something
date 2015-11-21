@@ -12,7 +12,6 @@ import com.twilio.ipmessaging.Constants.InitListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
-import com.twilio.ipmessaging.TwilioIPMessagingSDK;
 import com.twilio.ipmessaging.Version;
 
 import android.content.ComponentName;
@@ -265,4 +264,11 @@ public class TwilioIPMessagingSDKImpl {
 	public String getVersion() {
 		return Version.SDK_VERSION;
 	}
+
+	public void setLogLevel(int level) {
+		Logger.setLogLevel(level);
+		setLogLevelNative(level);
+	}
+	
+	private native void setLogLevelNative(int level);
 }

@@ -79,4 +79,21 @@ public class TwilioIPMessagingSDK {
 		return TwilioIPMessagingSDKImpl.getInstance().getVersion();
 	}
 
+	/**
+	 * Sets the logging level for messages logged by the Twilio IP Messaging
+	 * SDK.
+	 *
+	 * Log levels correspond to those specified by Android's
+	 * {@link android.util.Log} class.
+	 *
+	 * To disable all Twilio SDK logging, set this to
+	 * {@link android.util.Log#ASSERT}. The default is
+	 * {@link android.util.Log#ERROR}.
+	 *
+	 * @level The logging level
+	 */
+	public static void setLogLevel(int level) {
+		TwilioIPMessagingSDKImpl.getInstance().setLogLevel(level);
+	}
+
 }

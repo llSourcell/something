@@ -152,7 +152,8 @@ LOCAL_SRC_FILES := \
 	ChannelsImpl.cpp \
 	ChannelImpl.cpp \
 	MembersImpl.cpp \
-	MessageImpl.cpp 
+	MessageImpl.cpp \
+	TwilioIPMessagingLogger.c
 	
 LOCAL_STATIC_LIBRARIES := \
     RTDMessaging \

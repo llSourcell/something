@@ -1,4 +1,6 @@
-#include <twilio-jni/twilio-jni.h>
+#include <twilio-jni/JNIEnvAttacher.h>
+#include <twilio-jni/tw-jni.h>
+#include <twilio-jni/tw-jni-compat.h>
 #include <android/log.h>
 
 #define TAG  "TwilioIMessagingUtils(native)"
@@ -7,23 +9,23 @@ ITMessagesPtr getMessagesPtrFromNativeHandle(JNIEnv *env, jobject obj) {
 	ITMessagesPtr messages = nullptr;
 	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesHandler");
 
-	LOGD(TAG,"getMessagesPtrFromNativeHandle : Checking nativeMessagesContext.");
+	LOG_DEBUG(TAG,"getMessagesPtrFromNativeHandle : Checking nativeMessagesContext.");
 
 	if (nativeMessagesContext == 0) {
-			LOG_W(TAG,"nativeMessagesContext is null");
+			LOG_WARN(TAG,"nativeMessagesContext is null");
 			return nullptr;
 	} else {
 
 		MessagesContext *messagesContextRecreate = reinterpret_cast<MessagesContext *>(nativeMessagesContext);
-		LOGD(TAG, "nativeMessagesContext context is recreated.");
+		LOG_DEBUG(TAG, "nativeMessagesContext context is recreated.");
 
 		if(messagesContextRecreate == nullptr) {
-			LOG_W( TAG, "MessagesContextRecreate is NULL.");
+			LOG_WARN( TAG, "MessagesContextRecreate is NULL.");
 			return 0;
 		}
 
 		if(messagesContextRecreate->messages == nullptr) {
-			LOGW( TAG, "ITMessagesPtr is NULL.");
+			LOG_WARN( TAG, "ITMessagesPtr is NULL.");
 			return 0;
 		}
 
@@ -39,23 +41,23 @@ ITMessagePtr getMessagePtrFromNativeHandle(JNIEnv *env, jobject obj) {
 
 	jlong nativeMessageContext = tw_jni_fetch_long(env, obj, "nativeMessageHandle");
 
-	LOGD( TAG,"getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
+	LOG_DEBUG( TAG,"getMessagePtrFromNativeHandle : Checking nativeMessageContext.");
 
 	if (nativeMessageContext == 0) {
-			LOG_W(TAG, "nativeMessageContext is null");
+			LOG_WARN(TAG, "nativeMessageContext is null");
 			return nullptr;
 	} else {
 
 		MessageContext *messageContextRecreate = reinterpret_cast<MessageContext *>(nativeMessageContext);
-		LOGD(TAG, "nativeMessageContext is recreated.");
+		LOG_DEBUG(TAG, "nativeMessageContext is recreated.");
 
 		if(messageContextRecreate == nullptr) {
-			LOG_W( TAG, "getMessagePtrFromNativeHandle : MessagesContextRecreate is NULL.");
+			LOG_WARN( TAG, "getMessagePtrFromNativeHandle : MessagesContextRecreate is NULL.");
 			return 0;
 		}
 
 		if(messageContextRecreate->message == nullptr) {
-			LOGW(TAG,"getMessagePtrFromNativeHandle : ITMessagesPtr is NULL.");
+			LOG_WARN(TAG,"getMessagePtrFromNativeHandle : ITMessagesPtr is NULL.");
 			return 0;
 		}
 
