@@ -111,7 +111,7 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 	LOG_DEBUG(TAG,"TwilioIPMessagingClientListener::onMessage");
 
 	JNIEnvAttacher jniAttacher;
-	LOG_WARN(TAG, "Adding Message Object.");
+	LOG_DEBUG(TAG, "Adding Message Object.");
 	MessageContext* messageContext_ = new MessageContext();
 	messageContext_->message = messagePtr;
 	jlong messageContextHandle = reinterpret_cast<jlong>(messageContext_);
