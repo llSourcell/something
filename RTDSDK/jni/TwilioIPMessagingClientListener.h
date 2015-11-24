@@ -43,6 +43,8 @@ private:
     jobject j_ipmessagingclient_;
     jobject j_ipmessagingclientListenerInternal_;
 	jmethodID j_onMessageAdd_;
+	jmethodID j_onMessageChange_;
+	jmethodID j_onMessageDelete_;
 	jmethodID j_onChannelInvite_;
 	jmethodID j_onChannelAdd_;
 	jmethodID j_onChannelChanged_;

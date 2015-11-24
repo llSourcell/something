@@ -319,6 +319,34 @@ public class ChannelImpl implements Channel, Parcelable{
 		}
 	}
 	
+	public void handleEditMessage(final MessageImpl message) {
+		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+					 listener.onMessageChange(message);
+					}
+				}
+			});
+		}
+	}
+
+	public void handleDeleteMessage(final MessageImpl message) {
+		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+					 listener.onMessageDelete(message);
+					}
+				}
+			});
+		}
+	}
+	
 	/*
 	 * Use the thread looper or the main thread looper if the thread does not
 	 * provide one to callback on the thread that provided the event listener.
@@ -432,5 +460,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native void typingStartNative(long nativeChannelContextHandle);
 	private native String getChannelAttributesNative(long nativeChannelContextHandle);
 	private native String getUniqueName(long nativeChannelContextHandle);
+
+	
 
 }
