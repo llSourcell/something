@@ -136,7 +136,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
-						logger.e(channelName);
+						logger.e("Creating channel with friendly Name|" + channelName +"|");
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
@@ -148,7 +148,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
 				            		newChannel.setListener(ChannelActivity.this);
-				            		logger.e("channel Type is : " + type.toString());
+				            		logger.e("Channel created|SID|"+sid+"|TYPE|" + type.toString());
 				            		newChannel.join(new StatusListener() {
 				            			
 				    					@Override

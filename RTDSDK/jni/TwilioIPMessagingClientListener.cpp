@@ -74,6 +74,8 @@ TwilioIPMessagingClientListener::TwilioIPMessagingClientListener(JNIEnv* env,job
 	j_ipmessagingclientListenerInternal_ = env->NewGlobalRef(j_ipmessagingclientListenerInternal);
 	j_ipmessagingclient_ == env->NewGlobalRef(j_ipmessagingclient);
 	j_onMessageAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMessageAdd", "(Lcom/twilio/ipmessaging/Message;)V");
+	j_onMessageChange_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMessageChange", "(Lcom/twilio/ipmessaging/Message;)V");
+	j_onMessageDelete_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onMessageDelete", "(Lcom/twilio/ipmessaging/Message;)V");
 	j_onChannelInvite_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelInvite", "(Lcom/twilio/ipmessaging/Channel;)V");
 	j_onChannelAdd_ = tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelAdd", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
 	j_onChannelChanged_=tw_jni_get_method(env, j_ipmessagingclientListenerInternal_, "onChannelChange", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
@@ -106,56 +108,58 @@ TwilioIPMessagingClientListener::~TwilioIPMessagingClientListener()
 
 void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr messagePtr)
 {
-	LOG_WARN(TAG,"TwilioIPMessagingClientListener::onMessage");
-	LOG_DEBUG(TAG, "TwilioIPMessagingClientListener::onMessage");
+	LOG_DEBUG(TAG,"TwilioIPMessagingClientListener::onMessage");
 
 	JNIEnvAttacher jniAttacher;
+	LOG_WARN(TAG, "Adding Message Object.");
+	MessageContext* messageContext_ = new MessageContext();
+	messageContext_->message = messagePtr;
+	jlong messageContextHandle = reinterpret_cast<jlong>(messageContext_);
+
+	const char* author = messagePtr->getAuthor().c_str();
+	const char* body = messagePtr->getBody().c_str();
+	const char* timestamp = messagePtr->getTimestamp().c_str();
+	const char* sid = messagePtr->getSid().c_str();
+
+	LOG_DEBUG(TAG, "author Name  : %s.", author );
+	LOG_DEBUG(TAG, "Message body is %s", body);
+	LOG_DEBUG(TAG, "Message sid is %s", sid);
+	LOG_DEBUG(TAG, "MessageSid is: %s", sid);
+
+	jstring authorString = jniAttacher.get()->NewStringUTF(author);
+	jstring bodyString = jniAttacher.get()->NewStringUTF(body);
+	jstring timeStampString  = jniAttacher.get()->NewStringUTF(timestamp);
+	jstring sidString  = jniAttacher.get()->NewStringUTF(sid);
+
+	jclass java_message_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/MessageImpl");
+	if(java_message_impl_cls != NULL) {
+		LOG_WARN(TAG, "Found java_message_impl_cls class" );
+	}
+
+	jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
+	LOG_DEBUG(TAG,"Creating Messsage Object : construct");
+	jobject message = tw_jni_new_object(jniAttacher.get(), java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle);
+	jmethodID setSid = tw_jni_get_method_by_class(jniAttacher.get(), java_message_impl_cls, "setSid", "(Ljava/lang/String;)V");
+	jniAttacher.get()->CallVoidMethod(message, setSid, sidString);
+	LOG_DEBUG(TAG,"Created Message Object, calling java");
+
 	switch (action) {
 		case rtd::kTMActionAdded:
 		{
-			LOG_WARN(TAG, "Adding Message Object.");
-			MessageContext* messageContext_ = new MessageContext();
-			messageContext_->message = messagePtr;
-			jlong messageContextHandle = reinterpret_cast<jlong>(messageContext_);
-
-			const char* author = messagePtr->getAuthor().c_str();
-			const char* body = messagePtr->getBody().c_str();
-			const char* timestamp = messagePtr->getTimestamp().c_str();
-			const char* sid = messagePtr->getSid().c_str();
-
-			LOG_WARN(TAG, "author Name  : %s.", author );
-			LOG_WARN(TAG, "Message body is %s", body);
-			LOG_WARN(TAG, "Message sid is %s", sid);
-			LOG_DEBUG(TAG, "MessageSid is: %s", sid);
-
-			jstring authorString = jniAttacher.get()->NewStringUTF(author);
-			jstring bodyString = jniAttacher.get()->NewStringUTF(body);
-			jstring timeStampString  = jniAttacher.get()->NewStringUTF(timestamp);
-			jstring sidString  = jniAttacher.get()->NewStringUTF(sid);
-
-			jclass java_message_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/MessageImpl");
-			if(java_message_impl_cls != NULL) {
-				LOG_WARN(TAG, "Found java_message_impl_cls class" );
-			}
-
-			jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
-			LOG_WARN(TAG,"Creating Messsage Object : construct");
-			jobject message = tw_jni_new_object(jniAttacher.get(), java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle);
-			jmethodID setSid = tw_jni_get_method_by_class(jniAttacher.get(), java_message_impl_cls, "setSid", "(Ljava/lang/String;)V");
-			jniAttacher.get()->CallVoidMethod(message, setSid, sidString);
-			LOG_WARN(TAG,"Created Message Object, calling java");
-
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onMessageAdd_, message);
-
-			LOG_WARN(TAG, "Calling java");
+			LOG_DEBUG(TAG, "Called java");
 			break;
 		}
 		case rtd::kTMActionChanged:
 		{
+			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onMessageChange_, message);
+			LOG_DEBUG(TAG, "Called java");
 			break;
 		}
 		case rtd::kTMActionDeleted:
 		{
+			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onMessageDelete_, message);
+			LOG_DEBUG(TAG, "Called java");
 			break;
 		}
 	}
@@ -201,7 +205,6 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 			JNIEnvAttacher jniAttacher;
 			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelChanged_, channel);
-			//jniAttacher.get()->DeleteGlobalRef(channel);
 			break;
 		}
 		case rtd::kTMActionDeleted:
@@ -211,7 +214,6 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 			JNIEnvAttacher jniAttacher;
 			jobject channel = createChannelObject(channelPtr);
 			jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelDeleted_, channel);
-			//jniAttacher.get()->DeleteGlobalRef(channel);
 			break;
 		}
 	}

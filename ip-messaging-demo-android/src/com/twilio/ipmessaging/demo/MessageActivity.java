@@ -667,6 +667,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	@Override
 	public void onMessageChange(Message message) {
 		if(message != null) {
+			showToast(message.getSid() + " changed");
 			logger.d("Received onMessageChange "  + message.getSid());
 		} else {
 			logger.d("Received onMessageChange ");
@@ -676,6 +677,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	@Override
 	public void onMessageDelete(Message message) {
 		if(message != null) {
+			showToast(message.getSid() + " deleted");
 			logger.d("Received onMessageDelete "  + message.getSid());
 		} else {
 			logger.d("Received onMessageDelete.");

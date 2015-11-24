@@ -32,13 +32,26 @@ public class IPMessagingClientListenerInternal {
 
 	
 	public void onMessageChange(Message message) {
-		
+		logger.d("Entered onMessageChange");
+		if(message != null) {
+			String cSid = message.getChannelSid();
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleEditMessage((MessageImpl) message);
+			}
+		}
 	}
 
 	
 	public void onMessageDelete(Message message) {
-		// TODO Auto-generated method stub
-		
+		logger.d("Entered onMessageChange");
+		if(message != null) {
+			String cSid = message.getChannelSid();
+			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
+			if(channelImpl != null) {
+				channelImpl.handleDeleteMessage((MessageImpl) message);
+			}
+		}
 	}
 
 	
