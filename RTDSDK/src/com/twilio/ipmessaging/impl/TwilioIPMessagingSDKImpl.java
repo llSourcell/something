@@ -8,8 +8,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.twilio.common.TwilioAccessManager;
+import com.twilio.common.TwilioAccessManagerFactory;
+import com.twilio.common.TwilioAccessManagerListener;
 import com.twilio.ipmessaging.Constants.InitListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
+import com.twilio.ipmessaging.TwilioIPMessagingClient;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
 import com.twilio.ipmessaging.Version;
@@ -23,7 +27,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 
-public class TwilioIPMessagingSDKImpl {
+public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 	
 	static {
 		System.loadLibrary("twilio-rtd-native"); 
@@ -271,4 +275,39 @@ public class TwilioIPMessagingSDKImpl {
 	}
 	
 	private native void setLogLevelNative(int level);
+	
+	public TwilioIPMessagingClient createClientWithAccessManager(TwilioAccessManager accessManager,
+			IPMessagingClientListener listener) {
+		if(accessManager == null) {
+			return null;
+		}
+		//TODO :: revisit this code
+		String newCapabilityToken = accessManager.getToken();
+		accessManager = TwilioAccessManagerFactory.createAccessManager(newCapabilityToken, this);
+		
+		final TwilioIPMessagingClientImpl client = new TwilioIPMessagingClientImpl(context, newCapabilityToken, listener);	
+		
+		return null;
+	}
+
+
+	@Override
+	public void onAccessManagerTokenExpire(TwilioAccessManager arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onError(TwilioAccessManager arg0, String arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onTokenUpdated(TwilioAccessManager arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
