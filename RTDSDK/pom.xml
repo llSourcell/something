@@ -17,7 +17,7 @@
     <mavenVersion>2.0.9</mavenVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
      <dependencies.ipmsg.version>2.1.1</dependencies.ipmsg.version>
-     <dependencies.twilio-common-android.version>0.1.1</dependencies.twilio-common-android.version>
+     <dependencies.twilio-common-android.version>0.1.2</dependencies.twilio-common-android.version>
   </properties>
 
   <build>

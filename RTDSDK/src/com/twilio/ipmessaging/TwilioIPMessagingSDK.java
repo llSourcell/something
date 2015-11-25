@@ -58,6 +58,18 @@ public class TwilioIPMessagingSDK {
 	}
 	
 	/**
+	 * Creates a new IP Messaging client instance with a token manager.
+	 * @param <TwilioAccessManager>
+	 * 
+	 * @param accessManager Instance of TwilioAccessManager. 
+	 * @param listener		IPMessagingClientListener for this IPMessagingClient.
+	 * @return 				The newly initialized TwilioIPMessagingClient.
+	 */
+	public static TwilioIPMessagingClient createIPMessagingClientWithAccessManager(TwilioAccessManager accessManager, IPMessagingClientListener listener) {
+		return TwilioIPMessagingSDKImpl.getInstance().createClientWithAccessManager(accessManager, listener);
+	}
+	
+	/**
 	 * Shuts down the Twilio IP Messaging SDK.
 	 * 
 	 * This will terminate all connections, release all TwilioIPMessagingClient objects, and
@@ -95,17 +107,5 @@ public class TwilioIPMessagingSDK {
 	 */
 	public static void setLogLevel(int level) {
 		TwilioIPMessagingSDKImpl.getInstance().setLogLevel(level);
-	}
-
-	/**
-	 * Creates a new IP Messaging client instance with a token manager.
-	 * @param <TwilioAccessManager>
-	 * 
-	 * @param accessManager Instance of TwilioAccessManager. 
-	 * @param listener		IPMessagingClientListener for this IPMessagingClient.
-	 * @return 				The newly initialized TwilioIPMessagingClient.
-	 */
-	public static TwilioIPMessagingClient createIPMessagingClientWithAccessManager(TwilioAccessManager accessManager, IPMessagingClientListener listener) {
-		return TwilioIPMessagingSDKImpl.getInstance().createClientWithAccessManager(accessManager, listener);
 	}
 }
