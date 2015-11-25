@@ -53,7 +53,7 @@ public class ChannelsImpl implements Channels {
 		}
 	}
 
-	
+	//::TODO Need to implement setting attributes in JNI - need discussion.
 	@Override
 	public void createChannel(Map<String, Object> options, CreateChannelListener listener) {
 		Map<String,String> attrMap = new HashMap<String,String>();
