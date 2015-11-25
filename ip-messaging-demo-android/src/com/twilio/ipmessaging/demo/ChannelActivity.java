@@ -4,20 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import com.twilio.rtd.demoapp.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
+import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.Constants.CreateChannelListener;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.TwilioIPMessagingSDK;
-import com.twilio.ipmessaging.Constants.CreateChannelListener;
-import com.twilio.ipmessaging.Constants;
-import com.twilio.ipmessaging.Constants.StatusListener;
+import com.twilio.rtd.demoapp.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -84,6 +86,32 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		case R.id.action_create_private:
 			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
 			break;
+		case R.id.action_create_public_withoptions:
+		{
+			Random rand = new Random(); 
+			int value = rand.nextInt(50); 
+			
+			Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+			Map<String, Object> options = new HashMap<String, Object>();
+			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Pub_TestChannelF_"+value);
+			options.put(Constants.CHANNEL_UNIQUE_NAME, "Pub_TestChannelU_"+value);
+			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
+			channelsLocal.createChannel(options, null);
+			break;
+		}
+		case R.id.action_create_private_withoptions:
+		{
+			Random rand = new Random(); 
+			int value = rand.nextInt(50); 
+			
+			Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+			Map<String, Object> options = new HashMap<String, Object>();
+			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Priv_TestChannelF_"+value);
+			options.put(Constants.CHANNEL_UNIQUE_NAME, "Priv_TestChannelU_"+value);
+			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
+			channelsLocal.createChannel(options, null);
+			break;
+		}
 		case R.id.action_search_by_unique_name:
 			showSearchChannelDialog();
 			break;
