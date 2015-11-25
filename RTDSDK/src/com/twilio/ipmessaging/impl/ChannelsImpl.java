@@ -63,38 +63,40 @@ public class ChannelsImpl implements Channels {
 		ChannelType type;
 		String jsonObjStr = null;
 		
-		for (Map.Entry<String, Object> entry : options.entrySet())
-		{
-		    String entry_key = entry.getKey();
-		    if(entry_key.compareTo(Constants.CHANNEL_FRIENDLY_NAME)== 0) {
-		    	friendlyName = (String)entry.getValue();
-		    }
-		    
-		    if(entry_key.compareTo(Constants.CHANNEL_UNIQUE_NAME) == 0) {
-		    	uniqueName = (String) entry.getValue();
-		    }
-		    
-			if (entry_key.compareTo(Constants.CHANNEL_TYPE) == 0) {
-				type = (ChannelType) entry.getValue();
-				switch (type) {
-				case CHANNEL_TYPE_PUBLIC:
-					nativeType = 0;
-					break;
-				case CHANNEL_TYPE_PRIVATE:
-					nativeType = 1;
-					break;
-				default:
-					break;
+		if(options != null) {
+			for (Map.Entry<String, Object> entry : options.entrySet())
+			{
+			    String entry_key = entry.getKey();
+			    if(entry_key.compareTo(Constants.CHANNEL_FRIENDLY_NAME)== 0) {
+			    	friendlyName = (String)entry.getValue();
+			    }
+			    
+			    if(entry_key.compareTo(Constants.CHANNEL_UNIQUE_NAME) == 0) {
+			    	uniqueName = (String) entry.getValue();
+			    }
+			    
+				if (entry_key.compareTo(Constants.CHANNEL_TYPE) == 0) {
+					type = (ChannelType) entry.getValue();
+					switch (type) {
+					case CHANNEL_TYPE_PUBLIC:
+						nativeType = 0;
+						break;
+					case CHANNEL_TYPE_PRIVATE:
+						nativeType = 1;
+						break;
+					default:
+						break;
+					}
 				}
+			    
+			    if(entry_key.compareTo(Constants.CHANNE_ATTRIBUTES) == 0) {
+			    	attrMap = (Map<String,String>) entry.getValue();
+			    	JSONObject jsonObj = new JSONObject(attrMap);
+			    	if(jsonObj != null) {
+			    		jsonObjStr = jsonObj.toString();
+			    	}
+			    }	    
 			}
-		    
-		    if(entry_key.compareTo(Constants.CHANNE_ATTRIBUTES) == 0) {
-		    	attrMap = (Map<String,String>) entry.getValue();
-		    	JSONObject jsonObj = new JSONObject(attrMap);
-		    	if(jsonObj != null) {
-		    		jsonObjStr = jsonObj.toString();
-		    	}
-		    }	    
 		}
 		
 		if(listener != null) {

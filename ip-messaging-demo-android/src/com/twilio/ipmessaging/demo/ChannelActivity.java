@@ -96,7 +96,18 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Pub_TestChannelF_"+value);
 			options.put(Constants.CHANNEL_UNIQUE_NAME, "Pub_TestChannelU_"+value);
 			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
-			channelsLocal.createChannel(options, null);
+			channelsLocal.createChannel(null, new CreateChannelListener()
+	        {
+	            @Override
+	            public void onCreated(final Channel newChannel){
+	            	logger.e("Successfully created a channel with no options.");
+	            }
+
+				@Override
+				public void onError() {
+					logger.e("Error creating a channel");
+				}
+	        });
 			break;
 		}
 		case R.id.action_create_private_withoptions:
@@ -109,7 +120,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Priv_TestChannelF_"+value);
 			options.put(Constants.CHANNEL_UNIQUE_NAME, "Priv_TestChannelU_"+value);
 			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
-			channelsLocal.createChannel(options, null);
+			channelsLocal.createChannel(null, null);
 			break;
 		}
 		case R.id.action_search_by_unique_name:
