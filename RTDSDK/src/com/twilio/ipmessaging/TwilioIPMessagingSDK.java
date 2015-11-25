@@ -1,6 +1,7 @@
 package com.twilio.ipmessaging;
 
 import com.twilio.ipmessaging.impl.TwilioIPMessagingSDKImpl;
+import com.twilio.common.TwilioAccessManager;
 import com.twilio.ipmessaging.Constants.InitListener;
 import android.content.Context;
 
@@ -96,4 +97,15 @@ public class TwilioIPMessagingSDK {
 		TwilioIPMessagingSDKImpl.getInstance().setLogLevel(level);
 	}
 
+	/**
+	 * Creates a new IP Messaging client instance with a token manager.
+	 * @param <TwilioAccessManager>
+	 * 
+	 * @param accessManager Instance of TwilioAccessManager. 
+	 * @param listener		IPMessagingClientListener for this IPMessagingClient.
+	 * @return 				The newly initialized TwilioIPMessagingClient.
+	 */
+	public static TwilioIPMessagingClient createIPMessagingClientWithAccessManager(TwilioAccessManager accessManager, IPMessagingClientListener listener) {
+		return TwilioIPMessagingSDKImpl.getInstance().createClientWithAccessManager(accessManager, listener);
+	}
 }
