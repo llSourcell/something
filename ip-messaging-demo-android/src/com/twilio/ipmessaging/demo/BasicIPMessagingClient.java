@@ -47,6 +47,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
+		//TwilioAccessManager acessM = TwilioAccessManagerFactory.createAccessManager(capabilityToken, null);
 		TwilioIPMessagingSDK.setLogLevel(android.util.Log.DEBUG);
 		if(!TwilioIPMessagingSDK.isInitialized()) {
 			TwilioIPMessagingSDK.initializeSDK(context, new InitListener()
