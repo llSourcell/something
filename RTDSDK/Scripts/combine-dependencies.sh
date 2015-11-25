@@ -50,6 +50,13 @@ if [ "${USE_DEBUG_RTD_LIBS}" -eq "1" ]; then
   merge_archs "debug"
 fi
 
+pushd ${MVN_ARTIFACTS_DIR}
+# we're manually untaring
+mkdir -p android/twilio-common-android
+tar -xvzf twilio-common-android.tar -C ./android/twilio-common-android
+rm twilio-common-android.tar
+cp -R ./android/twilio-common-android/* ../libs
 
+popd
 
 popd
