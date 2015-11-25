@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging;
 
+import java.util.Map;
+
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Constants.CreateChannelListener;
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -7,6 +9,7 @@ import com.twilio.ipmessaging.Constants.StatusListener;
 
 
 public interface Channels {
+	
 	
 	/**
 	 * Method to create channel with attributes.
@@ -16,6 +19,14 @@ public interface Channels {
 	 * @param listener 		Listener that receives the status of create channel action.
 	 */
 	public void createChannel(String friendlyName, ChannelType type, CreateChannelListener listener);
+	
+	/**
+	 * Method to create channel with options.
+	 * 
+	 * @param options		These options can be passed to createChannel.
+	 * @param listener 		Listener that receives the status of create channel action.
+	 */
+	public void createChannel(Map<String, Object> options, CreateChannelListener listener);
 	
 	
 	/** Request loading of all channels from server to be delivered via callbacks.
