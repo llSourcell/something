@@ -27,6 +27,7 @@ jobject createChannelOnject() {
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithListener
 (JNIEnv *env, jobject obj, jstring friendlyName, jint type, jlong nativeChannelsContext, jobject listener) {
 	jobject channel;
+	const char *nativeNameString = NULL;
 	LOG_DEBUG(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_DEBUG(TAG,"nativeChannelsContext is null");
@@ -50,10 +51,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 			jmethodID j_onCreated_ = (env)->GetMethodID(cls, "onCreated", "(Lcom/twilio/ipmessaging/Channel;)V");
 			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
-			const char *nativeNameString = NULL;
-			if(friendlyName != NULL) {
-				env->GetStringUTFChars(friendlyName, JNI_FALSE);
-			}
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
 			if(type == 0) {
 				LOG_DEBUG(TAG, "Creating public channel");
@@ -70,6 +67,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 
 			LOG_DEBUG(TAG,"createChannelNative: release native string.");
 			if(friendlyName != NULL) {
+				nativeNameString = env->GetStringUTFChars(friendlyName, JNI_FALSE);
 				channelPtr->setFriendlyName(nativeNameString, NULL);
 				env->ReleaseStringUTFChars(friendlyName, nativeNameString);
 			}
@@ -148,6 +146,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
 (JNIEnv *env, jobject obj, jstring friendlyName, jint type, jlong nativeChannelsContext) {
+	const char *nativeNameString = NULL;
 	LOG_DEBUG(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_WARN(TAG,"nativeChannelsContext is null");
@@ -166,17 +165,16 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 		ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
 
 		if (channelsPtr != nullptr) {
-			const char *nativeNameString = NULL;
-			if(friendlyName != NULL) {
-				env->GetStringUTFChars(friendlyName, JNI_FALSE);
-			}
+
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
 			if(type == rtd::kTMChannelTypePublic) {
 				channelPtr->setType(rtd::kTMChannelTypePublic, [](TMResult result) {LOG_DEBUG(TAG,"Channel setType to kTMChannelTypePublic command processed");});
 			} else {
 				channelPtr->setType(rtd::kTMChannelTypePrivate, [](TMResult result) {LOG_DEBUG(TAG,"Channel setType to kTMChannelTypePrivate command processed");});
 			}
+
 			if(friendlyName != NULL) {
+				nativeNameString = env->GetStringUTFChars(friendlyName, JNI_FALSE);
 				channelPtr->setFriendlyName(nativeNameString, NULL);
 				env->ReleaseStringUTFChars(friendlyName, nativeNameString);
 			}

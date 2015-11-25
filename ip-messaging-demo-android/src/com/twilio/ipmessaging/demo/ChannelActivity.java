@@ -138,7 +138,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 								.toString();
 						logger.e("Creating channel with friendly Name|" + channelName +"|");
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
-						channelsLocal.createChannel(null,type, new CreateChannelListener()
+						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
 				            @Override
 				            public void onCreated(final Channel newChannel)
