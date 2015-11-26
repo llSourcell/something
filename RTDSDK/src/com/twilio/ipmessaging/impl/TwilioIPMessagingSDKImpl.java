@@ -27,7 +27,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 
-public class TwilioIPMessagingSDKImpl {
+public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 	
 	static {
 		System.loadLibrary("twilio-rtd-native"); 
@@ -278,15 +278,32 @@ public class TwilioIPMessagingSDKImpl {
 	
 	public TwilioIPMessagingClient createClientWithAccessManager(TwilioAccessManager accessManager,
 			IPMessagingClientListener listener) {
-		/*if(accessManager == null) {
+		if(accessManager == null) {
 			return null;
 		}
 		//TODO :: revisit this code
-		String newCapabilityToken = accessManager.getToken();*/
-		//accessManager = TwilioAccessManagerFactory.createAccessManager(newCapabilityToken, null);
+		String newCapabilityToken = accessManager.getToken();		
+		return createClientWithToken(newCapabilityToken, listener);
+	}
+
+
+	@Override
+	public void onAccessManagerTokenExpire(TwilioAccessManager accessManager) {
+		// TODO Auto-generated method stub
 		
-		//final TwilioIPMessagingClientImpl client = new TwilioIPMessagingClientImpl(context, newCapabilityToken, listener);	
+	}
+
+
+	@Override
+	public void onError(TwilioAccessManager accessManager, String errorMsg) {
+		// TODO Auto-generated method stub
 		
-		return null;
+	}
+
+
+	@Override
+	public void onTokenUpdated(TwilioAccessManager accessManager) {
+		// TODO Auto-generated method stub
+		
 	} 
 }
