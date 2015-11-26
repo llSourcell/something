@@ -30,6 +30,7 @@ function build_project {
 
     rm -f build.xml
     cp -a ${buildroot}/${SDK_NAME_STEM}/ip-messaging-demo-android/thirdparty/easyadapter-1.5.0.jar ${buildroot}/${SDK_NAME_STEM}/ip-messaging-demo-android/libs/.
+
     android update project -p  ${PROJECT_DIR}
 
     ant clean
