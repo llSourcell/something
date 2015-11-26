@@ -53,7 +53,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
 		acessMgr = TwilioAccessManagerFactory.createAccessManager(capabilityToken, this);
-		TwilioIPMessagingSDK.setLogLevel(android.util.Log.ERROR);
 		if(!TwilioIPMessagingSDK.isInitialized()) {
 			TwilioIPMessagingSDK.initializeSDK(context, new InitListener()
 	        {
@@ -176,16 +175,16 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	@Override
 	public void onAccessManagerTokenExpire(TwilioAccessManager arg0) {
-		logger.e("Received AccessManager:onAccessManagerTokenExpire.");
+		logger.d("Received AccessManager:onAccessManagerTokenExpire.");
 	}
 
 	@Override
 	public void onError(TwilioAccessManager arg0, String arg1) {
-		logger.e("Received AccessManager:onError.");
+		logger.d("Received AccessManager:onError.");
 	}
 
 	@Override
 	public void onTokenUpdated(TwilioAccessManager arg0) {
-		logger.e("Received AccessManager:onTokenUpdated.");
+		logger.d("Received AccessManager:onTokenUpdated.");
 	}
 }
