@@ -288,21 +288,21 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 
 
 	@Override
-	public void onAccessManagerTokenExpire(TwilioAccessManager arg0) {
+	public void onAccessManagerTokenExpire(TwilioAccessManager accessManager) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onError(TwilioAccessManager arg0, String arg1) {
+	public void onError(TwilioAccessManager accessManager, String errorMsg) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void onTokenUpdated(TwilioAccessManager arg0) {
+	public void onTokenUpdated(TwilioAccessManager accessManager) {
 		// TODO Auto-generated method stub
 		
 	} 
