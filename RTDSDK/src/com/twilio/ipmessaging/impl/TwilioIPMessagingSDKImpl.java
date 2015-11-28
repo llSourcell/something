@@ -12,6 +12,7 @@ import com.twilio.common.TwilioAccessManager;
 import com.twilio.common.TwilioAccessManagerFactory;
 import com.twilio.common.TwilioAccessManagerListener;
 import com.twilio.ipmessaging.Constants.InitListener;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
@@ -57,6 +58,7 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
 	
 	protected final Map<UUID, WeakReference<TwilioIPMessagingClientImpl>> clients = new HashMap<UUID, WeakReference<TwilioIPMessagingClientImpl>>();
+	protected final Map<TwilioAccessManager, WeakReference<TwilioIPMessagingClientImpl>> accessManagers = new HashMap<TwilioAccessManager, WeakReference<TwilioIPMessagingClientImpl>>();
 
 		
 	private TwilioIPMessagingSDKImpl() {
@@ -280,30 +282,49 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 			IPMessagingClientListener listener) {
 		if(accessManager == null) {
 			return null;
+		} 
+		
+		if(accessManager.getListener() == null) {
+			accessManager.setListener(this);
 		}
 		//TODO :: revisit this code
 		String newCapabilityToken = accessManager.getToken();		
-		return createClientWithToken(newCapabilityToken, listener);
+		TwilioIPMessagingClientImpl twilioIpmClient = createClientWithToken(newCapabilityToken, listener);
+		accessManagers.put(accessManager,  new WeakReference<TwilioIPMessagingClientImpl>(twilioIpmClient));
+		return twilioIpmClient;
 	}
 
 
 	@Override
 	public void onAccessManagerTokenExpire(TwilioAccessManager accessManager) {
-		// TODO Auto-generated method stub
-		
+		logger.e("Received onAccessManagerTokenExpire event.");
+		WeakReference<TwilioIPMessagingClientImpl> twilioIpmClient =  accessManagers.get(accessManager);
+		if(twilioIpmClient != null) {
+			logger.e("Found twilioIpmClient");
+			twilioIpmClient.get().updateToken(accessManager.getToken(), new StatusListener() {
+
+				@Override
+				public void onSuccess() {
+					logger.d("Updated token successfully.");
+				}
+
+				@Override
+				public void onError() {
+					//TODO:: @kabgchi TBD what to do, when this fails.
+					logger.e("Received onError() updating token.");
+				}});
+		}
 	}
 
 
 	@Override
 	public void onError(TwilioAccessManager accessManager, String errorMsg) {
-		// TODO Auto-generated method stub
-		
+		logger.e("Received TwilioAccessManager event.");
 	}
 
 
 	@Override
 	public void onTokenUpdated(TwilioAccessManager accessManager) {
-		// TODO Auto-generated method stub
-		
+		logger.e("Received onTokenUpdated event.");
 	} 
 }

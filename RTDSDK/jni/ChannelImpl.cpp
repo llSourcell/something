@@ -675,16 +675,17 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUnique
  */
 JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getUniqueName
 (JNIEnv *env, jobject obj, jlong nativeChannelContext) {
-	LOG_DEBUG(TAG, "Entered getChannelAttributesNative");
+	LOG_DEBUG(TAG, "Entered getUniqueName");
 	ChannelContext *clientChannelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
-	jstring attrString;
+	jstring nameString;
 	if(clientChannelContext != nullptr) {
 		ITMChannelPtr channel = clientChannelContext->channel;
 		if(channel != nullptr) {
-			const char* attr = channel->getUniqueName().c_str();
-			attrString = env->NewStringUTF(attr);
+			const char* name = channel->getUniqueName().c_str();
+			LOG_DEBUG(TAG, "Retrieved unique name|%s|", name);
+			nameString = env->NewStringUTF(name);
 		}
 	}
-	return attrString;
+	return nameString;
 }
 

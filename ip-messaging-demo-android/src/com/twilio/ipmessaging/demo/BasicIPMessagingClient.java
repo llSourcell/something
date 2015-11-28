@@ -23,6 +23,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	private String capabilityToken;
 	private long nativeClientParam;
 	private TwilioIPMessagingClient ipMessagingClient;
+	private TwilioIPMessagingClient ipMessagingClientWithAccessManager;
 	private Channel[] channels;
 	private Context context;
 	private TwilioAccessManager acessMgr;
@@ -52,7 +53,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
-		acessMgr = TwilioAccessManagerFactory.createAccessManager(capabilityToken, this);
+		TwilioIPMessagingSDK.setLogLevel(android.util.Log.ERROR	);
 		if(!TwilioIPMessagingSDK.isInitialized()) {
 			TwilioIPMessagingSDK.initializeSDK(context, new InitListener()
 	        {
@@ -154,17 +155,18 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	
 	
 	private void createClientWithAccessManager(LoginListener listener) {
-		ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithAccessManager(this.acessMgr, BasicIPMessagingClient.this);
-    	if(ipMessagingClient != null) {
-    		ipMessagingClient.setListener(this);
+		acessMgr = TwilioAccessManagerFactory.createAccessManager(capabilityToken, null);
+		ipMessagingClientWithAccessManager = TwilioIPMessagingSDK.createIPMessagingClientWithAccessManager(this.acessMgr, BasicIPMessagingClient.this);
+    	if(ipMessagingClientWithAccessManager != null) {
+    		ipMessagingClientWithAccessManager.setListener(this);
         	Intent intent = new Intent(context,ChannelActivity.class);
         	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        	ipMessagingClient.setIncomingIntent(pendingIntent);
+        	ipMessagingClientWithAccessManager.setIncomingIntent(pendingIntent);
         	if(listener != null) {
 				listener.onLoginFinished();
         	}
     	} else {
-    		listener.onLoginError("ipMessagingClient is null");
+    		listener.onLoginError("ipMessagingClientWithAccessManager is null");
     	}
 	}
 

@@ -326,12 +326,12 @@ public class MessageActivity extends Activity implements ChannelListener{
 	            			
 	    					@Override
 	    					public void onError() {
-	    						logger.e("Error inviteByIdentity");
+	    						logger.e("Error inviteByIdentity.");
 	    					}
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("Successful at inviteByidentityl");
+	    						logger.e("Successful at inviteByidentity.");
 	    					}
 	    	      		});	     	
 					}
@@ -765,12 +765,12 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 							@Override
 							public void onError() {
-								logger.e("Error changing name");
+								logger.e("Error changing uniqueName");
 							}
 
 							@Override
 							public void onSuccess() {
-								logger.e("successfully changed name");
+								logger.e("successfully changed uniqueName");
 							}
 						});
 					}

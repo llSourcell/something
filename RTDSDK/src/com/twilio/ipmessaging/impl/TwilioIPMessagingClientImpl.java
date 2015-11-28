@@ -8,6 +8,7 @@ import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
 
@@ -54,10 +55,10 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 
 	@Override
-	public void updateToken(String accessToken) {
+	public void updateToken(String accessToken, StatusListener listener) {
 		if(accessToken != null) {
 			synchronized(this) {
-				this.updateToken(accessToken, this.nativeClientParamContextHandle);
+				this.updateToken(accessToken, this.nativeClientParamContextHandle, listener);
 			}
 		}
 	}
@@ -184,6 +185,6 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
-	private native void updateToken(String token, long nativeClientParam);
+	private native void updateToken(String token, long nativeClientParam, StatusListener listener);
 	private native void shutDownNative(long nativeClientParam);
 }
