@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging;
 
+import com.twilio.ipmessaging.Constants.StatusListener;
+
 import android.app.PendingIntent;
 
 public interface TwilioIPMessagingClient {
@@ -30,7 +32,7 @@ public interface TwilioIPMessagingClient {
 	 * 
 	 * @param accessToken	an AccessToken for this Client.
 	 */
-	public void updateToken(String accessToken);
+	public void updateToken(String accessToken, StatusListener listener);
 	
 	/**
 	 * List of channels available to the TwilioIPMessagingClient.

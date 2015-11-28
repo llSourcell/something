@@ -37,7 +37,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_updateToken
-  (JNIEnv *, jobject, jstring, jlong);
+  (JNIEnv *, jobject, jstring, jlong, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
