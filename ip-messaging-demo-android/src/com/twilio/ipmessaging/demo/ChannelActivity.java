@@ -94,11 +94,14 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 			int value = rand.nextInt(50); 
 			
 			Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+			final Map<String, String> attrs = new HashMap<String, String>();
+			attrs.put("topic", "testing channel creation with options");
 			Map<String, Object> options = new HashMap<String, Object>();
 			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Pub_TestChannelF_"+value);
 			options.put(Constants.CHANNEL_UNIQUE_NAME, "Pub_TestChannelU_"+value);
 			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
-			channelsLocal.createChannel(null, new CreateChannelListener()
+			options.put("attributes", attrs);
+			channelsLocal.createChannel(options, new CreateChannelListener()
 	        {
 	            @Override
 	            public void onCreated(final Channel newChannel){
