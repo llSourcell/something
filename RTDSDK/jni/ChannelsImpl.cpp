@@ -206,6 +206,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 	const char *nativeFriendlyNameString = NULL;
 	const char *nativeUniqueNameString = NULL;
 	const char *nativeAttributeString = NULL;
+	const char *nativeAttrString = NULL;
 
 	LOG_DEBUG(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
@@ -245,6 +246,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 				env->ReleaseStringUTFChars(uniqueName, nativeUniqueNameString);
 			}
 
+			if(attribute != NULL) {
+				nativeAttrString = env->GetStringUTFChars(attribute, JNI_FALSE);
+				channelPtr->setAttributes(nativeAttrString, NULL);
+				env->ReleaseStringUTFChars(attribute, nativeAttrString);
+			}
+
 			channelsPtr->add(channelPtr, [channelPtr](TMResult result) {
 				LOG_DEBUG(TAG,"Channel setType to kTMChannelTypePrivate command processed");
 				JNIEnvAttacher jniAttacher;
@@ -274,6 +281,8 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 	const char *nativeFriendlyNameString = NULL;
 	const char *nativeUniqueNameString = NULL;
 	const char *nativeAttributeString = NULL;
+	const char *nativeAttrString = NULL;
+
 	LOG_DEBUG(TAG,"createChannelNative : Checking nativeChannelsContext.");
 	if (nativeChannelsContext == 0) {
 		LOG_DEBUG(TAG,"nativeChannelsContext is null");
@@ -321,6 +330,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 				nativeUniqueNameString = env->GetStringUTFChars(uniqueName, JNI_FALSE);
 				channelPtr->setUniqueName(nativeUniqueNameString, NULL);
 				env->ReleaseStringUTFChars(uniqueName, nativeUniqueNameString);
+			}
+
+			if(attribute != NULL) {
+				nativeAttrString = env->GetStringUTFChars(attribute, JNI_FALSE);
+				channelPtr->setAttributes(nativeAttrString, NULL);
+				env->ReleaseStringUTFChars(attribute, nativeAttrString);
 			}
 			channelsPtr->add(channelPtr, [channelPtr,j_createChanneListener_,j_onCreated_, j_onError_](TMResult result) {
 				LOG_DEBUG(TAG,"Channel add to kTMChannelTypePrivate command processed");
