@@ -77,6 +77,6 @@ public interface ChannelListener {
 	 * Called when Message synchronization for this Channel completes.
 	 * 
 	 */
-	public void onChannelHistoryLoaded();
+	public void onChannelHistoryLoaded(Channel channel);
 	
 }
