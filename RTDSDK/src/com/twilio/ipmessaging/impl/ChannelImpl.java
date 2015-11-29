@@ -103,7 +103,6 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public Channel.ChannelStatus getStatus() {
 		logger.d("getStatus called");
-		//long nativeClientHandle = TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
 		int status = getStatus(this.nativeChannelContextHandle, this.getSid());
 		switch (status) {
 			case 0:
@@ -430,13 +429,13 @@ public class ChannelImpl implements Channel, Parcelable{
 		}	
 	}
 	
-	public void handleOnChannelSync() {
+	public void handleOnChannelSync(final ChannelImpl channel) {
 		if (handler != null) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
 					if(listener!= null) {
-						listener.onChannelHistoryLoaded();
+						listener.onChannelHistoryLoaded(channel);
 					}
 				}
 			});

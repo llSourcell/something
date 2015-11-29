@@ -16,6 +16,7 @@ import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.Constants.CreateChannelListener;
 import com.twilio.ipmessaging.Constants.StatusListener;
+import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.TwilioIPMessagingSDK;
@@ -42,7 +43,7 @@ import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
 @SuppressLint("InflateParams")
-public class ChannelActivity extends Activity implements ChannelListener {
+public class ChannelActivity extends Activity implements ChannelListener, IPMessagingClientListener{
 
 	private static final String[] CHANNEL_OPTIONS = { "Join" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
@@ -68,6 +69,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_channel);
 		basicClient = TwilioApplication.get().getBasicClient();
+		basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
 		setupListView();
 	}
 
@@ -186,34 +188,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
-				            		newChannel.setListener(ChannelActivity.this);
+				            	 	newChannel.setListener(ChannelActivity.this);
 				            		logger.e("Channel created|SID|"+sid+"|TYPE|" + type.toString());
-				            		newChannel.join(new StatusListener() {
-				            			
-				    					@Override
-				    					public void onError() {
-				    						logger.e("failed to join channel");
-				    					}
-				    	
-				    					@Override
-				    					public void onSuccess() {
-				    						runOnUiThread(new Runnable() {
-						            	        @Override
-						            	        public void run() {
-						            	        	adapter.notifyDataSetChanged();
-						            	        }
-						            	    });
-				    						logger.d("Successfully joined channel");
-				    					}
-				    	      			
-				    	      		});	     	
-				            		
-				            		runOnUiThread(new Runnable() {
-				            	        @Override
-				            	        public void run() {
-				            	        	getChannels(sid);
-				            	        }
-				            	    });
 								} 
 				            }
 
@@ -515,7 +491,38 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	}
 	
 	@Override
-	public void onChannelHistoryLoaded() {
-		logger.d("Received onChannelHistoryLoaded callback");
+	public void onChannelHistoryLoaded(Channel channel) {
+		logger.e("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
+	}
+
+	@Override
+	public void onChannelAdd(Channel channel) {
+		logger.e("Received onChannelAdd callback "+channel.getFriendlyName());
+		runOnUiThread(new Runnable() {
+	        @Override
+	        public void run() {
+	        	getChannels(null);
+	        }
+	    });
+	}
+
+	@Override
+	public void onChannelChange(Channel channel) {
+		logger.e("Received onChannelAdd callback "+channel.getFriendlyName());		
+	}
+
+	@Override
+	public void onChannelDelete(Channel channel) {
+		logger.e("Received onChannelDelete callback "+channel.getFriendlyName());
+	}
+
+	@Override
+	public void onError(int errorCode, String errorText) {
+		logger.e("Received onError callback "+ errorCode + " " + errorText);		
+	}
+
+	@Override
+	public void onAttributesChange(String attributes) {
+		logger.e("Received onAttributesChange callback ");			
 	}
 }

@@ -167,7 +167,6 @@ void TwilioIPMessagingClientListener::onMessage(TMAction action, ITMessagePtr me
 
 void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr channelPtr)
 {
-	LOG_WARN(TAG,"TwilioIPMessagingClientListener::onChannel");
 	LOG_DEBUG(TAG, "TwilioIPMessagingClientListener::onChannel");
 	switch (action) {
 		case rtd::kTMActionAdded:
@@ -176,20 +175,23 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 				switch (channelPtr->getStatus()) {
 					case TMChannelStatus::kTMChannelStatusInvited:
 					{
-						LOG_WARN(TAG,"TwilioIPMessagingClientListener::onChannel invited");
+						LOG_DEBUG(TAG,"TwilioIPMessagingClientListener::onChannel invited");
 						JNIEnvAttacher jniAttacher;
 						jobject channel = createChannelObject(channelPtr);
 						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelInvite_, channel);
-						LOG_WARN(TAG,"Calling java");
+						LOG_DEBUG(TAG,"Calling java");
 						break;
 					}
 					case TMChannelStatus::kTMChannelStatusJoined:
-						LOG_WARN(TAG,"TwilioIPMessagingClientListener::onChannel joined");
+					{
 						LOG_DEBUG(TAG, "TwilioIPMessagingClientListener::onChannel - joined");
+						JNIEnvAttacher jniAttacher;
+						jobject channel = createChannelObject(channelPtr);
+						jniAttacher.get()->CallVoidMethod(j_ipmessagingclientListenerInternal_, j_onChannelAdd_, channel);
 						break;
+					}
 					case TMChannelStatus::kTMChannelStatusNotParticipating:
 					{
-						LOG_WARN(TAG,"TwilioIPMessagingClientListener::onChannel notparticipating");
 						LOG_DEBUG(TAG, "TwilioIPMessagingClientListener::onChannel - notparticipating");
 						JNIEnvAttacher jniAttacher;
 						jobject channel = createChannelObject(channelPtr);
@@ -209,7 +211,6 @@ void TwilioIPMessagingClientListener::onChannel(TMAction action, ITMChannelPtr c
 		}
 		case rtd::kTMActionDeleted:
 		{
-			LOG_WARN(TAG,"onChannel::kTMActionDeleted");
 			LOG_DEBUG(TAG, "TwilioIPMessagingClientListener::onChannel - deleted");
 			JNIEnvAttacher jniAttacher;
 			jobject channel = createChannelObject(channelPtr);
@@ -346,6 +347,12 @@ void TwilioIPMessagingClientListener::onChannelSynchronization(
 	if (event == TMSynchronization::kTMSynchronizationCompleted) {
 		LOG_DEBUG(TAG, "onChannelSynchronization::kTMSynchronizationCompleted");
 		auto messages = channelPtr->getMessages();
+		if(messages == nullptr) {
+			return;
+		}
+		// FIXME: remove once we figure out how to handle this with a new callback to the client
+		LOG_DEBUG(TAG, "Calling onChannelAdd");
+		this->onChannel(TMAction::kTMActionAdded,channelPtr);
 		messages->fetchLastMessages(
 				[this,channelPtr, messages](TMResult result, std::vector<uint64_t> indexes) {
 					if (result == TMResult::kTMResultSuccess) {

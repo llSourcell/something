@@ -61,7 +61,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	            public void onInitialized()
 	            {
 	            	createClientWithToken(listener);
-	            	createClientWithAccessManager(listener);
+	            	//createClientWithAccessManager(listener);
 	            }
 	
 	            @Override
@@ -155,7 +155,26 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	
 	
 	private void createClientWithAccessManager(LoginListener listener) {
-		acessMgr = TwilioAccessManagerFactory.createAccessManager(capabilityToken, null);
+		String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTS2E3MDA0MjRhNDExMjY3ODZhZTBiNTk5YjA3NGM3NWNmLTE0NDg2MjczNTQiLCJpc3MiOiJTS2E3MDA0MjRhNDExMjY3ODZhZTBiNTk5YjA3NGM3NWNmIiwic3ViIjoiQUNmNzVmNDRiZjUzZDQ2ZmJjYjNlNDI0MDY1N2FlMjY4ZiIsIm5iZiI6MTQ0ODYyNzM1NCwiZXhwIjoxNDQ4NjMyMzU0LCJncmFudHMiOnsiaWRlbnRpdHkiOiJBbGV4IiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVMzZjA2Y2NhNGIzOTk0NjlhYThhMDM5OGVkMTc4MDY0ZCIsImVuZHBvaW50X2lkIjoiMTUyNTIzLTIxMzUyMzUyMTM1LTMyNTEyMzUtMjM1In19fQ.33VHyDboW4CeIq3j8SbPdxaN8Wxcl078PPp2k3U5JfM";
+        TwilioAccessManager manager = TwilioAccessManagerFactory.createAccessManager(token, new TwilioAccessManagerListener() {
+            @Override
+            public void onAccessManagerTokenExpire(TwilioAccessManager twilioAccessManager) {
+                Log.d("Test", "token expire");
+            }
+
+            @Override
+            public void onTokenUpdated(TwilioAccessManager twilioAccessManager) {
+                Log.d("Test", "token updated");
+            }
+
+            @Override
+            public void onError(TwilioAccessManager twilioAccessManager, String s) {
+                Log.d("Test", "token error: " + s);
+            }
+        });
+    	acessMgr = TwilioAccessManagerFactory.createAccessManager(capabilityToken, null);
+		
+    	
 		ipMessagingClientWithAccessManager = TwilioIPMessagingSDK.createIPMessagingClientWithAccessManager(this.acessMgr, BasicIPMessagingClient.this);
     	if(ipMessagingClientWithAccessManager != null) {
     		ipMessagingClientWithAccessManager.setListener(this);
@@ -172,7 +191,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	@Override
 	public void onChannelHistoryLoaded(Channel channel) {
-		logger.d("Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
+		logger.e("Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
 	}
 
 	@Override

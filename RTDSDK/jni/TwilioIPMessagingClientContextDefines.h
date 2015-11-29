@@ -23,7 +23,6 @@ typedef struct IPMessagingClientContext {
 	ITMClientPtr messagingClient;
 	ITMChannelsPtr channels;
 	std::map<const char*,ITMChannelPtr>   channelMap;
-
 } IPMessagingClientContext;
 
 //Channel

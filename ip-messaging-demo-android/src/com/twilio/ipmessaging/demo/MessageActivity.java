@@ -780,7 +780,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	}
 
 	@Override
-	public void onChannelHistoryLoaded() {
-		logger.d("Received onChannelSynchronization callback");
+	public void onChannelHistoryLoaded(Channel channel) {
+		logger.d("Received onChannelSynchronization callback " + channel.getFriendlyName());
 	}
 }
