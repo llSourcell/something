@@ -317,7 +317,7 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 
 				@Override
 				public void onError() {
-					//TODO:: @kabgchi TBD what to do, when this fails.
+					//TODO:: @kbagchi TBD what to do, when this fails.
 					logger.e("Received onError() updating token.");
 				}});
 		}
