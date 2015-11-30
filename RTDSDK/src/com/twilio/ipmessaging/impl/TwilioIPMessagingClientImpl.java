@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.twilio.common.TwilioAccessManager;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
@@ -30,10 +31,22 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
 	protected final Map<String, ChannelImpl> privateChannelList = new ConcurrentHashMap<String,ChannelImpl>();
 	private final UUID uuid = UUID.randomUUID();
+	private TwilioAccessManager accessManager;
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {
 		this.context = context2;
 		this.ipMessagingListener = inListener;		
+		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
+		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal);
+		createMessagingClient(token, this.nativeClientParamContextHandle);
+	}
+
+
+	public TwilioIPMessagingClientImpl(Context context2, String token, TwilioAccessManager accessMgr,
+			IPMessagingClientListener inListener) {
+		this.context = context2;
+		this.ipMessagingListener = inListener;		
+		this.accessManager = accessMgr;
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
 		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal);
 		createMessagingClient(token, this.nativeClientParamContextHandle);
@@ -70,8 +83,12 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 
 	@Override
 	public String getIdentity() {
-		// TODO Auto-generated method stub
-		return null;
+		if(this.accessManager != null) {
+			return this.accessManager.getIdentity();
+		} else {
+			return null;
+		}
+		
 	}
 	
 	@Override
