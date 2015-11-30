@@ -230,6 +230,43 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 		}
 	}
 	
+	public TwilioIPMessagingClientImpl createClientWithToken(String token, IPMessagingClientListener listener, TwilioAccessManager accessMgr) {
+		if(token != null) {
+
+			final TwilioIPMessagingClientImpl client = new TwilioIPMessagingClientImpl(context, token, accessMgr, listener);
+			synchronized (clients)
+			{
+				clients.put(client.getUUID(), new WeakReference<TwilioIPMessagingClientImpl>(client));
+			}
+			return client;
+		} else {
+			return null;
+		}
+	}
+	
+	public TwilioIPMessagingClient createClientWithAccessManager(TwilioAccessManager accessManager,
+			IPMessagingClientListener listener) {
+		if(accessManager == null) {
+			return null;
+		} 
+		
+		if(accessManager.getListener() == null) {
+			accessManager.setListener(this);
+		}
+		String newCapabilityToken = accessManager.getToken();		
+		TwilioIPMessagingClientImpl twilioIpmClient = createClientWithToken(newCapabilityToken, listener, accessManager);
+		accessManagers.put(accessManager,  new WeakReference<TwilioIPMessagingClientImpl>(twilioIpmClient));
+		return twilioIpmClient;
+	}
+	
+	public String getVersion() {
+		return Version.SDK_VERSION;
+	}
+
+	public void setLogLevel(int level) {
+		Logger.setLogLevel(level);
+		setLogLevelNative(level);
+	}
 	
 	public void shutdown()
 	{
@@ -264,36 +301,6 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 		state.set(State.UNINITIALIZED);
 
 	}
-	
-	private native void create();	
-
-	public String getVersion() {
-		return Version.SDK_VERSION;
-	}
-
-	public void setLogLevel(int level) {
-		Logger.setLogLevel(level);
-		setLogLevelNative(level);
-	}
-	
-	private native void setLogLevelNative(int level);
-	
-	public TwilioIPMessagingClient createClientWithAccessManager(TwilioAccessManager accessManager,
-			IPMessagingClientListener listener) {
-		if(accessManager == null) {
-			return null;
-		} 
-		
-		if(accessManager.getListener() == null) {
-			accessManager.setListener(this);
-		}
-		//TODO :: revisit this code
-		String newCapabilityToken = accessManager.getToken();		
-		TwilioIPMessagingClientImpl twilioIpmClient = createClientWithToken(newCapabilityToken, listener);
-		accessManagers.put(accessManager,  new WeakReference<TwilioIPMessagingClientImpl>(twilioIpmClient));
-		return twilioIpmClient;
-	}
-
 
 	@Override
 	public void onAccessManagerTokenExpire(TwilioAccessManager accessManager) {
@@ -310,7 +317,7 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 
 				@Override
 				public void onError() {
-					//TODO:: @kabgchi TBD what to do, when this fails.
+					//TODO:: @kbagchi TBD what to do, when this fails.
 					logger.e("Received onError() updating token.");
 				}});
 		}
@@ -327,4 +334,7 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 	public void onTokenUpdated(TwilioAccessManager accessManager) {
 		logger.e("Received onTokenUpdated event.");
 	} 
+	
+	private native void create();	
+	private native void setLogLevelNative(int level);
 }
