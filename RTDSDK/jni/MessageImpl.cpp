@@ -54,7 +54,7 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_getChanne
  * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_setBodyNative
-(JNIEnv *env, jobject obj, jlong nativeMessageContext, jstring msgText	, jobject listener) {
+(JNIEnv *env, jobject obj, jlong nativeMessageContext, jstring msgText, jobject listener) {
 	ITMessagePtr messagePtr = nullptr;
 	jstring sidString;
 

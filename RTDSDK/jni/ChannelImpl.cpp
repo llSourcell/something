@@ -637,30 +637,38 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUnique
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
-		jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 		ITMChannelPtr channel = channelContext->channel;
+		if(listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jmethodID j_onSuccess_ = tw_jni_get_method(env, j_statusListener_, "onSuccess", "()V");
+			jmethodID j_onError_ = tw_jni_get_method(env, j_statusListener_, "onError", "()V");
 
-		if(channel != nullptr) {
-			LOG_DEBUG("Update Unique Name for channel with sid : %s ", nativeSidString);
-			channel->setUniqueName(nativeNameString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					LOG_DEBUG(TAG, "Update unique name for channel is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					LOG_DEBUG(TAG, "Update Unique Name for channel failed");
+			if(channel != nullptr) {
+				LOG_DEBUG("Update Unique Name for channel with sid : %s ", nativeSidString);
+				channel->setUniqueName(nativeNameString, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						LOG_DEBUG(TAG, "Update unique name for channel is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						LOG_DEBUG(TAG, "Update Unique Name for channel failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
+			LOG_DEBUG(TAG, "StatusListener is null.");
+			if(channel != nullptr) {
+				LOG_DEBUG("Update Unique Name for channel with sid : %s ", nativeSidString);
+				channel->setUniqueName(nativeNameString, nullptr);
+			}
 		}
 	}
 	env->ReleaseStringUTFChars(channel_sid, nativeSidString);
