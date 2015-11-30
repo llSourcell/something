@@ -31,21 +31,12 @@ public class MessagesImpl implements Messages , Parcelable {
 
 	@Override
 	public void sendMessage(Message message, StatusListener listener) {
-		if(listener != null) {
-			sendMessageNative(message, listener);
-		} else {
-			logger.e("StatusListener is null.");
-		}
+		sendMessageNative(message, listener);
 	}
 	
 	@Override
 	public void removeMessage(Message message, StatusListener listener) {
-		if(listener != null) {
-			removeMessageNative(message, listener);
-		} else {
-			logger.e("StatusListener is null.");
-		}
-		
+		removeMessageNative(message, listener);	
 	}
 
 

@@ -237,27 +237,35 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 		if(clientParamsRecreate != nullptr) {
-			jobject j_statusListener_ = env->NewGlobalRef(listener);
-			jclass cls = (env)->GetObjectClass(j_statusListener_);
-			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
-			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+			if(listener != nullptr) {
+				jobject j_statusListener_ = env->NewGlobalRef(listener);
+				jclass cls = (env)->GetObjectClass(j_statusListener_);
+				jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+				jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
-			ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
-			if(messagingClient != nullptr) {
-				messagingClient->updateToken(tokenStr,[j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-					JNIEnvAttacher jniAttacher;
-					if (result == rtd::TMResult::kTMResultSuccess) {
-						LOG_DEBUG(TAG, "updateToken is successful. Calling java listener.");
-						//Call Java
-						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-					} else {
-						LOG_WARN(TAG, "updateToken channel failed. Calling java listener.");
-						//Call Java
-						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-					}
-				});
+				ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
+				if(messagingClient != nullptr) {
+					messagingClient->updateToken(tokenStr,[j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+						JNIEnvAttacher jniAttacher;
+						if (result == rtd::TMResult::kTMResultSuccess) {
+							LOG_DEBUG(TAG, "updateToken is successful. Calling java listener.");
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						} else {
+							LOG_WARN(TAG, "updateToken channel failed. Calling java listener.");
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					});
+				}
+			} else {
+				LOG_DEBUG(TAG, "Updating token.StatusListener is set to null.");
+				ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
+				if(messagingClient != nullptr) {
+					messagingClient->updateToken(tokenStr, nullptr);
+				}
 			}
 		}
 

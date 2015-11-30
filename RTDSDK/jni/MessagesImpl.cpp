@@ -239,31 +239,39 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
 
 	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
 	if(messages != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jclass cls = (env)->GetObjectClass(j_statusListener_);
-		jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
-		jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+		if(listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
-		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
-		if(message != nullptr) {
-			messages->send(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					LOG_DEBUG(TAG, "Sent message is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					LOG_DEBUG(TAG, "Sent message failed");
+			ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
+			if(message != nullptr) {
+				messages->send(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						LOG_DEBUG(TAG, "Sent message is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						LOG_DEBUG(TAG, "Sent message failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				LOG_DEBUG(TAG, "Sent message DeleteGlobalRef.");
+				env->DeleteGlobalRef(j_statusListener_);
+			}
 		} else {
-			LOG_DEBUG(TAG, "Sent message DeleteGlobalRef.");
-			env->DeleteGlobalRef(j_statusListener_);
+			LOG_DEBUG(TAG, "Sending message. StatusListener is set to null.");
+			ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
+			if(message != nullptr) {
+				messages->send(message, nullptr);
+			}
 		}
 	}
 }
@@ -278,30 +286,38 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessa
 
 	ITMessagesPtr messages = getMessagesPtrFromNativeHandle(env, obj);
 	if(messages != nullptr) {
-		jobject j_statusListener_ = env->NewGlobalRef(listener);
-		jclass cls = (env)->GetObjectClass(j_statusListener_);
-		jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
-		jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+		if(listener != nullptr) {
+			jobject j_statusListener_ = env->NewGlobalRef(listener);
+			jclass cls = (env)->GetObjectClass(j_statusListener_);
+			jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
-		ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
-		if(message != nullptr) {
-			 messages->remove(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
-				JNIEnvAttacher jniAttacher;
-				if (result == rtd::TMResult::kTMResultSuccess) {
-					LOG_DEBUG(TAG, "Remove message is successful. Calling java listener.");
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				} else {
-					LOG_DEBUG(TAG, "Remove message failed");
+			ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
+			if(message != nullptr) {
+				 messages->remove(message, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+					JNIEnvAttacher jniAttacher;
+					if (result == rtd::TMResult::kTMResultSuccess) {
+						LOG_DEBUG(TAG, "Remove message is successful. Calling java listener.");
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					} else {
+						LOG_DEBUG(TAG, "Remove message failed");
 
-					//Call Java
-					jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-					jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-				}
-			});
+						//Call Java
+						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+					}
+				});
+			} else {
+				env->DeleteGlobalRef(j_statusListener_);
+			}
 		} else {
-			env->DeleteGlobalRef(j_statusListener_);
+			LOG_DEBUG(TAG, "Removing message. StatusListener is set to null.");
+			ITMessagePtr message = getMessagePtrFromNativeHandle(env, messageObj);
+			if(message != nullptr) {
+				messages->remove(message, nullptr);
+			}
 		}
 	}
 }
