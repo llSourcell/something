@@ -156,13 +156,20 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public void setListener(ChannelListener listener) {
-		
-		logger.e("Setting listener for: " + this.hashCode()+"|"+this.sid);
 		this.listener = listener;
 		Handler handler = setupListenerHandler();
-		if(listenerList != null) {
-			listenerList.put(listener, handler);
-			this.ipmClient.channelListenerMap.put(this.sid, listenerList);
+		this.handler = handler;
+		logger.d("Calling setListener " + this.hashCode());
+		if(this.ipmClient != null) {
+			Map<ChannelListener, Handler> existingMap = this.ipmClient.channelListenerMap.get(this.sid);
+			if(existingMap != null) {
+				existingMap.put(listener, handler);
+			} else {
+				existingMap = new HashMap<ChannelListener, Handler>();
+				existingMap.put(listener, handler);
+			}
+			this.ipmClient.channelListenerMap.put(this.sid, existingMap);
+			logger.d("existingMap " + existingMap);
 		}
 	}
 
@@ -476,16 +483,16 @@ public class ChannelImpl implements Channel, Parcelable{
 		}	
 	}
 	
+	
 	public void handleOnChannelSync(final ChannelImpl channel) {
-		logger.e("handleOnChannelSync 1 " + this.hashCode());
+		logger.d("Calling channelImpl:handleOnChannelSync " + this.hashCode());
 		if (handler != null) {
-			logger.e("handleOnChannelSync 2");
+			logger.d("Calling channelImpl:handleOnChannelSync:handler not null. " + this.hashCode());
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					logger.e("handleOnChannelSync 3");
 					if(listener!= null) {
-						logger.e("handleOnChannelSync 4");
+						logger.d("Calling channelImpl:handleOnChannelSync:listener not null.  " + this.hashCode());
 						listener.onChannelHistoryLoaded(channel);
 					}
 				}

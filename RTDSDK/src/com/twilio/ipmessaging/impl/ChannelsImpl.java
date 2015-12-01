@@ -151,7 +151,7 @@ public class ChannelsImpl implements Channels {
 		if(localCopyChannelArray != null ) {
 			for(int i=0; i<localCopyChannelArray.length; i++) {
 				if(localCopyChannelArray[i] != null) {
-					logger.e("*****KUMKUM***** " + localCopyChannelArray[i].getSid() + "|" + localCopyChannelArray[i].hashCode());
+					logger.d(localCopyChannelArray[i].getSid() + "|" + localCopyChannelArray[i].hashCode());
 					this.ipmClient.publicChannelMap.put(localCopyChannelArray[i].getSid(), (ChannelImpl) localCopyChannelArray[i]);
 				}
 			}

@@ -127,21 +127,21 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 	
 	public void handleChannelAddEvent(ChannelImpl channel) {
-		logger.e("handleChannelAddEvent |" + channel.getSid());
+		logger.d("handleChannelAddEvent |" + channel.getSid());
 		if (this.ipMessagingListener != null) {
 			if (channel != null) {
 				ChannelImpl existingChannel = publicChannelMap.get(channel.getSid());
 				if (existingChannel == null) {
-					logger.e("handleChannelAddEvent existingChannel is null.");
+					logger.d("handleChannelAddEvent existingChannel is null.");
 					synchronized(this) {
 						if (channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
 							privateChannelList.put(channel.getSid(), channel);
 						}
-						logger.e("*****KUMKUM***** Adding channel cid" + channel.getSid() + " hashCode is: " + channel.hashCode());
+						logger.d("Adding channel cid" + channel.getSid() + " hashCode is: " + channel.hashCode());
 						publicChannelMap.put(channel.getSid(), channel);
 					}
 				} else {
-					logger.e("*****KUMKUM***** handleChannelAddEvent no add|" + existingChannel.getSid() +"|" + existingChannel.hashCode());
+					logger.d("handleChannelAddEvent no add|" + existingChannel.getSid() +"|" + existingChannel.hashCode());
 				}
 			}
 			this.ipMessagingListener.onChannelAdd(channel);
@@ -149,19 +149,19 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 	
 	public void handleChannelCreate(ChannelImpl channel) {
-		logger.e("handleChannelCreate " + channel.hashCode() + "|"+ channel.getSid());
+		logger.d("handleChannelCreate " + channel.hashCode() + "|"+ channel.getSid());
 		if(this.ipMessagingListener != null) {
 			if(channel != null) {
-				logger.e("handleChannelCreate" + channel.hashCode());
+				logger.d("handleChannelCreate" + channel.hashCode());
 				ChannelImpl existingChannel = publicChannelMap.get(channel.getSid());
 				if (existingChannel == null) {
-					logger.e("handleChannelCreate: adding " + channel.hashCode());
+					logger.d("handleChannelCreate: adding " + channel.hashCode());
 					if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
 						synchronized(this) {
 							privateChannelList.put(channel.getSid(),channel);
 						}
 					} 
-					logger.e("*****KUMKUM***** *****Adding channel cid" +channel.getSid() + " hashCode is: " + channel.hashCode());
+					logger.d("*****Adding channel cid" +channel.getSid() + " hashCode is: " + channel.hashCode());
 					synchronized(this) {
 						publicChannelMap.put(channel.getSid(), channel);
 					}
@@ -177,7 +177,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
 					 existingChannel = publicChannelMap.get(channel.getSid());
 					if(existingChannel != null) {
-						logger.e("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + existingChannel.hashCode());
+						logger.d("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + existingChannel.hashCode());
 						synchronized(this) {
 							existingChannel.friendlyName = channel.friendlyName;
 							existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
@@ -186,7 +186,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 						}
 						this.ipMessagingListener.onChannelChange(existingChannel);
 					} else {
-						logger.e("*****KUMKUM***** Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						logger.d("Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
 						synchronized(this) {
 							privateChannelList.put(channel.getSid(),channel);
 							publicChannelMap.put(channel.getSid(), channel);
@@ -197,7 +197,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 				} else if(channel.getType() == ChannelType.CHANNEL_TYPE_PUBLIC) {
 					existingChannel = publicChannelMap.get(channel.getSid());
 					if(existingChannel != null) {
-						logger.e("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + existingChannel.hashCode());
+						logger.d("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + existingChannel.hashCode());
 						synchronized(this) {
 							existingChannel.friendlyName = channel.friendlyName;
 							existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
@@ -206,7 +206,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 						}
 						this.ipMessagingListener.onChannelChange(existingChannel);
 					} else {
-						logger.e("*****KUMKUM***** *****Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						logger.d("*****Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
 						synchronized(this) {
 							publicChannelMap.put(channel.getSid(), channel);
 						}
@@ -220,7 +220,6 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	public void handleChannelDeleted(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
 			synchronized(this) {
-				logger.d("*****KUMKUM*****");
 				privateChannelList.remove(channel.getSid());
 				publicChannelMap.remove(channel.getSid());
 			}
