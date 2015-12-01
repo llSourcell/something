@@ -304,10 +304,10 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 
 	@Override
 	public void onAccessManagerTokenExpire(TwilioAccessManager accessManager) {
-		logger.e("Received onAccessManagerTokenExpire event.");
+		logger.d("Received onAccessManagerTokenExpire event.");
 		WeakReference<TwilioIPMessagingClientImpl> twilioIpmClient =  accessManagers.get(accessManager);
 		if(twilioIpmClient != null) {
-			logger.e("Found twilioIpmClient");
+			logger.d("Found twilioIpmClient");
 			twilioIpmClient.get().updateToken(accessManager.getToken(), new StatusListener() {
 
 				@Override
@@ -326,13 +326,13 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 
 	@Override
 	public void onError(TwilioAccessManager accessManager, String errorMsg) {
-		logger.e("Received TwilioAccessManager event.");
+		logger.d("Received TwilioAccessManager event.");
 	}
 
 
 	@Override
 	public void onTokenUpdated(TwilioAccessManager accessManager) {
-		logger.e("Received onTokenUpdated event.");
+		logger.d("Received onTokenUpdated event.");
 	} 
 	
 	private native void create();	

@@ -1,11 +1,16 @@
 package com.twilio.ipmessaging.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
+
+import android.os.Handler;
 
 public class IPMessagingClientListenerInternal {
 	
@@ -128,7 +133,10 @@ public class IPMessagingClientListenerInternal {
 	}
 	
 	public void onChannelAdd(ChannelImpl channel) {
-		this.ipmClient.handleChannelAddEvent(channel);
+		logger.d("this.ipmClient" + this.ipmClient.hashCode());
+		synchronized(this.ipmClient) {
+			this.ipmClient.handleChannelAddEvent(channel);
+		}
 	}
 	
 	public void onChannelInvite(Channel channel) {
@@ -152,14 +160,44 @@ public class IPMessagingClientListenerInternal {
 		logger.d("Entered onChannelSync");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
+			final ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
 			if(channelImpl != null) {
-				channelImpl.handleOnChannelSync(channel);
+				logger.d("onChannelSync channelImpl " + channelImpl.getSid() + "|"+channelImpl.hashCode());
+			}
+			
+			Map<ChannelListener, Handler> listenerMap = this.ipmClient.channelListenerMap.get(cSid);
+			if(listenerMap != null) {
+					logger.d("onChannelSync channelImpl listenerMap " + listenerMap.toString()); 
+	 				for (Map.Entry<ChannelListener, Handler> entry : listenerMap.entrySet()) {
+	 					final ChannelListener listener = entry.getKey();
+	 					logger.d("onChannelSync channelImpl listener " + listener.hashCode());
+	 				    Handler handler = entry.getValue();
+	 				    if (handler != null) {
+	 						logger.d("handleOnChannelSync handler not null.");
+	 						handler.post(new Runnable() {
+	 							@Override
+	 							public void run() {
+	 								if(listener!= null) {
+	 									logger.d("handleOnChannelSync calling listener");
+	 									listener.onChannelHistoryLoaded(channelImpl);
+	 								}
+	 							}
+	 						});
+	 					}	
+	 				}
 			}
 			
 			if(this.ipmClient != null) {
+				logger.d("Calling ipmClient:handleOnChannelSync");
 				this.ipmClient.handleOnChannelSync(channel);
 			}
+		}
+	}
+	
+	public void onChannelCreated(ChannelImpl channel) {
+		logger.d("ipmClient " + this.ipmClient.hashCode());
+		synchronized(this.ipmClient) {
+			this.ipmClient.handleChannelCreate(channel);
 		}
 	}
 

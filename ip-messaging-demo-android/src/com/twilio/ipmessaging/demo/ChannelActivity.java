@@ -105,7 +105,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	        {
 	            @Override
 	            public void onCreated(final Channel newChannel){
-	            	logger.e("Successfully created a channel with no options.");
+	            	logger.e("Successfully created a channel with options.");
 	            }
 
 				@Override
@@ -465,7 +465,9 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	private void setupListenersForChannel(Channel[] channelArray){
 		if(channelArray != null) {
 			for(int i=0; i<channelArray.length; i++) {
-				channelArray[i].setListener(ChannelActivity.this);
+				if(channelArray[i] != null) {
+					channelArray[i].setListener(ChannelActivity.this);
+				}
 			}
 		}
 	}

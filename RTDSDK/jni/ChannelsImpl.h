@@ -18,12 +18,27 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
+ * Method:    createChannelNativeWithListener
+ * Signature: (Ljava/lang/String;IJLcom/twilio/ipmessaging/TwilioIPMessagingClient/CreateChannelListener;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithListenerWithSDKListener
+  (JNIEnv *, jobject, jstring, jint, jlong, jobject, jobject, jobject);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
  * Method:    createChannelNative
  * Signature: (Ljava/lang/String;IJ)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNative
   (JNIEnv *, jobject, jstring, jint, jlong);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
+ * Method:    createChannelNative
+ * Signature: (Ljava/lang/String;IJ)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithSDKListener
+  (JNIEnv *, jobject, jstring, jint, jlong, jobject, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -31,7 +46,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  * Signature: (Ljava/lang/String;Ljava/lang/String;IJ)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelWithOptionsNative
-  (JNIEnv *, jobject, jstring, jstring, jstring, jint, jlong);
+  (JNIEnv *, jobject, jstring, jstring, jstring, jint, jlong, jobject, jobject);;
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -39,7 +54,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  * Signature: (Ljava/lang/String;Ljava/lang/String;IJLcom/twilio/ipmessaging/Constants/CreateChannelListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithOptionsWithListener
-  (JNIEnv *, jobject, jstring, jstring, jstring, jint, jlong, jobject);
+  (JNIEnv *, jobject, jstring, jstring, jstring, jint, jlong, jobject, jobject, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
