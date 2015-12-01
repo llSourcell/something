@@ -634,7 +634,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
  * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelsNative
-  (JNIEnv *env, jobject obj, jlong nativeChannelsContext) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelsContext, jobject ipmClient) {
 
 	jobject channel;
 	jobjectArray channelsArray ;
@@ -663,8 +663,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 		LOG_DEBUG(TAG,"public channels count : %d",publicChannels.size());
 
 		jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
+		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JIILcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;)V");
 
-		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
+		//jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
 		channelsArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),java_channel_impl_cls, 0);
 
 		for (int i= 0; i<publicChannels.size() ; i++ ) {
@@ -704,7 +705,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 			jstring nameString = env->NewStringUTF(name);
 			jstring sidString = env->NewStringUTF(sid);
-			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
+			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type, ipmClient);
+
+			//channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
 			env->SetObjectArrayElement(channelsArray, i, channel);
 		}
 	}

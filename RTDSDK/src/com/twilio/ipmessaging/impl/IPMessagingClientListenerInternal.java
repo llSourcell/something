@@ -167,24 +167,28 @@ public class IPMessagingClientListenerInternal {
 			
 			Map<ChannelListener, Handler> listenerMap = this.ipmClient.channelListenerMap.get(cSid);
 			if(listenerMap != null) {
-					logger.d("onChannelSync channelImpl listenerMap " + listenerMap.toString()); 
-	 				for (Map.Entry<ChannelListener, Handler> entry : listenerMap.entrySet()) {
-	 					final ChannelListener listener = entry.getKey();
-	 					logger.d("onChannelSync channelImpl listener " + listener.hashCode());
-	 				    Handler handler = entry.getValue();
-	 				    if (handler != null) {
-	 						logger.d("handleOnChannelSync handler not null.");
-	 						handler.post(new Runnable() {
-	 							@Override
-	 							public void run() {
-	 								if(listener!= null) {
-	 									logger.d("handleOnChannelSync calling listener");
-	 									listener.onChannelHistoryLoaded(channelImpl);
-	 								}
-	 							}
-	 						});
-	 					}	
-	 				}
+				logger.d("onChannelSync channelImpl listenerMap " + listenerMap.toString()); 
+ 				for (Map.Entry<ChannelListener, Handler> entry : listenerMap.entrySet()) {
+ 					final ChannelListener listener = entry.getKey();
+ 					logger.d("onChannelSync channelImpl listener " + listener.hashCode());
+ 				    Handler handler = entry.getValue();
+ 				    if (handler != null) {
+ 						logger.d("handleOnChannelSync handler not null.");
+ 						handler.post(new Runnable() {
+ 							@Override
+ 							public void run() {
+ 								if(listener!= null) {
+ 									logger.d("handleOnChannelSync calling listener");
+ 									listener.onChannelHistoryLoaded(channelImpl);
+ 								}
+ 							}
+ 						});
+ 					}	
+ 				}
+			} else {
+				if(channelImpl != null) {
+					channelImpl.handleOnChannelSync(channel);
+				}
 			}
 			
 			if(this.ipmClient != null) {
