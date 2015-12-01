@@ -117,6 +117,8 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	@Override
 	public void setListener(ChannelListener listener) {
+		
+		logger.e("Setting listener for: " + this.hashCode()+"|"+this.sid);
 		this.listener = listener;
 		setupListenerHandler();
 	}
@@ -430,11 +432,15 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 	
 	public void handleOnChannelSync(final ChannelImpl channel) {
+		logger.e("handleOnChannelSync 1 " + this.hashCode());
 		if (handler != null) {
+			logger.e("handleOnChannelSync 2");
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+					logger.e("handleOnChannelSync 3");
 					if(listener!= null) {
+						logger.e("handleOnChannelSync 4");
 						listener.onChannelHistoryLoaded(channel);
 					}
 				}

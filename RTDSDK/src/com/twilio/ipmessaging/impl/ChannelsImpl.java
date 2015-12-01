@@ -26,6 +26,7 @@ public class ChannelsImpl implements Channels {
 	private Handler handler;
 	private TwilioIPMessagingClientImpl ipmClient;
 
+	//Gets created in the JNI layer
 	public ChannelsImpl(TwilioIPMessagingClientImpl client, long handler) {
 		super();
 		this.ipmClient = client;
@@ -46,14 +47,30 @@ public class ChannelsImpl implements Channels {
 				break;
 		}
 	
-		if(listener != null) {
+		/*if(listener != null) {
 			this.createChannelNativeWithListener(friendlyName, nativeType, this.nativeChannelsHandler, listener);
 		} else {
 			this.createChannelNative(friendlyName, nativeType, this.nativeChannelsHandler);
+		}*/
+		
+		if(listener != null) {
+			if(this.ipmClient != null) {
+				this.createChannelNativeWithListenerWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, listener, this.ipmClient.getInternalListener());
+			} else {
+				//this should never happen if this.ipmClient is null, we have a bigger issue
+				this.createChannelNativeWithListener(friendlyName, nativeType, this.nativeChannelsHandler, listener);
+			}
+		} else {
+			if(this.ipmClient != null) {
+				this.createChannelNativeWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, this.ipmClient.getInternalListener());
+			} else {
+				//this should never happen if this.ipmClient is null, we have a bigger issue
+				this.createChannelNative(friendlyName, nativeType, this.nativeChannelsHandler);
+			}
 		}
+		
 	}
 
-	//::TODO Need to implement setting attributes in JNI - need discussion.
 	@Override
 	public void createChannel(Map<String, Object> options, CreateChannelListener listener) {
 		Map<String,String> attrMap = new HashMap<String,String>();
@@ -134,6 +151,7 @@ public class ChannelsImpl implements Channels {
 		if(localCopyChannelArray != null ) {
 			for(int i=0; i<localCopyChannelArray.length; i++) {
 				if(localCopyChannelArray[i] != null) {
+					logger.e("*****KUMKUM***** " + localCopyChannelArray[i].getSid() + "|" + localCopyChannelArray[i].hashCode());
 					this.ipmClient.publicChannelMap.put(localCopyChannelArray[i].getSid(), (ChannelImpl) localCopyChannelArray[i]);
 				}
 			}
@@ -210,6 +228,11 @@ public class ChannelsImpl implements Channels {
 	
 	private native void createChannelNative(String friendlyName, int type, long nativeChannelsContext);
 	private native void createChannelNativeWithListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener);
+	
+	private native void createChannelNativeWithSDKListener(String friendlyName, int type, long nativeChannelsContext, IPMessagingClientListenerInternal internalListener);
+	private native void createChannelNativeWithListenerWithSDKListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener, IPMessagingClientListenerInternal internalListener );
+	
+	
 	private native void createChannelWithOptionsNative(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext);
 	private native void createChannelNativeWithOptionsWithListener(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext, CreateChannelListener listener);
 	private native ChannelImpl getChannelNative(String channelId, long handle);

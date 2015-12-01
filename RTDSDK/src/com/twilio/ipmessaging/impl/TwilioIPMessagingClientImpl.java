@@ -122,16 +122,46 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 	
 	public void handleChannelAddEvent(ChannelImpl channel) {
-		logger.e("handleChannelAddEvent");
-		if(this.ipMessagingListener != null) {
-			if(channel != null) {
-				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
-					privateChannelList.put(channel.getSid(),channel);
-				} 
-				logger.d("*****Adding channel cid" +channel.getSid() + " hashCode is: " + channel.hashCode());
-				publicChannelMap.put(channel.getSid(), channel);
+		logger.e("handleChannelAddEvent |" + channel.getSid());
+		if (this.ipMessagingListener != null) {
+			if (channel != null) {
+				ChannelImpl existingChannel = publicChannelMap.get(channel.getSid());
+				if (existingChannel == null) {
+					logger.e("handleChannelAddEvent existingChannel is null.");
+					synchronized(this) {
+						if (channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
+							privateChannelList.put(channel.getSid(), channel);
+						}
+						logger.e("*****KUMKUM***** Adding channel cid" + channel.getSid() + " hashCode is: " + channel.hashCode());
+						publicChannelMap.put(channel.getSid(), channel);
+					}
+				} else {
+					logger.e("*****KUMKUM***** handleChannelAddEvent no add|" + existingChannel.getSid() +"|" + existingChannel.hashCode());
+				}
 			}
 			this.ipMessagingListener.onChannelAdd(channel);
+		}
+	}
+	
+	public void handleChannelCreate(ChannelImpl channel) {
+		logger.e("handleChannelCreate " + channel.hashCode() + "|"+ channel.getSid());
+		if(this.ipMessagingListener != null) {
+			if(channel != null) {
+				logger.e("handleChannelCreate" + channel.hashCode());
+				ChannelImpl existingChannel = publicChannelMap.get(channel.getSid());
+				if (existingChannel == null) {
+					logger.e("handleChannelCreate: adding " + channel.hashCode());
+					if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
+						synchronized(this) {
+							privateChannelList.put(channel.getSid(),channel);
+						}
+					} 
+					logger.e("*****KUMKUM***** *****Adding channel cid" +channel.getSid() + " hashCode is: " + channel.hashCode());
+					synchronized(this) {
+						publicChannelMap.put(channel.getSid(), channel);
+					}
+				} 
+			}
 		}
 	}
 	
@@ -142,31 +172,39 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 				if(channel.getType() == ChannelType.CHANNEL_TYPE_PRIVATE) {
 					 existingChannel = publicChannelMap.get(channel.getSid());
 					if(existingChannel != null) {
-						logger.d("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
-						existingChannel.friendlyName = channel.friendlyName;
-						existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
-						existingChannel.status = channel.status;
-						existingChannel.type = channel.type;
+						logger.e("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + existingChannel.hashCode());
+						synchronized(this) {
+							existingChannel.friendlyName = channel.friendlyName;
+							existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
+							existingChannel.status = channel.status;
+							existingChannel.type = channel.type;
+						}
 						this.ipMessagingListener.onChannelChange(existingChannel);
 					} else {
-						logger.d("*****Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
-						privateChannelList.put(channel.getSid(),channel);
-						publicChannelMap.put(channel.getSid(), channel);
+						logger.e("*****KUMKUM***** Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						synchronized(this) {
+							privateChannelList.put(channel.getSid(),channel);
+							publicChannelMap.put(channel.getSid(), channel);
+						}
 						this.ipMessagingListener.onChannelChange(channel);
 					}
 					
 				} else if(channel.getType() == ChannelType.CHANNEL_TYPE_PUBLIC) {
 					existingChannel = publicChannelMap.get(channel.getSid());
 					if(existingChannel != null) {
-						logger.d("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
-						existingChannel.friendlyName = channel.friendlyName;
-						existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
-						existingChannel.status = channel.status;
-						existingChannel.type = channel.type;
+						logger.e("*****EXISTING Changed channel cid " +channel.getSid() + " hashCode is: " + existingChannel.hashCode());
+						synchronized(this) {
+							existingChannel.friendlyName = channel.friendlyName;
+							existingChannel.nativeChannelContextHandle = channel.nativeChannelContextHandle;
+							existingChannel.status = channel.status;
+							existingChannel.type = channel.type;
+						}
 						this.ipMessagingListener.onChannelChange(existingChannel);
 					} else {
-						logger.d("*****Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
-						publicChannelMap.put(channel.getSid(), channel);
+						logger.e("*****KUMKUM***** *****Changed channel cid " +channel.getSid() + " hashCode is: " + channel.hashCode());
+						synchronized(this) {
+							publicChannelMap.put(channel.getSid(), channel);
+						}
 						this.ipMessagingListener.onChannelChange(channel);
 					}
 				}
@@ -176,8 +214,11 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
 	public void handleChannelDeleted(ChannelImpl channel) {
 		if(this.ipMessagingListener != null) {
-			privateChannelList.remove(channel.getSid());
-			publicChannelMap.remove(channel.getSid());
+			synchronized(this) {
+				logger.d("*****KUMKUM*****");
+				privateChannelList.remove(channel.getSid());
+				publicChannelMap.remove(channel.getSid());
+			}
 			this.ipMessagingListener.onChannelDelete(channel);
 		}
 	}
@@ -199,9 +240,14 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		return uuid;
 	}
 	
+	protected IPMessagingClientListenerInternal getInternalListener(){
+		return this.ipMessagingClientListenerInternal;
+	}
+	
 	public native long initNative(String token, IPMessagingClientListenerInternal listener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
 	private native void updateToken(String token, long nativeClientParam, StatusListener listener);
 	private native void shutDownNative(long nativeClientParam);
+
 }

@@ -128,7 +128,10 @@ public class IPMessagingClientListenerInternal {
 	}
 	
 	public void onChannelAdd(ChannelImpl channel) {
-		this.ipmClient.handleChannelAddEvent(channel);
+		logger.e("this.ipmClient" + this.ipmClient.hashCode());
+		synchronized(this.ipmClient) {
+			this.ipmClient.handleChannelAddEvent(channel);
+		}
 	}
 	
 	public void onChannelInvite(Channel channel) {
@@ -149,17 +152,26 @@ public class IPMessagingClientListenerInternal {
 	}
 	
 	public void onChannelSync(ChannelImpl channel) {
-		logger.d("Entered onChannelSync");
+		logger.e("Entered onChannelSync");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) this.ipmClient.publicChannelMap.get(cSid);
+			ChannelImpl channelImpl = (ChannelImpl) this .ipmClient.publicChannelMap.get(cSid);
+			
 			if(channelImpl != null) {
+				logger.e("Entered onChannelSync: channelImpl not null." + cSid + "|"+ channelImpl.hashCode() + "|" + channelImpl.toString());
 				channelImpl.handleOnChannelSync(channel);
 			}
-			
-			if(this.ipmClient != null) {
-				this.ipmClient.handleOnChannelSync(channel);
-			}
+		}
+		//This should always be called 
+		if(this.ipmClient != null) {
+			this.ipmClient.handleOnChannelSync(channel);
+		}
+	}
+	
+	public void onChannelCreated(ChannelImpl channel) {
+		logger.e("this.ipmClient" + this.ipmClient.hashCode());
+		synchronized(this.ipmClient) {
+			this.ipmClient.handleChannelCreate(channel);
 		}
 	}
 
