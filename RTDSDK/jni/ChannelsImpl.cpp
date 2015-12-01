@@ -131,10 +131,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					LOG_DEBUG(TAG, "Calling CreateChannelListenr");
 					jniAttacher.get()->CallVoidMethod(j_createChanneListener_,j_onCreated_, channel);
 					jniAttacher.get()->DeleteGlobalRef(j_createChanneListener_);
+					jniAttacher.get()->DeleteGlobalRef(j_ipmClient_);
 				 } else {
 					//Call Java
 					jniAttacher.get()->CallVoidMethod(j_createChanneListener_,j_onError_);
 					jniAttacher.get()->DeleteGlobalRef(j_createChanneListener_);
+					jniAttacher.get()->DeleteGlobalRef(j_ipmClient_);
 				 }
 			});
 
@@ -171,6 +173,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 		ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
 
 		if (channelsPtr != nullptr) {
+			jobject j_ipmClient_ = env->NewGlobalRef(ipmClient);
 			jobject j_internalListener_ = env->NewGlobalRef(clientInternalListener);
 			jclass internalCls = (env)->GetObjectClass(j_internalListener_);
 			jmethodID j_onCreatedChannel_ = (env)->GetMethodID(internalCls, "onChannelCreated", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
@@ -187,7 +190,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 				channelPtr->setFriendlyName(nativeNameString, NULL);
 				env->ReleaseStringUTFChars(friendlyName, nativeNameString);
 			}
-			channelsPtr->add(channelPtr, [channelPtr, j_internalListener_, j_onCreatedChannel_](TMResult result) {
+			channelsPtr->add(channelPtr, [channelPtr, j_internalListener_, j_onCreatedChannel_, j_ipmClient_](TMResult result) {
 				LOG_DEBUG(TAG,"Channel setType to kTMChannelTypePrivate command processed");
 				JNIEnvAttacher jniAttacher;
 				if (result == rtd::TMResult::kTMResultSuccess) {
@@ -233,15 +236,16 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 							break;
 					}
 
-					//LOG_DEBUG(TAG, "Channel type %d: ", type);
-					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
-					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
+					LOG_DEBUG(TAG, "Creating channel");
+					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JIILcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;)V");
+					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type, j_ipmClient_);
 					LOG_DEBUG(TAG, "Created Channel Object with type %d", type);
 
 					//Call Java
-					LOG_ERROR(TAG, "Calling internal listener.");
+					LOG_DEBUG(TAG, "Calling internal listener.");
 					jniAttacher.get()->CallVoidMethod(j_internalListener_,j_onCreatedChannel_, channel);
 					jniAttacher.get()->DeleteGlobalRef(j_internalListener_);
+					jniAttacher.get()->DeleteGlobalRef(j_ipmClient_);
 				} else {
 					LOG_DEBUG(TAG, "Channel creation failed");
 					LOG_DEBUG(TAG, "Error creating Channel Object.");
@@ -261,7 +265,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  * Signature: (Ljava/lang/String;Ljava/lang/String;IJ)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelWithOptionsNative
-  (JNIEnv *env, jobject obj, jstring friendlyName, jstring uniqueName, jstring attribute, jint type, jlong nativeChannelsContext) {
+  (JNIEnv *env, jobject obj, jstring friendlyName, jstring uniqueName, jstring attribute, jint type, jlong nativeChannelsContext,jobject clientInternalListener, jobject ipmClient) {
 	const char *nativeFriendlyNameString = NULL;
 	const char *nativeUniqueNameString = NULL;
 	const char *nativeAttributeString = NULL;
@@ -285,6 +289,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 		ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
 
 		if (channelsPtr != nullptr) {
+			jobject j_ipmClient_ = env->NewGlobalRef(ipmClient);
+			jobject j_internalListener_ = env->NewGlobalRef(clientInternalListener);
+			jclass internalCls = (env)->GetObjectClass(j_internalListener_);
+			jmethodID j_onCreatedChannel_ = (env)->GetMethodID(internalCls, "onChannelCreated", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
+
 
 			ITMChannelPtr channelPtr = channelsPtr->createChannel();
 			if(type == rtd::kTMChannelTypePublic) {
@@ -311,11 +320,61 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 				env->ReleaseStringUTFChars(attribute, nativeAttrString);
 			}
 
-			channelsPtr->add(channelPtr, [channelPtr](TMResult result) {
+			channelsPtr->add(channelPtr, [channelPtr, j_internalListener_,j_onCreatedChannel_, j_ipmClient_](TMResult result) {
 				LOG_DEBUG(TAG,"Channel setType to kTMChannelTypePrivate command processed");
 				JNIEnvAttacher jniAttacher;
 				if (result == rtd::TMResult::kTMResultSuccess) {
 					LOG_DEBUG(TAG, "Successfully created channel");
+					//Create channel context
+					ChannelContext* channelContext_ = new ChannelContext();
+					channelContext_->channel = channelPtr;
+					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
+					const char* sid = channelPtr->getSid().c_str();
+					const char* name = channelPtr->getFriendlyName().c_str();
+					LOG_DEBUG(TAG, "Channel Sid 1 %s", sid);
+					jstring nameString = jniAttacher.get()->NewStringUTF(name);
+					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
+					//create channel object
+					jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
+					if(java_channel_impl_cls != nullptr) {
+						LOG_DEBUG(TAG, "Found java_channel_impl_cls class" );
+					}
+
+					int status = 0;
+					switch (channelPtr->getStatus()) {
+						case TMChannelStatus::kTMChannelStatusInvited:
+							status = 0;
+						case TMChannelStatus::kTMChannelStatusJoined:
+							status = 1;
+						case TMChannelStatus::kTMChannelStatusNotParticipating:
+							status = 2;
+						default:
+							break;
+					}
+
+					int type = 0;
+					switch (channelPtr->getType()) {
+						case rtd::TMChannelType::kTMChannelTypePublic:
+							//LOG_DEBUG(TAG, "Setting type to kTMChannelTypePublic");
+							type = 0;
+							break;
+						case rtd::TMChannelType::kTMChannelTypePrivate:
+							//LOG_DEBUG(TAG, "Setting type to kTMChannelTypePrivate");
+							type = 1;
+							break;
+						default:
+							break;
+					}
+
+					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JIILcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;)V");
+					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type, j_ipmClient_);
+					LOG_DEBUG(TAG, "Created Channel Object with type %d", type);
+
+					//Call Java
+					LOG_DEBUG(TAG, "Calling internal listener.");
+					jniAttacher.get()->CallVoidMethod(j_internalListener_,j_onCreatedChannel_, channel);
+					jniAttacher.get()->DeleteGlobalRef(j_internalListener_);
+					jniAttacher.get()->DeleteGlobalRef(j_ipmClient_);
 				} else {
 					LOG_DEBUG(TAG, "Channel creation failed");
 					LOG_DEBUG(TAG, "Error creating Channel Object.");
@@ -334,7 +393,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  * Signature: (Ljava/lang/String;Ljava/lang/String;IJLcom/twilio/ipmessaging/Constants/CreateChannelListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithOptionsWithListener
-  (JNIEnv *env, jobject obj, jstring friendlyName, jstring uniqueName, jstring attribute, jint type, jlong nativeChannelsContext, jobject listener) {
+  (JNIEnv *env, jobject obj, jstring friendlyName, jstring uniqueName, jstring attribute, jint type, jlong nativeChannelsContext, jobject listener, jobject clientInternalListener, jobject ipmClient) {
 
 	jobject channel;
 	const char *nativeFriendlyNameString = NULL;
@@ -360,6 +419,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 		ITMChannelsPtr channelsPtr = channelsContextRecreate->channels;
 
 		if (channelsPtr != nullptr) {
+			jobject j_ipmClient_ = env->NewGlobalRef(ipmClient);
+			jobject j_internalListener_ = env->NewGlobalRef(clientInternalListener);
+			jclass internalCls = (env)->GetObjectClass(j_internalListener_);
+			jmethodID j_onCreatedChannel_ = (env)->GetMethodID(internalCls, "onChannelCreated", "(Lcom/twilio/ipmessaging/impl/ChannelImpl;)V");
+
 			jobject j_createChanneListener_ = env->NewGlobalRef(listener);
 			jclass cls = (env)->GetObjectClass(j_createChanneListener_);
 			jmethodID j_onCreated_ = (env)->GetMethodID(cls, "onCreated", "(Lcom/twilio/ipmessaging/Channel;)V");
@@ -396,7 +460,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 				channelPtr->setAttributes(nativeAttrString, NULL);
 				env->ReleaseStringUTFChars(attribute, nativeAttrString);
 			}
-			channelsPtr->add(channelPtr, [channelPtr,j_createChanneListener_,j_onCreated_, j_onError_](TMResult result) {
+			channelsPtr->add(channelPtr, [channelPtr,j_createChanneListener_,j_onCreated_, j_onError_, j_internalListener_,j_onCreatedChannel_, j_ipmClient_](TMResult result) {
 				LOG_DEBUG(TAG,"Channel add to kTMChannelTypePrivate command processed");
 				JNIEnvAttacher jniAttacher;
 				if (result == rtd::TMResult::kTMResultSuccess) {
@@ -441,10 +505,15 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 							break;
 					}
 
-					//LOG_DEBUG(TAG, "Channel type %d: ", type);
-					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
-					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
+					jmethodID construct = tw_jni_get_method_by_class(jniAttacher.get(), java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JIILcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;)V");
+					jobject channel = tw_jni_new_object(jniAttacher.get(), java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type, j_ipmClient_);
 					LOG_DEBUG(TAG, "Created Channel Object with type %d", type);
+
+					//Call Java
+					LOG_DEBUG(TAG, "Calling internal listener.");
+					jniAttacher.get()->CallVoidMethod(j_internalListener_,j_onCreatedChannel_, channel);
+					jniAttacher.get()->DeleteGlobalRef(j_internalListener_);
+					jniAttacher.get()->DeleteGlobalRef(j_ipmClient_);
 
 					//Call Java
 					jniAttacher.get()->CallVoidMethod(j_createChanneListener_,j_onCreated_, channel);

@@ -117,9 +117,9 @@ public class ChannelsImpl implements Channels {
 		}
 		
 		if(listener != null) {
-			this.createChannelNativeWithOptionsWithListener(friendlyName, uniqueName, jsonObjStr, nativeType, this.nativeChannelsHandler, listener);
+			this.createChannelNativeWithOptionsWithListener(friendlyName, uniqueName, jsonObjStr, nativeType, this.nativeChannelsHandler, listener, this.ipmClient.getInternalListener(), this.ipmClient);
 		} else {
-			this.createChannelWithOptionsNative(friendlyName,uniqueName, jsonObjStr, nativeType, this.nativeChannelsHandler);
+			this.createChannelWithOptionsNative(friendlyName,uniqueName, jsonObjStr, nativeType, this.nativeChannelsHandler, this.ipmClient.getInternalListener(), this.ipmClient);
 		}
 		
 			
@@ -233,8 +233,8 @@ public class ChannelsImpl implements Channels {
 	private native void createChannelNativeWithListenerWithSDKListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener, IPMessagingClientListenerInternal internalListener, TwilioIPMessagingClientImpl ipmClient);
 	
 	
-	private native void createChannelWithOptionsNative(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext);
-	private native void createChannelNativeWithOptionsWithListener(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext, CreateChannelListener listener);
+	private native void createChannelWithOptionsNative(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext, IPMessagingClientListenerInternal internalListener, TwilioIPMessagingClientImpl ipmClient);
+	private native void createChannelNativeWithOptionsWithListener(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext, CreateChannelListener listener, IPMessagingClientListenerInternal internalListener, TwilioIPMessagingClientImpl ipmClient);
 	private native ChannelImpl getChannelNative(String channelId, long handle);
 	private native ChannelImpl[] getChannelsNative(long handle);
 	private native ChannelImpl getChannelNativeWithUniqueName(String uniqueChannelName, long handle);
