@@ -55,14 +55,14 @@ public class ChannelsImpl implements Channels {
 		
 		if(listener != null) {
 			if(this.ipmClient != null) {
-				this.createChannelNativeWithListenerWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, listener, this.ipmClient.getInternalListener());
+				this.createChannelNativeWithListenerWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, listener, this.ipmClient.getInternalListener(), this.ipmClient);
 			} else {
 				//this should never happen if this.ipmClient is null, we have a bigger issue
 				this.createChannelNativeWithListener(friendlyName, nativeType, this.nativeChannelsHandler, listener);
 			}
 		} else {
 			if(this.ipmClient != null) {
-				this.createChannelNativeWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, this.ipmClient.getInternalListener());
+				this.createChannelNativeWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, this.ipmClient.getInternalListener(), this.ipmClient);
 			} else {
 				//this should never happen if this.ipmClient is null, we have a bigger issue
 				this.createChannelNative(friendlyName, nativeType, this.nativeChannelsHandler);
@@ -229,8 +229,8 @@ public class ChannelsImpl implements Channels {
 	private native void createChannelNative(String friendlyName, int type, long nativeChannelsContext);
 	private native void createChannelNativeWithListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener);
 	
-	private native void createChannelNativeWithSDKListener(String friendlyName, int type, long nativeChannelsContext, IPMessagingClientListenerInternal internalListener);
-	private native void createChannelNativeWithListenerWithSDKListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener, IPMessagingClientListenerInternal internalListener );
+	private native void createChannelNativeWithSDKListener(String friendlyName, int type, long nativeChannelsContext, IPMessagingClientListenerInternal internalListener, TwilioIPMessagingClientImpl ipmClient);
+	private native void createChannelNativeWithListenerWithSDKListener(String friendlyName, int type, long nativeChannelsContext, CreateChannelListener listener, IPMessagingClientListenerInternal internalListener, TwilioIPMessagingClientImpl ipmClient);
 	
 	
 	private native void createChannelWithOptionsNative(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext);

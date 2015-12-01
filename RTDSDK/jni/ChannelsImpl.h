@@ -22,7 +22,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  * Signature: (Ljava/lang/String;IJLcom/twilio/ipmessaging/TwilioIPMessagingClient/CreateChannelListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithListenerWithSDKListener
-  (JNIEnv *, jobject, jstring, jint, jlong, jobject, jobject);
+  (JNIEnv *, jobject, jstring, jint, jlong, jobject, jobject, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -38,7 +38,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
  * Signature: (Ljava/lang/String;IJ)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChannelNativeWithSDKListener
-  (JNIEnv *, jobject, jstring, jint, jlong, jobject);
+  (JNIEnv *, jobject, jstring, jint, jlong, jobject, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl

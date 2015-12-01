@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.twilio.common.TwilioAccessManager;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
+import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
 import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -17,6 +18,7 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 
 public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
@@ -30,6 +32,9 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private PendingIntent incomingIntent;
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
 	protected final Map<String, ChannelImpl> privateChannelList = new ConcurrentHashMap<String,ChannelImpl>();
+	
+	protected final Map<String, Map<ChannelListener, Handler>> channelListenerMap = new ConcurrentHashMap<String, Map<ChannelListener, Handler>>();
+	
 	private final UUID uuid = UUID.randomUUID();
 	private TwilioAccessManager accessManager;
 		

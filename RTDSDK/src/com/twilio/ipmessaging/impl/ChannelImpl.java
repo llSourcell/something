@@ -24,6 +24,9 @@ public class ChannelImpl implements Channel, Parcelable{
 	
 	/** ChannelListener */
 	private ChannelListener listener;
+	
+	/** ChannelListener */
+	private Map<ChannelListener, Handler> listenerList = new HashMap<ChannelListener, Handler>();
 
 	/** The unique identifier for this channel. */
 	private String sid;
@@ -47,6 +50,9 @@ public class ChannelImpl implements Channel, Parcelable{
 	protected ChannelType type;
 	protected long nativeChannelContextHandle;
 	
+	/** The ipmessaging client for this Channel */
+	private TwilioIPMessagingClientImpl ipmClient;
+	
 	private Handler handler;
 	
 	public ChannelImpl(String friendlyName, String sid) {
@@ -67,6 +73,39 @@ public class ChannelImpl implements Channel, Parcelable{
 		super();
 		this.friendlyName = friendlyName;
 		this.sid = sid;
+		this.nativeChannelContextHandle = nativeHandle;
+		switch (status) {
+			case 0:
+				this.status = Channel.ChannelStatus.INVITED;
+				break;
+			case 1:
+				this.status =Channel.ChannelStatus.JOINED;
+				break;
+			case 2:
+				this.status = Channel.ChannelStatus.NOT_PARTICIPATING;
+				break;
+			default:
+				break;
+		}	
+		
+		switch (type) {
+			case 0:
+				this.type = Channel.ChannelType.CHANNEL_TYPE_PUBLIC;
+				break;
+			case 1:
+				this.type = Channel.ChannelType.CHANNEL_TYPE_PRIVATE;
+				break;
+			default:
+				break;
+		}	
+	}
+	
+	
+	public ChannelImpl(String friendlyName, String sid, long nativeHandle, int status, int type, TwilioIPMessagingClientImpl ipmsgClient) {
+		super();
+		this.friendlyName = friendlyName;
+		this.sid = sid;
+		this.ipmClient = ipmsgClient;
 		this.nativeChannelContextHandle = nativeHandle;
 		switch (status) {
 			case 0:
@@ -120,7 +159,11 @@ public class ChannelImpl implements Channel, Parcelable{
 		
 		logger.e("Setting listener for: " + this.hashCode()+"|"+this.sid);
 		this.listener = listener;
-		setupListenerHandler();
+		Handler handler = setupListenerHandler();
+		if(listenerList != null) {
+			listenerList.put(listener, handler);
+			this.ipmClient.channelListenerMap.put(this.sid, listenerList);
+		}
 	}
 
 	@Override
@@ -352,8 +395,9 @@ public class ChannelImpl implements Channel, Parcelable{
 	 * Use the thread looper or the main thread looper if the thread does not
 	 * provide one to callback on the thread that provided the event listener.
 	 */
-	private void setupListenerHandler() {
+	private Handler setupListenerHandler() {
 		Looper looper;
+		Handler handler;
 		if((looper = Looper.myLooper()) != null) {
 			handler = new Handler(looper);
 		} else if((looper = Looper.getMainLooper()) != null) {
@@ -363,6 +407,7 @@ public class ChannelImpl implements Channel, Parcelable{
 			throw new IllegalArgumentException("Channel Listener must have a Looper.");
 		}
 		logger.d("*****setupListenerHandler for channel: " + this.getSid() + ", handler is " + handler);
+		return handler;
 	}
 
 	public void handleOnMemberJoin(final Member member) {

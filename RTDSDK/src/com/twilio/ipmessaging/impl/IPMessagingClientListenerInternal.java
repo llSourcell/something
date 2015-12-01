@@ -1,11 +1,16 @@
 package com.twilio.ipmessaging.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.twilio.ipmessaging.Channel;
+import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
+
+import android.os.Handler;
 
 public class IPMessagingClientListenerInternal {
 	
@@ -155,11 +160,31 @@ public class IPMessagingClientListenerInternal {
 		logger.e("Entered onChannelSync");
 		if(channel != null) {
 			String cSid = channel.getSid();
-			ChannelImpl channelImpl = (ChannelImpl) this .ipmClient.publicChannelMap.get(cSid);
+			final ChannelImpl channelImpl = (ChannelImpl) this .ipmClient.publicChannelMap.get(cSid);
 			
 			if(channelImpl != null) {
 				logger.e("Entered onChannelSync: channelImpl not null." + cSid + "|"+ channelImpl.hashCode() + "|" + channelImpl.toString());
 				channelImpl.handleOnChannelSync(channel);
+			}
+			
+			//Notifying the listener map 
+			Map<ChannelListener, Handler> listenerMap = this.ipmClient.channelListenerMap.get(cSid);
+			for (Map.Entry<ChannelListener, Handler> entry : listenerMap.entrySet()) {
+				final ChannelListener listener = entry.getKey();
+			    Handler handler = entry.getValue();
+			    if (handler != null) {
+					logger.e("handleOnChannelSync 2");
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							logger.e("handleOnChannelSync 3");
+							if(listener!= null) {
+								logger.e("handleOnChannelSync 4");
+								listener.onChannelHistoryLoaded(channelImpl);
+							}
+						}
+					});
+				}	
 			}
 		}
 		//This should always be called 
