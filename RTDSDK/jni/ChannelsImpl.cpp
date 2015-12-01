@@ -124,11 +124,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					LOG_DEBUG(TAG, "Created Channel Object with type %d", type);
 
 					//Call Java
-					LOG_ERROR(TAG, "Calling internal listener.");
+					LOG_DEBUG(TAG, "Calling internal listener.");
 					jniAttacher.get()->CallVoidMethod(j_internalListener_,j_onCreatedChannel_, channel);
 					jniAttacher.get()->DeleteGlobalRef(j_internalListener_);
 
-					LOG_ERROR(TAG, "Calling CreateChannelListenr");
+					LOG_DEBUG(TAG, "Calling CreateChannelListenr");
 					jniAttacher.get()->CallVoidMethod(j_createChanneListener_,j_onCreated_, channel);
 					jniAttacher.get()->DeleteGlobalRef(j_createChanneListener_);
 				 } else {
