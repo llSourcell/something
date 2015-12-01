@@ -169,22 +169,24 @@ public class IPMessagingClientListenerInternal {
 			
 			//Notifying the listener map 
 			Map<ChannelListener, Handler> listenerMap = this.ipmClient.channelListenerMap.get(cSid);
-			for (Map.Entry<ChannelListener, Handler> entry : listenerMap.entrySet()) {
-				final ChannelListener listener = entry.getKey();
-			    Handler handler = entry.getValue();
-			    if (handler != null) {
-					logger.e("handleOnChannelSync 2");
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							logger.e("handleOnChannelSync 3");
-							if(listener!= null) {
-								logger.e("handleOnChannelSync 4");
-								listener.onChannelHistoryLoaded(channelImpl);
+			if(listenerMap != null) {
+				for (Map.Entry<ChannelListener, Handler> entry : listenerMap.entrySet()) {
+					final ChannelListener listener = entry.getKey();
+				    Handler handler = entry.getValue();
+				    if (handler != null) {
+						logger.e("handleOnChannelSync 2");
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								logger.e("handleOnChannelSync 3");
+								if(listener!= null) {
+									logger.e("handleOnChannelSync 4");
+									listener.onChannelHistoryLoaded(channelImpl);
+								}
 							}
-						}
-					});
-				}	
+						});
+					}	
+				}
 			}
 		}
 		//This should always be called 

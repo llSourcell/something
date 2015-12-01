@@ -465,7 +465,9 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	private void setupListenersForChannel(Channel[] channelArray){
 		if(channelArray != null) {
 			for(int i=0; i<channelArray.length; i++) {
-				channelArray[i].setListener(ChannelActivity.this);
+				if(channelArray[i] != null) {
+					channelArray[i].setListener(ChannelActivity.this);
+				}
 			}
 		}
 	}
