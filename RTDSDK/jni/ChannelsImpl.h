@@ -70,14 +70,15 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
  * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelsNative
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, jlong, jobject);
+
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
- * Method:    getMyChannelsNative
+ * Method:    getChannelSidArrayNative
  * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getMyChannelsNative
+JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelSidArrayNative
   (JNIEnv *, jobject, jlong);
 
 /*

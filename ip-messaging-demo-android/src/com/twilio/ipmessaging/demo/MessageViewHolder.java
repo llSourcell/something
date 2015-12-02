@@ -48,20 +48,20 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 	@Override
 	public void onSetValues(Message message, PositionInfo pos) {
 		StringBuffer textInfo = new StringBuffer();
-		String dateString = message.getTimeStamp();
-		if(dateString != null) {
-			textInfo.append(message.getAuthor()).append(":").append(dateString);
-		} else {
-			textInfo.append(message.getAuthor());
+		if(message != null) {
+			String dateString = message.getTimeStamp();
+			if(dateString != null) {
+				textInfo.append(message.getAuthor()).append(":").append(dateString);
+			} else {
+				textInfo.append(message.getAuthor());
+			}
+			txtInfo.setText(textInfo.toString());
+			body.setText(message.getMessageBody());
+			
+			boolean left = (message.getAuthor().compareTo(LoginActivity.local_author) ==0)? true:false;
+			body.setBackgroundResource(left ? R.drawable.bubble_a : R.drawable.bubble_b);
+			singleMessageContainer.setGravity(left ? Gravity.LEFT : Gravity.RIGHT);
 		}
-		txtInfo.setText(textInfo.toString());
-		body.setText(message.getMessageBody());
-		
-		//singleMessageContainer.setGravity(Gravity.RIGHT);
-		
-		boolean left = (message.getAuthor().compareTo(LoginActivity.local_author) ==0)? true:false;
-		body.setBackgroundResource(left ? R.drawable.bubble_a : R.drawable.bubble_b);
-		singleMessageContainer.setGravity(left ? Gravity.LEFT : Gravity.RIGHT);
 		
 	}
 	

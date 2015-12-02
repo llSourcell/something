@@ -569,6 +569,12 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private class CustomMessageComparator implements Comparator<Message> {
 		@Override
 		public int compare(Message lhs, Message rhs) {
+			if (lhs == null) {
+		        return (rhs == null) ? 0 : -1;
+		    }
+		    if (rhs == null) {
+		        return 1;
+		    }
 			return lhs.getTimeStamp().compareTo(rhs.getTimeStamp());		
 		}
 	}

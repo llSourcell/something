@@ -43,7 +43,16 @@ public class MessagesImpl implements Messages , Parcelable {
 	@Override
 	public Message[] getMessages() {
 		synchronized(this) {
-			return this.getMessagesNative(this.nativeMessagesContextHandler);
+			long[] indexArray = this.getMessageIndexArrayNative(this.nativeMessagesContextHandler);
+			Message[] messages = new Message[indexArray.length];
+			for(int i=0; i<indexArray.length; i++) {
+				if(indexArray[i] != 0) {
+					logger.d("index[i] " + indexArray[i]);
+					MessageImpl message = (MessageImpl)this.getMessageByIndex(indexArray[i], this.nativeMessagesContextHandler);
+					messages[i] = message;
+				}
+			}
+			return messages;
 		}
 	}
 	
@@ -78,6 +87,7 @@ public class MessagesImpl implements Messages , Parcelable {
 	private native void sendMessageNative(Message message, StatusListener listener);
 	private native void removeMessageNative(Message message, StatusListener listener);
 	private native Message[] getMessagesNative(long handle);
-
+	private native long[] getMessageIndexArrayNative(long handle);
+	private native Message getMessageByIndex(long messageIndex, long handle);
 	
 }

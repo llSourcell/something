@@ -634,7 +634,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
  * Signature: (J)[Lcom/twilio/ipmessaging/Channel;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelsNative
-  (JNIEnv *env, jobject obj, jlong nativeChannelsContext) {
+  (JNIEnv *env, jobject obj, jlong nativeChannelsContext, jobject ipmClient) {
 
 	jobject channel;
 	jobjectArray channelsArray ;
@@ -663,8 +663,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 		LOG_DEBUG(TAG,"public channels count : %d",publicChannels.size());
 
 		jclass java_channel_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelImpl");
-
-		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JII)V");
+		jmethodID construct = tw_jni_get_method_by_class(env, java_channel_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;JIILcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;)V");
 		channelsArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),java_channel_impl_cls, 0);
 
 		for (int i= 0; i<publicChannels.size() ; i++ ) {
@@ -704,13 +703,54 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 			jstring nameString = env->NewStringUTF(name);
 			jstring sidString = env->NewStringUTF(sid);
-			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type);
+			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type, ipmClient);
+
 			env->SetObjectArrayElement(channelsArray, i, channel);
 		}
 	}
-
 	return channelsArray ;
+}
 
+
+JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChannelSidArrayNative
+  (JNIEnv *env, jobject obj, jlong nativeChannelsContext) {
+	jobject channel;
+	jobjectArray channelSidArray ;
+
+	LOG_DEBUG(TAG, "Checking nativeChannelsContext.");
+	if (nativeChannelsContext == 0) {
+		LOG_WARN(TAG, "nativeChannelsContext is null");
+			return nullptr;
+	} else {
+
+		ChannelsContext *channelsContextRecreate = reinterpret_cast<ChannelsContext *>(nativeChannelsContext);
+		if(channelsContextRecreate == nullptr) {
+			LOG_WARN(TAG, "channelsContextRecreate is null.");
+			return 0;
+		}
+
+		if(channelsContextRecreate->channels == nullptr) {
+			LOG_WARN(TAG, " ITChannelsPtr is null.");
+			return 0;
+		}
+
+		ITMChannelsPtr channels = channelsContextRecreate->channels;
+
+		std::vector<ITMChannelPtr> publicChannels;
+		channels->getPublicChannelsList(publicChannels);
+		LOG_DEBUG(TAG,"public channels count : %d",publicChannels.size());
+
+		jclass stringObjectCls = tw_jni_find_class(env, "java/lang/String");
+		channelSidArray = (jobjectArray) env->NewObjectArray(publicChannels.size(),stringObjectCls, 0);
+
+		for (int i= 0; i<publicChannels.size() ; i++ ) {
+			ITMChannelPtr channelPtr = publicChannels[i];
+			const char* sid = channelPtr->getSid().c_str();
+			jstring sidString = env->NewStringUTF(sid);
+			env->SetObjectArrayElement(channelSidArray, i, sidString);
+		}
+	}
+	return channelSidArray ;
 }
 
 /*
