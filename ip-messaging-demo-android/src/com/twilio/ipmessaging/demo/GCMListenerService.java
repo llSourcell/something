@@ -34,27 +34,26 @@ public class GCMListenerService extends GcmListenerService {
 	}
 
 	private void notify(Bundle bundle) {
-		JSONObject json;
-		try {
-			json = new JSONObject(bundle.getString("data"));
 
-			Intent intent = new Intent(this, MessageActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			intent.putExtra("C_SID", (String) json.get("channel_id"));
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
-			NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.ic_launcher).setContentTitle("Twilio Notification")
-					.setContentText((String) json.get("text_message")).setAutoCancel(true)
-					.setContentIntent(pendingIntent);
-
-			NotificationManager notificationManager = (NotificationManager) getSystemService(
-					Context.NOTIFICATION_SERVICE);
-
-			notificationManager.notify(0, notificationBuilder.build());
-		} catch (JSONException e) {
-			e.printStackTrace();
+		Intent intent = new Intent(this, MessageActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		if (bundle.containsKey("channel_id")) {
+			intent.putExtra("C_SID", bundle.getString("channel_id"));
 		}
+
+		String message = "";
+		if (bundle.containsKey("channel_id")) {
+			message = bundle.getString("text_message");
+		}
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+				.setSmallIcon(R.drawable.ic_launcher).setContentTitle("Twilio Notification").setContentText(message)
+				.setAutoCancel(true).setContentIntent(pendingIntent);
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		notificationManager.notify(0, notificationBuilder.build());
 	}
 
 }

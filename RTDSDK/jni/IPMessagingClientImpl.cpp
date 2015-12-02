@@ -30,8 +30,8 @@
 
 
 #define TAG  "IPMessagingClient(native)"
-#define PRODUCTION 1
-#define STAGE 0
+#define PRODUCTION 0
+#define STAGE 1
 #define DEV 0
 #define WITH_SSL 1
 
@@ -162,7 +162,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 		}
 
 		if( clientParamsRecreate->regObservationListener == nullptr ){
-			LOG_W(TAG, "regObservationListener is NULL");
+			LOG_WARN(TAG, "regObservationListener is NULL");
 			return 0;
 		}
 
@@ -347,7 +347,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_registerWithToken
 (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token) {
 	if (nativeClientContext == 0) {
-			LOGW(TAG,"client context is null");
+			LOG_WARN(TAG,"client context is null");
 	} else {
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
@@ -373,7 +373,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_unRegisterWithToken
 (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token) {
 	if (nativeClientContext == 0) {
-			LOGW(TAG,"client context is null");
+			LOG_WARN(TAG,"client context is null");
 	} else {
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
@@ -397,7 +397,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_handleNotificationNative
   (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring notification) {
 	if (nativeClientContext == 0) {
-			LOGW(TAG,"client context is null");
+			LOG_WARN(TAG,"client context is null");
 	} else {
 		const char *notificationString = env->GetStringUTFChars(notification, 0);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
