@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONObject;
 import com.twilio.common.TwilioAccessManager;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
@@ -19,15 +20,18 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 
 public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
 	private static final Logger logger = Logger.getLogger(TwilioIPMessagingClientImpl.class);
-	
+	private static final String TAG = "TwilioIPMessagingClientImpl-java";
 	private Context context;	
 	private String identity;
 	private IPMessagingClientListener ipMessagingListener;
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
+	private StatusListener gcmRegistrationStatusListener;
+	private StatusListener appGCMRegistrationStatusListener;
 	private long nativeClientParamContextHandle;
 	private PendingIntent incomingIntent;
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
@@ -40,9 +44,25 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {
 		this.context = context2;
-		this.ipMessagingListener = inListener;		
+		this.ipMessagingListener = inListener;
+		this.gcmRegistrationStatusListener = new StatusListener() {
+
+			@Override
+			public void onError() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onError();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onSuccess();
+				}
+			}
+		};
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
-		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal);
+		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal, gcmRegistrationStatusListener);
 		createMessagingClient(token, this.nativeClientParamContextHandle);
 	}
 
@@ -52,8 +72,24 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		this.context = context2;
 		this.ipMessagingListener = inListener;		
 		this.accessManager = accessMgr;
+		this.gcmRegistrationStatusListener = new StatusListener() {
+
+			@Override
+			public void onError() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onError();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onSuccess();
+				}
+			}
+		};
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
-		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal);
+		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal, gcmRegistrationStatusListener);
 		createMessagingClient(token, this.nativeClientParamContextHandle);
 	}
 
@@ -248,10 +284,33 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		return this.ipMessagingClientListenerInternal;
 	}
 	
-	public native long initNative(String token, IPMessagingClientListenerInternal listener);
+	@Override
+	public void registerGCMToken(String token, StatusListener listener) {
+		this.appGCMRegistrationStatusListener = listener;
+		registerWithToken(this.nativeClientParamContextHandle, token);
+	}
+
+	@Override
+	public void unregisterGCMToken(String token, StatusListener listener) {
+		this.appGCMRegistrationStatusListener = listener;
+		unRegisterWithToken(this.nativeClientParamContextHandle, token);
+	}
+	
+	@Override
+	public void handleNotification(Map<String, String> notification) {
+		JSONObject jsonObj = new JSONObject(notification);	
+		if(jsonObj != null) {
+			handleNotificationNative(this.nativeClientParamContextHandle, jsonObj.toString());
+		}
+	}
+	
+	public native long initNative(String token, IPMessagingClientListenerInternal listener, StatusListener reglistener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
 	private native void updateToken(String token, long nativeClientParam, StatusListener listener);
 	private native void shutDownNative(long nativeClientParam);
+	private native void registerWithToken(long nativeClientParam, String token);
+	private native void unRegisterWithToken(long nativeClientParam, String token);
+	private native void handleNotificationNative(long nativeClientParam, String notification);
 
 }

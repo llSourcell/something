@@ -140,17 +140,21 @@ public interface Channel {
 	 * Joins the current user to the channel.
 	 * @param listener
 	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void join(StatusListener listener);
 	
 	/**
 	 * Leaves the current channel.
+	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void leave(StatusListener listener);
 	
 	/**
 	 * Destroys the current channel.
 	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void destroy(StatusListener listener);	
 
@@ -158,6 +162,7 @@ public interface Channel {
 	 * Declines an invite on this channel.
 	 * @param listener StatusListener to report status of the async operation via callback.
 	 * 
+	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void declineInvitation(StatusListener listener);
 	

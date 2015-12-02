@@ -1,6 +1,6 @@
 package com.twilio.ipmessaging.demo;
 
-import com.twilio.rtd.demoapp.R;
+import com.twilio.ipmessaging.demo.R;
 import com.twilio.ipmessaging.Member;
 
 import android.view.View;

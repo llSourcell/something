@@ -31,7 +31,7 @@ public interface Channels {
 	
 	/** Request loading of all channels from server to be delivered via callbacks.
 	 * 
-	 *  @param listener Listener that will receive callback of the result.
+	 *  @param listener Listener that will receive callback with the result.
 	 */
 	public void loadChannelsWithListener(StatusListener listener);
 	

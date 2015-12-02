@@ -1,10 +1,15 @@
 package com.twilio.ipmessaging.demo;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 
-import com.twilio.rtd.demoapp.R;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.TwilioIPMessagingSDK;
+
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
+import com.twilio.ipmessaging.demo.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,10 +19,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,11 +38,15 @@ public class LoginActivity extends Activity implements LoginListener {
 	private ProgressDialog progressDialog;
 	private Button login;
 	private Button logout;
+	private CheckBox gcmCxbx;
+	private Button stopGCM;
 	private String capabilityToken = null;
 	private EditText clientNameTextBox;
 	private BasicIPMessagingClient chatClient;
 	private String endpoint_id = "";
 	public static String local_author = DEFAULT_CLIENT_NAME;
+    private String PROJECT_NUMBER = "215048275735";
+    private EditText etRegId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +83,11 @@ public class LoginActivity extends Activity implements LoginListener {
 				chatClient.cleanupTest();
 			}
 		});
-
+		etRegId = (EditText) findViewById(R.id.etRegId);
 		chatClient = TwilioApplication.get().getBasicClient();
+
+		gcmCxbx = (CheckBox) findViewById(R.id.gcmcxbx);
+
 	}
 
 	@Override
@@ -82,7 +96,7 @@ public class LoginActivity extends Activity implements LoginListener {
 		getMenuInflater().inflate(R.menu.login, menu);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
@@ -124,7 +138,6 @@ public class LoginActivity extends Activity implements LoginListener {
 		protected String doInBackground(String... params) {
 			try {
 				capabilityToken = HttpHelper.httpGet(params[0]);
-				logger.e("capabilityToken string : " + capabilityToken);
 				chatClient.setCapabilityToken(capabilityToken);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -137,13 +150,16 @@ public class LoginActivity extends Activity implements LoginListener {
 	public void onLoginStarted() {
 		logger.d("Log in started");
 	}
-
-	@Override
-	public void onLoginFinished() {
-		LoginActivity.this.progressDialog.dismiss();
-		Intent intent = new Intent(this, ChannelActivity.class);
-		this.startActivity(intent);
-	}
+	
+		@Override
+		public void onLoginFinished() {
+			if (gcmCxbx.isChecked()) {
+				getGCMRegistrationToken();
+			}
+			LoginActivity.this.progressDialog.dismiss();
+			Intent intent = new Intent(this, ChannelActivity.class);
+			this.startActivity(intent);
+		}
 
 	@Override
 	public void onLoginError(String errorMessage) {
@@ -156,5 +172,39 @@ public class LoginActivity extends Activity implements LoginListener {
 	public void onLogoutFinished() {
 		// TODO Auto-generated method stub
 	}
+	
+	public void getGCMRegistrationToken() {
+		new AsyncTask<Void, Void, String>() {
+			@Override
+			protected String doInBackground(Void... params) {
+				String token = "";
+				InstanceID instanceId = InstanceID.getInstance(getApplicationContext());
+				try {
+					token = instanceId.getToken(PROJECT_NUMBER, null);
+					chatClient.setGCMToken(token);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return token;
+			}
+
+			@Override
+			protected void onPostExecute(final String token) {
+				etRegId.setText(token);
+				chatClient.getIpMessagingClient().registerGCMToken(token, new StatusListener() {
+
+					@Override
+					public void onError() {
+						logger.w("GCM registration not successful");
+					}
+
+					@Override
+					public void onSuccess() {
+						logger.d("GCM registration successful");
+					}
+				});
+			}
+	        }.execute(null, null, null);
+	    }
 
 }

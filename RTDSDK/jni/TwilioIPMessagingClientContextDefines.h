@@ -10,6 +10,7 @@
 #include "TwilioIPMessagingConfigurationProvider.h"
 #include "TwilioIPMessagingNotificationClientListener.h"
 #include "TwilioIPMessagingClientListener.h"
+#include "RegistrationObserverImpl.h"
 
 using namespace rtd;
 
@@ -18,6 +19,7 @@ typedef struct IPMessagingClientContext {
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver;
 	std::shared_ptr<TwilioIPMessagingConfigurationProvider> configurationProvider;
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
+	std::shared_ptr<RegistrationObserverImpl> regObservationListener;
 	ITNTwilsockClientPtr twilsock;
 	ITNNotificationClientPtr notificationClient;
 	ITMClientPtr messagingClient;

@@ -21,6 +21,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	private static final Logger logger = Logger.getLogger(BasicIPMessagingClient.class);
 	private String capabilityToken;
+	private String gcmToken;
 	private long nativeClientParam;
 	private TwilioIPMessagingClient ipMessagingClient;
 	private TwilioIPMessagingClient ipMessagingClientWithAccessManager;
@@ -51,6 +52,13 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 		this.capabilityToken = capabilityToken;
 	}
 
+	public String getGCMToken() {
+		return gcmToken;
+	}
+
+	public void setGCMToken(String gcmToken) {
+		this.gcmToken = gcmToken;
+	}
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
 		TwilioIPMessagingSDK.setLogLevel(android.util.Log.ERROR	);

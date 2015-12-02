@@ -6,12 +6,11 @@ public class TwilioApplication extends Application {
 
 	private static TwilioApplication instance;
 	private BasicIPMessagingClient basicClient;
-	
 
 	public static TwilioApplication get() {
 		return instance;
 	}
-
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();

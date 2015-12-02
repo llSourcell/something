@@ -146,6 +146,7 @@ LOCAL_SRC_FILES := \
 	ChannelImpl.cpp \
 	MembersImpl.cpp \
 	MessageImpl.cpp \
+	RegistrationObserverImpl.cpp \
 	TwilioIPMessagingLogger.c
 	
 LOCAL_STATIC_LIBRARIES := \

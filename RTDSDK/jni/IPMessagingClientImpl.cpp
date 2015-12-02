@@ -24,6 +24,7 @@
 #include "ITMMembers.h"
 #include "ITMMember.h"
 #include "IPMessagingClientImpl.h"
+#include "RegistrationObserverImpl.h"
 #include "TwilioIPMessagingClientContextDefines.h"
 #include "TwilioIPMessagingLogger.h"
 
@@ -65,7 +66,7 @@ std::map<std::string, std::string> configMap;
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/impl/IPMessagingClientListenerInternal;)J
  */
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
-  (JNIEnv *env, jobject obj, jstring token, jobject listener) {
+  (JNIEnv *env, jobject obj, jstring token, jobject listener, jobject reglistener) {
 
 	LOG_DEBUG( TAG, "Entered IPMessagingClientImpl_initNative()");
 
@@ -78,6 +79,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	const char *tokenStr = env->GetStringUTFChars(token, 0);
 	IPMessagingClientContext *clientParams_ = new IPMessagingClientContext();
 	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>(env, obj, listener);
+	auto regObservationListener = std::make_shared<RegistrationObserverImpl>(env, obj, reglistener);
 
 	LOG_DEBUG(TAG,"Creating  config map");
 	LOG_DEBUG(TAG, "%s, %s", TEST_IPMESSAGING_SERVICE, TEST_REGISTRATION_SERVICE);
@@ -116,6 +118,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	clientParams_->notificationClientObserver = notificationClientObserver;
 	clientParams_->notificationClient = notificationClientPtr;
 	clientParams_->twilsock = m_twilsock;
+	clientParams_->regObservationListener = regObservationListener;
 
 	return reinterpret_cast<jlong>(clientParams_);
 
@@ -155,6 +158,11 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 
 		if( clientParamsRecreate->notificationClient == nullptr) {
 			LOG_WARN(TAG, "notificationClient is NULL.");
+			return 0;
+		}
+
+		if( clientParamsRecreate->regObservationListener == nullptr ){
+			LOG_WARN(TAG, "regObservationListener is NULL");
 			return 0;
 		}
 
@@ -327,4 +335,77 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 		}
 	}
 
+}
+
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    registerWithToken
+ * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_registerWithToken
+(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token) {
+	if (nativeClientContext == 0) {
+			LOG_WARN(TAG,"client context is null");
+	} else {
+		const char *tokenStr = env->GetStringUTFChars(token, 0);
+		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
+		if(clientParamsRecreate != nullptr) {
+			ITNNotificationClientPtr notificationClient = clientParamsRecreate->notificationClient;
+			if(notificationClient != nullptr) {
+				auto regListener = clientParamsRecreate->regObservationListener;
+				if( regListener != nullptr ){
+					notificationClient->Register(rtd::TNChannelType::GCM, tokenStr, regListener);
+				}
+			}
+		}
+	}
+
+}
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    unRegisterWithToken
+ * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_unRegisterWithToken
+(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token) {
+	if (nativeClientContext == 0) {
+			LOG_WARN(TAG,"client context is null");
+	} else {
+		const char *tokenStr = env->GetStringUTFChars(token, 0);
+		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
+		if(clientParamsRecreate != nullptr) {
+			ITNNotificationClientPtr notificationClient = clientParamsRecreate->notificationClient;
+			if(notificationClient != nullptr) {
+				auto regListener = clientParamsRecreate->regObservationListener;
+				if( regListener != nullptr ){
+					notificationClient->Unregister(rtd::TNChannelType::GCM, tokenStr, regListener);
+				}
+			}
+		}
+	}
+}
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
+ * Method:    handleNotificationNative
+ * Signature: (JLjava/lang/String)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_handleNotificationNative
+  (JNIEnv *env, jobject obj, jlong nativeClientContext, jstring notification) {
+	if (nativeClientContext == 0) {
+			LOG_WARN(TAG,"client context is null");
+	} else {
+		const char *notificationString = env->GetStringUTFChars(notification, 0);
+		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
+		if(clientParamsRecreate != nullptr) {
+			ITNNotificationClientPtr notificationClient = clientParamsRecreate->notificationClient;
+			if(notificationClient != nullptr) {
+				notificationClient->ReceivedNotification(TNChannelType::GCM, std::string(notificationString));
+			}
+		}
+	}
 }
