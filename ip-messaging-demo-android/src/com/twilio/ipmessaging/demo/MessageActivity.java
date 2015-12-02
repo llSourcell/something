@@ -19,7 +19,7 @@ import com.twilio.ipmessaging.Members;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.Messages;
 import com.twilio.ipmessaging.impl.Logger;
-import com.twilio.rtd.demo.R;
+import com.twilio.ipmessaging.demo.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;

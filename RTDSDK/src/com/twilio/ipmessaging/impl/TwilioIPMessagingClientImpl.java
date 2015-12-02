@@ -28,6 +28,8 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private String identity;
 	private IPMessagingClientListener ipMessagingListener;
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
+	private StatusListener gcmRegistrationStatusListener;
+	private StatusListener appGCMRegistrationStatusListener;
 	private long nativeClientParamContextHandle;
 	private PendingIntent incomingIntent;
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
@@ -36,9 +38,25 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {
 		this.context = context2;
-		this.ipMessagingListener = inListener;		
+		this.ipMessagingListener = inListener;
+		this.gcmRegistrationStatusListener = new StatusListener() {
+
+			@Override
+			public void onError() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onError();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onSuccess();
+				}
+			}
+		};
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
-		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal);
+		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal, gcmRegistrationStatusListener);
 		createMessagingClient(token, this.nativeClientParamContextHandle);
 	}
 
@@ -181,16 +199,14 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	
 	@Override
 	public void registerGCMToken(String token, StatusListener listener) {
-		//::TODO listener implementation
-		Log.e(TAG, "GCM - registerGCMToken");
-		registerWithToken(this.nativeClientParamContextHandle, token, listener);
+		this.appGCMRegistrationStatusListener = listener;
+		registerWithToken(this.nativeClientParamContextHandle, token);
 	}
-
 
 	@Override
 	public void unregisterGCMToken(String token, StatusListener listener) {
-		//::TODO listener implementation
-		unRegisterWithToken(this.nativeClientParamContextHandle, token, listener);
+		this.appGCMRegistrationStatusListener = listener;
+		unRegisterWithToken(this.nativeClientParamContextHandle, token);
 	}
 	
 	@Override
@@ -201,13 +217,13 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		}
 	}
 	
-	public native long initNative(String token, IPMessagingClientListenerInternal listener);
+	public native long initNative(String token, IPMessagingClientListenerInternal listener, StatusListener reglistener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
 	private native void updateToken(String token, long nativeClientParam);
 	private native void shutDownNative(long nativeClientParam);
-	private native void registerWithToken(long nativeClientParam, String token, StatusListener listener);
-	private native void unRegisterWithToken(long nativeClientParam, String token, StatusListener listener);
+	private native void registerWithToken(long nativeClientParam, String token);
+	private native void unRegisterWithToken(long nativeClientParam, String token);
 	private native void handleNotificationNative(long nativeClientParam, String notification);
 
 }

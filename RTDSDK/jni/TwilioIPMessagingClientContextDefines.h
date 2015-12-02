@@ -10,6 +10,7 @@
 #include "TwilioIPMessagingConfigurationProvider.h"
 #include "TwilioIPMessagingNotificationClientListener.h"
 #include "TwilioIPMessagingClientListener.h"
+#include "RegistrationObserverImpl.h"
 
 
 #define LOGD(tag, fmt, ...)  _tw_jni_log_printer(__func__, __LINE__, TW_LOG_LEVEL_DEBUG, tag, fmt, ##__VA_ARGS__)
@@ -26,6 +27,7 @@ typedef struct IPMessagingClientContext {
 	std::shared_ptr<TwilioIPMessagingNotificationClientListener>  notificationClientObserver;
 	std::shared_ptr<TwilioIPMessagingConfigurationProvider> configurationProvider;
 	std::shared_ptr<TwilioIPMessagingClientListener> messagingListener;
+	std::shared_ptr<RegistrationObserverImpl> regObservationListener;
 	ITNTwilsockClientPtr twilsock;
 	ITNNotificationClientPtr notificationClient;
 	ITMClientPtr messagingClient;

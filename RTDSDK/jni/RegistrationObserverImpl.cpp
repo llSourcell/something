@@ -34,18 +34,6 @@ RegistrationObserverImpl::~RegistrationObserverImpl()
 void RegistrationObserverImpl::onRegStateChanged(const TNChannelType& type, const TNNotificationID& nId, TNRegistrationStates state)
 {
 	__android_log_print(ANDROID_LOG_INFO, TAG, "RegistrationObserverImpl::onRegStateChanged");
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM RegistrationObserverImpl::onRegStateChanged");
-
-	//__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM onRegStateChanged state: %s ", state);
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM onRegStateChanged notification-id : %s ", nId.c_str());
-	//__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM onRegStateChanged type : %s ", type);
-
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM token status question" );
-	if( state == rtd::TNRegistrationStates::Registered ){
-		__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM token registered");
-	}
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM token status question completed" );
-
 
 	JNIEnvAttacher jniAttacher;
 	jniAttacher.get()->CallVoidMethod(j_statusListener_, j_onSuccess_);
@@ -56,7 +44,6 @@ void RegistrationObserverImpl::onRegStateChanged(const TNChannelType& type, cons
 void RegistrationObserverImpl::onError(const TNErrorDescription& message, TNError code)
 {
 	__android_log_print(ANDROID_LOG_INFO, TAG, "RegistrationObserverImpl::onError");
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM RegistrationObserverImpl::onError");
 
 	JNIEnvAttacher jniAttacher;
 	jniAttacher.get()->CallVoidMethod(j_statusListener_, j_onError_);
@@ -66,8 +53,7 @@ void RegistrationObserverImpl::onError(const TNErrorDescription& message, TNErro
 
 void RegistrationObserverImpl::onFatalError(const TNErrorDescription& message, TNError code)
 {
-	__android_log_print(ANDROID_LOG_INFO, TAG, "RegistrationObserverImpl::oFatalnError");
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM RegistrationObserverImpl::onFatalError");
+	__android_log_print(ANDROID_LOG_INFO, TAG, "RegistrationObserverImpl::onFatalError");
 
 	JNIEnvAttacher jniAttacher;
 	jniAttacher.get()->CallVoidMethod(j_statusListener_, j_onError_);

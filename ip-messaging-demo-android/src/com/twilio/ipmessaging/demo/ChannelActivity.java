@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import com.twilio.rtd.demo.R;
+import com.twilio.ipmessaging.demo.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
@@ -91,6 +91,30 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			TwilioIPMessagingSDK.shutdown();
 			finish();
 			break;
+		case R.id.action_unregistercm:
+			String gcmToken = basicClient.getGCMToken();
+			basicClient.getIpMessagingClient().unregisterGCMToken(gcmToken, new StatusListener() {
+
+				@Override
+				public void onError() {
+					logger.w("GCM unregistration not successful");
+					runOnUiThread(new Runnable() {
+						  public void run() {
+							  Toast.makeText(ChannelActivity.this, "GCM unregistration not successful", Toast.LENGTH_SHORT).show();
+						  }
+					});
+				}
+
+				@Override
+				public void onSuccess() {
+					logger.d("GCM unregistration successful");
+					runOnUiThread(new Runnable() {
+						  public void run() {
+							  Toast.makeText(ChannelActivity.this, "GCM unregistration successful", Toast.LENGTH_SHORT).show();
+						  }
+					});
+				}
+			});
 		}
 		return super.onOptionsItemSelected(item);
 	}

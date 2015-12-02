@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/impl/IPMessagingClientListenerInternal;)J
  */
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
-  (JNIEnv *, jobject, jstring, jobject);
+  (JNIEnv *, jobject, jstring, jobject, jobject);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
  * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_registerWithToken
-  (JNIEnv *, jobject, jlong, jstring, jobject);
+  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
  * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_unRegisterWithToken
-  (JNIEnv *, jobject, jlong, jstring, jobject);
+  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl

@@ -17,6 +17,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 
 	private static final Logger logger = Logger.getLogger(BasicIPMessagingClient.class);
 	private String capabilityToken;
+	private String gcmToken;
 	private long nativeClientParam;
 	private TwilioIPMessagingClient ipMessagingClient;
 	private Channel[] channels;
@@ -45,6 +46,13 @@ public class BasicIPMessagingClient implements IPMessagingClientListener {
 		this.capabilityToken = capabilityToken;
 	}
 
+	public String getGCMToken() {
+		return gcmToken;
+	}
+
+	public void setGCMToken(String gcmToken) {
+		this.gcmToken = gcmToken;
+	}
 	
 	public void doLogin(final String capabilityToken, final LoginListener listener) {
 	

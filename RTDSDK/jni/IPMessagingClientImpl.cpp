@@ -74,7 +74,7 @@ static LogListener logger;
  * Signature: (Ljava/lang/String;Lcom/twilio/ipmessaging/impl/IPMessagingClientListenerInternal;)J
  */
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
-  (JNIEnv *env, jobject obj, jstring token, jobject listener) {
+  (JNIEnv *env, jobject obj, jstring token, jobject listener, jobject reglistener) {
 
 	LOGD( TAG, "Entered IPMessagingClientImpl_initNative()");
 
@@ -92,6 +92,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	const char *tokenStr = env->GetStringUTFChars(token, 0);
 	IPMessagingClientContext *clientParams_ = new IPMessagingClientContext();
 	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>(env, obj, listener);
+	auto regObservationListener = std::make_shared<RegistrationObserverImpl>(env, obj, reglistener);
 
 	LOGD(TAG,"Creating  config map");
 	__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", TEST_IPMESSAGING_SERVICE, TEST_REGISTRATION_SERVICE);
@@ -130,6 +131,7 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	clientParams_->notificationClientObserver = notificationClientObserver;
 	clientParams_->notificationClient = notificationClientPtr;
 	clientParams_->twilsock = m_twilsock;
+	clientParams_->regObservationListener = regObservationListener;
 
 	return reinterpret_cast<jlong>(clientParams_);
 
@@ -169,6 +171,11 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 
 		if( clientParamsRecreate->notificationClient == nullptr) {
 			LOG_W(TAG, "notificationClient is NULL.");
+			return 0;
+		}
+
+		if( clientParamsRecreate->regObservationListener == nullptr ){
+			LOG_W(TAG, "regObservationListener is NULL");
 			return 0;
 		}
 
@@ -331,28 +338,19 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
  * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_registerWithToken
-(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token, jobject listener) {
-//	LOGW(TAG, "GCM - register With Token ");
-	__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM - register with Token");
+(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token) {
 	if (nativeClientContext == 0) {
 			LOGW(TAG,"client context is null");
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM - client context is null");
 	} else {
-		__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM - client context is not null");
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
-		//TODO :: Pass in regListener to  Register(). Check with iOS
-
-		// incoming statuslistener
-		// converting to registration observer ptr
-		// expecting ITNRegistrationObserverPtr
-		// which is reinterpreted to ITNRegistrationObserver
-		auto regListener = std::make_shared<RegistrationObserverImpl>(env, obj, listener);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 		if(clientParamsRecreate != nullptr) {
-			__android_log_print(ANDROID_LOG_ERROR, TAG, "GCM - clientParamsRecreate is not null");
 			ITNNotificationClientPtr notificationClient = clientParamsRecreate->notificationClient;
 			if(notificationClient != nullptr) {
-				notificationClient->Register(rtd::TNChannelType::GCM, tokenStr, regListener);
+				auto regListener = clientParamsRecreate->regObservationListener;
+				if( regListener != nullptr ){
+					notificationClient->Register(rtd::TNChannelType::GCM, tokenStr, regListener);
+				}
 			}
 		}
 	}
@@ -366,18 +364,19 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
  * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_unRegisterWithToken
-(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token, jobject listener) {
+(JNIEnv *env, jobject obj, jlong nativeClientContext, jstring token) {
 	if (nativeClientContext == 0) {
 			LOGW(TAG,"client context is null");
 	} else {
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
-		//TODO :: Pass in regListener to  Register(). Check with iOS
-		RegistrationObserverImpl* regListener = reinterpret_cast<RegistrationObserverImpl*>(env, obj, listener);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 		if(clientParamsRecreate != nullptr) {
 			ITNNotificationClientPtr notificationClient = clientParamsRecreate->notificationClient;
 			if(notificationClient != nullptr) {
-				notificationClient->Unregister(rtd::TNChannelType::GCM, tokenStr, nullptr);
+				auto regListener = clientParamsRecreate->regObservationListener;
+				if( regListener != nullptr ){
+					notificationClient->Unregister(rtd::TNChannelType::GCM, tokenStr, regListener);
+				}
 			}
 		}
 	}

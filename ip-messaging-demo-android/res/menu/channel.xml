@@ -30,6 +30,14 @@
                 android:orderInCategory="100"
                 android:showAsAction="ifRoom"
                 android:title="@string/shutdownlib"/>
+
+            <item
+                android:id="@+id/action_unregistercm"
+                android:orderInCategory="100"
+                android:showAsAction="ifRoom"
+                android:title="@string/unregister_gcm"
+                />
+
             </menu>
     </item>
 

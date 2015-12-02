@@ -28,5 +28,7 @@
     <string name="Create_public_channel">Create public channel</string>
     <string name="Create_private_channel">Create private channel</string>
     <string name="RegId">Reg Id:</string>
+    <string name="gcm">GCM</string>
+    <string name="unregister_gcm">Unregister GCM Token</string>
 
 </resources>
