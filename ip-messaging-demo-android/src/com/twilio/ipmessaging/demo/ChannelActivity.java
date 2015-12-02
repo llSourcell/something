@@ -4,20 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.twilio.ipmessaging.demo.R;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.Channels;
+import com.twilio.ipmessaging.Constants;
+import com.twilio.ipmessaging.Constants.CreateChannelListener;
+import com.twilio.ipmessaging.Constants.StatusListener;
+import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.Member;
 import com.twilio.ipmessaging.Message;
 import com.twilio.ipmessaging.TwilioIPMessagingSDK;
-import com.twilio.ipmessaging.Constants.CreateChannelListener;
-import com.twilio.ipmessaging.Constants;
-import com.twilio.ipmessaging.Constants.StatusListener;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -40,7 +43,7 @@ import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
 @SuppressLint("InflateParams")
-public class ChannelActivity extends Activity implements ChannelListener {
+public class ChannelActivity extends Activity implements ChannelListener, IPMessagingClientListener{
 
 	private static final String[] CHANNEL_OPTIONS = { "Join" };
 	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
@@ -56,15 +59,17 @@ public class ChannelActivity extends Activity implements ChannelListener {
 	private Channel[] channelArray;
 	
 	private static final Handler handler = new Handler();
-	private AlertDialog incoingChannelInvite;
+	private AlertDialog incomingChannelInvite;
 	private ProgressDialog progressDialog;
-
+	private StatusListener joinListener;
+	private StatusListener declineInvitationListener;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_channel);
 		basicClient = TwilioApplication.get().getBasicClient();
+		basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
 		setupListView();
 	}
 
@@ -82,6 +87,49 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			break;
 		case R.id.action_create_private:
 			showCreateChannelDialog(ChannelType.CHANNEL_TYPE_PRIVATE);
+			break;
+		case R.id.action_create_public_withoptions:
+		{
+			Random rand = new Random(); 
+			int value = rand.nextInt(50); 
+			
+			Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+			final Map<String, String> attrs = new HashMap<String, String>();
+			attrs.put("topic", "testing channel creation with options");
+			Map<String, Object> options = new HashMap<String, Object>();
+			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Pub_TestChannelF_"+value);
+			options.put(Constants.CHANNEL_UNIQUE_NAME, "Pub_TestChannelU_"+value);
+			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
+			options.put("attributes", attrs);
+			channelsLocal.createChannel(options, new CreateChannelListener()
+	        {
+	            @Override
+	            public void onCreated(final Channel newChannel){
+	            	logger.e("Successfully created a channel with no options.");
+	            }
+
+				@Override
+				public void onError() {
+					logger.e("Error creating a channel");
+				}
+	        });
+			break;
+		}
+		case R.id.action_create_private_withoptions:
+		{
+			Random rand = new Random(); 
+			int value = rand.nextInt(50); 
+			
+			Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+			Map<String, Object> options = new HashMap<String, Object>();
+			options.put(Constants.CHANNEL_FRIENDLY_NAME, "Priv_TestChannelF_"+value);
+			options.put(Constants.CHANNEL_UNIQUE_NAME, "Priv_TestChannelU_"+value);
+			options.put(Constants.CHANNEL_TYPE, ChannelType.CHANNEL_TYPE_PUBLIC);
+			channelsLocal.createChannel(null, null);
+			break;
+		}
+		case R.id.action_search_by_unique_name:
+			showSearchChannelDialog();
 			break;
 		case R.id.action_logout:
 			basicClient.getIpMessagingClient().shutdown();
@@ -156,7 +204,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
-						logger.e(channelName);
+						logger.e("Creating channel with friendly Name|" + channelName +"|");
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
@@ -167,34 +215,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
-				            		newChannel.setListener(ChannelActivity.this);
-				            		logger.e("channel Type is : " + type.toString());
-				            		newChannel.join(new StatusListener() {
-				            			
-				    					@Override
-				    					public void onError() {
-				    						logger.e("failed to join channel");
-				    					}
-				    	
-				    					@Override
-				    					public void onSuccess() {
-				    						runOnUiThread(new Runnable() {
-						            	        @Override
-						            	        public void run() {
-						            	        	adapter.notifyDataSetChanged();
-						            	        }
-						            	    });
-				    						logger.d("Successfully joined channel");
-				    					}
-				    	      			
-				    	      		});	     	
-				            		
-				            		runOnUiThread(new Runnable() {
-				            	        @Override
-				            	        public void run() {
-				            	        	getChannels(sid);
-				            	        }
-				            	    });
+				            	 	newChannel.setListener(ChannelActivity.this);
+				            		logger.e("Channel created|SID|"+sid+"|TYPE|" + type.toString());
 								} 
 				            }
 
@@ -214,6 +236,43 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		createChannelDialog = builder.create();
 		createChannelDialog.show();
 	}
+	
+	
+	private void showSearchChannelDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+		String title = "Enter unique channel name";
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_search_channel, null)).setTitle(title)
+				.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						
+						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
+								.toString();
+						logger.e(channelName);
+						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
+						final Channel channel = channelsLocal.getChannelByUniqueName(channelName);
+				            		
+	            		runOnUiThread(new Runnable() {
+	            	        @Override
+	            	        public void run() {
+	            	        	if(channel !=null ) {
+	            	        		showToast(channel.getSid()+":"+channel.getFriendlyName());
+	            	        	} else {
+	            	        		showToast("Channel not found.");
+	            	        	}
+	            	        }
+	            	    });
+					}
+				});
+		createChannelDialog = builder.create();
+		createChannelDialog.show();
+	}
+
 
 	private void setupListView() {
 		listView = (ListView) findViewById(R.id.channel_list);
@@ -243,7 +302,7 @@ public class ChannelActivity extends Activity implements ChannelListener {
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == JOIN) {
 									dialog.cancel();
-									channel.join(new StatusListener() {
+									joinListener = new StatusListener() {
 				            			
 				    					@Override
 				    					public void onError() {
@@ -261,7 +320,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
 				    						logger.e("Successfully joined channel");
 				    					}
 				    	      			
-				    	      		});	     	
+				    	      		};
+									channel.join(joinListener);	     	
 								} 
 							}
 						});
@@ -292,9 +352,11 @@ public class ChannelActivity extends Activity implements ChannelListener {
 							if (channelsObject != null) {
 								channelArray = channelsObject.getChannels();
 								setupListenersForChannel(channelArray);
-								ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-								Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
-								adapter.notifyDataSetChanged();
+								if(ChannelActivity.this.channels != null && channelArray != null ) {
+									ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+									Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+									adapter.notifyDataSetChanged();
+								}
 							}
 						}
 		      		});	     	
@@ -330,8 +392,8 @@ public class ChannelActivity extends Activity implements ChannelListener {
             @Override
             public void run()
             {
-                if (incoingChannelInvite == null) {
-                    incoingChannelInvite = new AlertDialog.Builder(ChannelActivity.this)
+                if (incomingChannelInvite == null) {
+                    incomingChannelInvite = new AlertDialog.Builder(ChannelActivity.this)
                         .setTitle(R.string.incoming_call)
                         .setMessage(R.string.incoming_call_message)
                         .setPositiveButton(R.string.join, new DialogInterface.OnClickListener()
@@ -357,32 +419,34 @@ public class ChannelActivity extends Activity implements ChannelListener {
 			    						logger.d("Successfully joined channel");
 			    					}
 			    	      		});	     	
-                                incoingChannelInvite = null;
+                                incomingChannelInvite = null;
                             }
                         })
                         .setNegativeButton(R.string.decline, new DialogInterface.OnClickListener()
                         {
-                            @Override
+
+							@Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                               channel.declineInvitation(new StatusListener() {
-			            			
-			    					@Override
-			    					public void onError() {
-			    						logger.d("Failed to decline channel invite");
-			    					}
-			    	
-			    					@Override
-			    					public void onSuccess() {
-			    						logger.e("Successfully to declined channel invite");
-			    					}
-			    	      			
-			    	      		});	     	
-                               incoingChannelInvite = null;
+							declineInvitationListener = new StatusListener() {
+
+								@Override
+								public void onError() {
+									logger.d("Failed to decline channel invite");
+								}
+
+								@Override
+								public void onSuccess() {
+									logger.e("Successfully to declined channel invite");
+								}
+
+							};
+                               channel.declineInvitation(declineInvitationListener);	     	
+                               incomingChannelInvite = null;
                             }
                         })
                         .create();
-                    incoingChannelInvite.show();
+                    incomingChannelInvite.show();
                 }
             }
         });
@@ -451,5 +515,41 @@ public class ChannelActivity extends Activity implements ChannelListener {
 		if(member != null) {
 			logger.d(member.getIdentity() + " ended typing");
 		}
+	}
+	
+	@Override
+	public void onChannelHistoryLoaded(Channel channel) {
+		logger.e("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
+	}
+
+	@Override
+	public void onChannelAdd(Channel channel) {
+		logger.e("Received onChannelAdd callback "+channel.getFriendlyName());
+		runOnUiThread(new Runnable() {
+	        @Override
+	        public void run() {
+	        	getChannels(null);
+	        }
+	    });
+	}
+
+	@Override
+	public void onChannelChange(Channel channel) {
+		logger.e("Received onChannelAdd callback "+channel.getFriendlyName());		
+	}
+
+	@Override
+	public void onChannelDelete(Channel channel) {
+		logger.e("Received onChannelDelete callback "+channel.getFriendlyName());
+	}
+
+	@Override
+	public void onError(int errorCode, String errorText) {
+		logger.e("Received onError callback "+ errorCode + " " + errorText);		
+	}
+
+	@Override
+	public void onAttributesChange(String attributes) {
+		logger.e("Received onAttributesChange callback ");			
 	}
 }

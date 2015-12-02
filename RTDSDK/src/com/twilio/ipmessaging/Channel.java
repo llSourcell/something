@@ -50,12 +50,26 @@ public interface Channel {
 	public String getFriendlyName();
 	
 	/**
+	 * Updates the friendly name for this channel.
+	 * 
+	 * @param friendlyName updated friendly name.
+	 */
+	public void setFriendlyName(String friendlyName, StatusListener listener);
+	
+	/**
 	 * Custom attributes associated with the Channel.
 	 * 
 	 * @return the map of attributes.
 	 */
 	public Map<String, String> getAttributes();
 	
+	/**
+	 * Updates the attribute data for this channel.
+	 * 
+	 * @param updatedAttributes
+	 */
+	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener);
+
 	/**
 	 * Method to get messages.
 	 * 
@@ -71,18 +85,19 @@ public interface Channel {
 	public Channel.ChannelStatus getStatus();
 	
 	/**
-	 * Method to set ChannelListener for this Channel.
-	 * 
-	 * @param listener The channel listener.
-	 */
-	public void setListener(ChannelListener listener);
-	
-	/**
 	 * Method to retrieve ChannelListener for this Channel.
 	 * 
 	 * @return listener for this channel.
 	 */
 	public ChannelListener getListener();
+	
+	/**
+	 * Method to set ChannelListener for this Channel.
+	 * 
+	 * @param listener The channel listener.
+	 */
+	public void setListener(ChannelListener listener);
+
 		
 	/**
 	 * Method to get the channel members.
@@ -99,31 +114,31 @@ public interface Channel {
 	public ChannelType getType();
 	
 	/**
-	 * Updates the attribute data for this channel.
-	 * 
-	 * @param updatedAttributes
-	 */
-	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener);
-	
-	/**
-	 * Updates the friendly name for this channel.
-	 * 
-	 * @param friendlyName updated friendly name.
-	 * @param listener Listener that will receive callback with the result.
-	 *  	
-	 */
-	public void setFriendlyName(String friendlyName, StatusListener listener);
-	
-	/**
 	 * Updates the channel type for this channel.
 	 * 
 	 * @param type updated channel type.
-	 * @param listener Listener that will receive callback with the result.
 	 */
 	public void setType(ChannelType type, StatusListener listener);
 	
 	/**
+	 * Method that returns the unique Name of the channel.
+	 * 
+	 * @return the unique Name.
+	 */
+	public String getUniqueName();
+	
+	/**
+	 * Updates the unique name for this channel.
+	 * 
+	 * @param uniqueName	The new unique name for this channel.
+	 * @param listener		Listener that will receive callback with the result.
+	 * 
+	 */
+	public void setUniqueName(String uniqueName, StatusListener listener);
+	
+	/**
 	 * Joins the current user to the channel.
+	 * @param listener
 	 * 
 	 * @param listener Listener that will receive callback with the result.
 	 */
@@ -145,6 +160,7 @@ public interface Channel {
 
 	/**
 	 * Declines an invite on this channel.
+	 * @param listener StatusListener to report status of the async operation via callback.
 	 * 
 	 * @param listener Listener that will receive callback with the result.
 	 */

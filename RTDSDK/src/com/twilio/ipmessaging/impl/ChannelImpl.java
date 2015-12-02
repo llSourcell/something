@@ -39,6 +39,9 @@ public class ChannelImpl implements Channel, Parcelable{
 
 	/** The current user's status on this channel. */
 	protected ChannelStatus status;
+	
+	/** The unique name for this channel. */
+	protected String uniqueName;
 
 	/** The channel's visibility type. */
 	protected ChannelType type;
@@ -96,29 +99,10 @@ public class ChannelImpl implements Channel, Parcelable{
 		return this.sid;
 	}
 
-	@Override
-	public String getFriendlyName() {
-		return this.friendlyName;
-	}
-
-	@Override
-	public Map<String, String> getAttributes() {
-		Map<String,String> attrMap = new HashMap<String,String>();
-		String attrString = getChannelAttributesNative(this.nativeChannelContextHandle);
-		try {
-			JSONObject jsonObj = new JSONObject(attrString);
-			attrMap = Utils.toMap(jsonObj);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		return attrMap;
-	}
 
 	@Override
 	public Channel.ChannelStatus getStatus() {
 		logger.d("getStatus called");
-		//long nativeClientHandle = TwilioIPMessagingSDKImpl.getInstance().getNativeClientParam();
 		int status = getStatus(this.nativeChannelContextHandle, this.getSid());
 		switch (status) {
 			case 0:
@@ -146,6 +130,21 @@ public class ChannelImpl implements Channel, Parcelable{
 	public Members getMembers() {
 		return getMembers(this.getNativeClientContextHandle(), this.sid);
 	}
+	
+	@Override
+	public Map<String, String> getAttributes() {
+		Map<String,String> attrMap = new HashMap<String,String>();
+		String attrString = getChannelAttributesNative(this.nativeChannelContextHandle);
+		try {
+			JSONObject jsonObj = new JSONObject(attrString);
+			attrMap = Utils.toMap(jsonObj);
+			return attrMap;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}				
+	}
 
 	@Override
 	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener) {
@@ -162,12 +161,22 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 
 	@Override
+	public String getFriendlyName() {
+		return this.friendlyName;
+	}
+	
+	@Override
 	public void setFriendlyName(String friendlyName, StatusListener listener) {
 		if (friendlyName != null && this.getSid() != null) {
 			synchronized(this) {
 				updateChannelName(this.nativeChannelContextHandle, this.getSid(), friendlyName, listener);
 			}
 		}
+	}
+	
+	@Override
+	public ChannelType getType() {
+		return this.type;
 	}
 	
 	@Override
@@ -189,58 +198,52 @@ public class ChannelImpl implements Channel, Parcelable{
 			logger.e("StatusListener is null.");
 		}
 	}
+	
+	@Override
+	public String getUniqueName() {
+		return getUniqueName(this.nativeChannelContextHandle);
+	}
+	
+	@Override
+	public void setUniqueName(String uniqueName, StatusListener listener) {
+		this.updateUniqueName(this.nativeChannelContextHandle,this.getSid(), uniqueName, listener);
+	}
 
 	@Override
 	public void join(StatusListener statusListener) {
 		logger.d("channelimpl join called");
-		if (statusListener != null) {
-			if (this.getSid() != null) {
-				synchronized (this) {
-					this.joinChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
-				}
-			} 
-		} else {
-			logger.e("StatusListener is null.");
+		if (this.getSid() != null) {
+			synchronized (this) {
+				this.joinChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
+			}
 		}
 	}
 
 	@Override
 	public void leave(StatusListener statusListener) {
 		logger.d("channelimpl leave called");
-		if (statusListener != null) {
-			if (this.getSid() != null) {
-				synchronized (this) {
-					this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
-				}
+		if (this.getSid() != null) {
+			synchronized (this) {
+				this.leaveChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
 			}
-		} else {
-			logger.e("StatusListener is null.");
 		}
 	}
 
 	@Override
 	public void destroy(StatusListener statusListener) {
 		logger.d("channelimpl destroy called");
-		if (statusListener != null) {
-			if (this.getSid() != null) {
-				synchronized (this) {
-					destroyChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
-				}
+		if (this.getSid() != null) {
+			synchronized (this) {
+				destroyChannel(this.nativeChannelContextHandle, this.getSid(), statusListener);
 			}
-		} else {
-			logger.e("StatusListener is null.");
 		}
 	}
 	
 	@Override
 	public void declineInvitation(StatusListener statusListener) {
 		logger.d("channelimpl decline called");
-		if (statusListener != null) {
-			if (this.getSid() != null) {
-				this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), statusListener);
-			}
-		} else {
-			logger.e("StatusListener is null.");
+		if (this.getSid() != null) {
+			this.declineChannelInvite(this.nativeChannelContextHandle, this.getSid(), statusListener);
 		}
 	}
 
@@ -251,11 +254,6 @@ public class ChannelImpl implements Channel, Parcelable{
 		} else {
 			return null;
 		}
-	}
-	
-	@Override
-	public ChannelType getType() {
-		return this.type;
 	}
 	
 	@Override
@@ -277,6 +275,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		 dest.writeString(this.sid);
 		 dest.writeString(this.friendlyName);
+		 dest.writeLong(this.nativeChannelContextHandle);
 	}
 
 
@@ -288,7 +287,8 @@ public class ChannelImpl implements Channel, Parcelable{
         {
             String sid = in.readString();
             String friendlyName = in.readString();
-            ChannelImpl chImpl = new ChannelImpl(friendlyName, sid);
+            long nativeHandleContext = in.readLong();
+            ChannelImpl chImpl = new ChannelImpl(friendlyName, sid, nativeHandleContext);
             return chImpl;
         }
 
@@ -312,6 +312,34 @@ public class ChannelImpl implements Channel, Parcelable{
 				public void run() {
 					if(listener!= null) {
 					 listener.onMessageAdd(message);
+					}
+				}
+			});
+		}
+	}
+	
+	public void handleEditMessage(final MessageImpl message) {
+		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+					 listener.onMessageChange(message);
+					}
+				}
+			});
+		}
+	}
+
+	public void handleDeleteMessage(final MessageImpl message) {
+		logger.d("setupListenerHandler for channel: " + this.getFriendlyName() + ", handler is " + handler + " hashCode:" + this.hashCode());
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+					 listener.onMessageDelete(message);
 					}
 				}
 			});
@@ -401,6 +429,19 @@ public class ChannelImpl implements Channel, Parcelable{
 		}	
 	}
 	
+	public void handleOnChannelSync(final ChannelImpl channel) {
+		if (handler != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(listener!= null) {
+						listener.onChannelHistoryLoaded(channel);
+					}
+				}
+			});
+		}		
+	}
+	
 	private native void joinChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
@@ -409,6 +450,7 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native void updateChannelName(long nativeChannelContextHandle, String channel_sid, String name, StatusListener listener);
 	private native void updateChannelType(long nativeChannelContextHandle, String channel_sid, int channelType, StatusListener listener);
 	private native void updateChannelAttributes(long nativeChannelContextHandle, String channel_sid, String attrMap, StatusListener listener);
+	private native void updateUniqueName(long nativeChannelContextHandle, String channel_sid, String name, StatusListener listener);
 	
 	private native Messages getMessagesObject(long nativeChannelContextHandle, String channel_sid);
 	private native int getStatus(long nativeChannelContextHandle, String channel_sid);   
@@ -416,5 +458,8 @@ public class ChannelImpl implements Channel, Parcelable{
 	private native String getChannelSidNative(long nativeChannelContextHandle);
 	private native void typingStartNative(long nativeChannelContextHandle);
 	private native String getChannelAttributesNative(long nativeChannelContextHandle);
+	private native String getUniqueName(long nativeChannelContextHandle);
+
+	
 
 }

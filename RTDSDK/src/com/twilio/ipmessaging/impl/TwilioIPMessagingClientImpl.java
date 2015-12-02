@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
-
+import com.twilio.common.TwilioAccessManager;
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.Channel.ChannelType;
 import com.twilio.ipmessaging.Channels;
@@ -35,10 +35,38 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
 	protected final Map<String, ChannelImpl> privateChannelList = new ConcurrentHashMap<String,ChannelImpl>();
 	private final UUID uuid = UUID.randomUUID();
+	private TwilioAccessManager accessManager;
 		
 	public TwilioIPMessagingClientImpl(Context context2, String token, IPMessagingClientListener inListener) {
 		this.context = context2;
 		this.ipMessagingListener = inListener;
+		this.gcmRegistrationStatusListener = new StatusListener() {
+
+			@Override
+			public void onError() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onError();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				if (appGCMRegistrationStatusListener != null) {
+					appGCMRegistrationStatusListener.onSuccess();
+				}
+			}
+		};
+		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
+		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal, gcmRegistrationStatusListener);
+		createMessagingClient(token, this.nativeClientParamContextHandle);
+	}
+
+
+	public TwilioIPMessagingClientImpl(Context context2, String token, TwilioAccessManager accessMgr,
+			IPMessagingClientListener inListener) {
+		this.context = context2;
+		this.ipMessagingListener = inListener;		
+		this.accessManager = accessMgr;
 		this.gcmRegistrationStatusListener = new StatusListener() {
 
 			@Override
@@ -76,10 +104,10 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 
 	@Override
-	public void updateToken(String accessToken) {
+	public void updateToken(String accessToken, StatusListener listener) {
 		if(accessToken != null) {
 			synchronized(this) {
-				this.updateToken(accessToken, this.nativeClientParamContextHandle);
+				this.updateToken(accessToken, this.nativeClientParamContextHandle, listener);
 			}
 		}
 	}
@@ -91,8 +119,12 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 
 	@Override
 	public String getIdentity() {
-		// TODO Auto-generated method stub
-		return null;
+		if(this.accessManager != null) {
+			return this.accessManager.getIdentity();
+		} else {
+			return null;
+		}
+		
 	}
 	
 	@Override
@@ -192,6 +224,12 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		}
 	}
 	
+	public void handleOnChannelSync(ChannelImpl channel) {
+		if(this.ipMessagingListener != null) {
+			this.ipMessagingListener.onChannelHistoryLoaded(channel);
+		}
+	}
+	
 	UUID getUUID()
 	{
 		return uuid;
@@ -220,7 +258,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	public native long initNative(String token, IPMessagingClientListenerInternal listener, StatusListener reglistener);
 	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
-	private native void updateToken(String token, long nativeClientParam);
+	private native void updateToken(String token, long nativeClientParam, StatusListener listener);
 	private native void shutDownNative(long nativeClientParam);
 	private native void registerWithToken(long nativeClientParam, String token);
 	private native void unRegisterWithToken(long nativeClientParam, String token);

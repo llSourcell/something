@@ -115,6 +115,22 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_typingStartN
 JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChannelAttributesNative
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    updateUniqueName
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUniqueName
+  (JNIEnv *, jobject, jlong, jstring, jstring, jobject);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_ChannelImpl
+ * Method:    getUniqueName
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getUniqueName
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

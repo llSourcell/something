@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.twilio.ipmessaging.demo"
-    android:versionCode="18"
-    android:versionName="1.2" >
 
-    <uses-sdk
+    package="com.twilio.ipmessaging.demo"
+    android:versionCode="26"
+    android:versionName="1.4" >
+     <uses-sdk
         android:minSdkVersion="19"
         android:targetSdkVersion="21" />
 

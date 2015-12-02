@@ -2,18 +2,26 @@
 #include <jni.h>
 /* Header for class com_twilio_ipmessaging_impl_MessageImpl */
 
-#ifndef _Included_MessageImpl
-#define _Included_MessageImpl
+#ifndef _Included_com_twilio_ipmessaging_impl_MessageImpl
+#define _Included_com_twilio_ipmessaging_impl_MessageImpl
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*
  * Class:     com_twilio_ipmessaging_impl_MessageImpl
  * Method:    getChannelSidNative
- * Signature: ()J
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_getChannelSidNative
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_MessageImpl
+ * Method:    setBodyNative
+ * Signature: (JLjava/lang/String;Lcom/twilio/ipmessaging/Constants/StatusListener;)V
+ */
+JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_setBodyNative
+  (JNIEnv *, jobject, jlong, jstring, jobject);
 
 #ifdef __cplusplus
 }

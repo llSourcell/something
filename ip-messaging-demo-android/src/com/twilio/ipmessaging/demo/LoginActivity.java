@@ -6,11 +6,15 @@ import java.net.URLEncoder;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.twilio.ipmessaging.Constants.StatusListener;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
+
 import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
 import com.twilio.ipmessaging.demo.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,10 +32,7 @@ import android.widget.Toast;
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 		
-	//private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
-	
-	// stage token: 
-	private static final String AUTH_PHP_SCRIPT = "https://twilio-ip-messaging-token.herokuapp.com/token?ttl=999999&account_sid=AC998c10b68cbfda9f67277f7d8f4439c9&auth_token=a5af001d07e3368c99ed9cdc6cbca5dd&service_sid=ISd4059eefb9544213b78383165fa21805&credential_sid=CRe6afec79bdb8036a1c44327a1160a108&identity=";
+	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";	
 	
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
@@ -99,10 +100,23 @@ public class LoginActivity extends Activity implements LoginListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		if (id == R.id.action_about) {
+			showAboutDialog();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void showAboutDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+		builder.setTitle("About").setMessage("Version: " + TwilioIPMessagingSDK.getVersion()).setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+
+		AlertDialog aboutDialog = builder.create();
+		aboutDialog.show();
 	}
 
 	private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String> {
@@ -157,7 +171,6 @@ public class LoginActivity extends Activity implements LoginListener {
 	@Override
 	public void onLogoutFinished() {
 		// TODO Auto-generated method stub
-
 	}
 	
 	public void getGCMRegistrationToken() {

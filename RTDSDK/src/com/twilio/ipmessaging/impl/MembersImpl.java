@@ -37,11 +37,7 @@ public class MembersImpl implements Members{
 				}
 			}
 		}
-		if(listener != null) {
-			this.add(identity, this.nativeMembersContextHandle, listener);
-		} else {
-			logger.e("Listener is null.");
-		}
+		this.add(identity, this.nativeMembersContextHandle, listener);
 	}
 
 	@Override
@@ -57,11 +53,7 @@ public class MembersImpl implements Members{
 				}
 			}
 		}
-		if(listener != null) {
-			this.invite(identity, this.nativeMembersContextHandle, listener);
-		} else {
-			logger.e("Listener is null.");
-		}
+		this.invite(identity, this.nativeMembersContextHandle, listener);
 	}
 
 	@Override

@@ -8,10 +8,12 @@
 #include <Notification/ITNNotificationClient.h>
 #include <Poco/Net/SSLManager.h>
 #include <Poco/Net/Context.h>
-#include <Common/TLLoggerInitializer.h>
 #include <Poco/Net/PrivateKeyPassphraseHandler.h>
 #include <Poco/UUIDGenerator.h>
-#include <twilio-jni/twilio-jni.h>
+#include <twilio-jni/JNIEnvAttacher.h>
+#include <twilio-jni/tw-jni.h>
+#include <twilio-jni/tw-jni-compat.h>
+
 #include <Twilsock/ITNTwilsockClient.h>
 
 #include "ITMClient.h"
@@ -24,6 +26,7 @@
 #include "IPMessagingClientImpl.h"
 #include "RegistrationObserverImpl.h"
 #include "TwilioIPMessagingClientContextDefines.h"
+#include "TwilioIPMessagingLogger.h"
 
 
 #define TAG  "IPMessagingClient(native)"
@@ -57,17 +60,6 @@ std::map<std::string, std::string> configMap;
 #endif
 
 
-class LogListener: public ITLLogListener {
-public :
-	void onNewEntry(const char * c, const char* prefix, TLLogLevel level) {
-		__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", c, prefix);
-	}
-
-};
-
-static LogListener logger;
-
-
 /*
  * Class:     com_twilio_ipmessaging_impl_TwilioIPMessagingSDKImpl
  * Method:    initNative
@@ -76,16 +68,11 @@ static LogListener logger;
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_initNative
   (JNIEnv *env, jobject obj, jstring token, jobject listener, jobject reglistener) {
 
-	LOGD( TAG, "Entered IPMessagingClientImpl_initNative()");
-
-	rtd::ITDLogger::initialize(true);
-	rtd::TLLogger::instance().SetLogListener(&logger);
-	LOGD(TAG, "Set ITDLogger to true.");
-
+	LOG_DEBUG( TAG, "Entered IPMessagingClientImpl_initNative()");
 
 	ITMClient::initialize();
 	if (token == nullptr) {
-		LOGE("token is null");
+		LOG_ERROR(TAG, "token is null");
 		return 0;
 	}
 
@@ -94,36 +81,36 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 	auto messagingListener = std::make_shared<TwilioIPMessagingClientListener>(env, obj, listener);
 	auto regObservationListener = std::make_shared<RegistrationObserverImpl>(env, obj, reglistener);
 
-	LOGD(TAG,"Creating  config map");
-	__android_log_print(ANDROID_LOG_INFO, TAG, "%s, %s", TEST_IPMESSAGING_SERVICE, TEST_REGISTRATION_SERVICE);
+	LOG_DEBUG(TAG,"Creating  config map");
+	LOG_DEBUG(TAG, "%s, %s", TEST_IPMESSAGING_SERVICE, TEST_REGISTRATION_SERVICE);
 	configMap.insert(std::make_pair("RTDIPMessagingServiceAddr", TEST_IPMESSAGING_SERVICE));
 	configMap.insert(std::make_pair("RTDRegistrationServiceAddr", TEST_REGISTRATION_SERVICE));
 	configMap.insert(std::make_pair("RTDTwilsockServiceAddr", TEST_TWILSOCK_SERVICE));
 	configMap.insert(std::make_pair("RTDDataServiceAddr", TEST_DATA_SERVICE));
 	configMap.insert(std::make_pair("RTDSubscriptionServiceAddr", TEST_SUBSCRIPTIONS_SERVICE));
 
-	LOGD(TAG,"Creating configurationProvider");
+	LOG_DEBUG(TAG,"Creating configurationProvider");
 	auto configurationProvider = std::make_shared<TwilioIPMessagingConfigurationProvider>(configMap);
 	if(configurationProvider == nullptr) {
-		LOGD( TAG, "configurationProvider is NULL");
+		LOG_DEBUG( TAG, "configurationProvider is NULL");
 	}
 
-	LOGD( TAG, "Creating notificationClientObserver");
+	LOG_DEBUG( TAG, "Creating notificationClientObserver");
 	auto  notificationClientObserver = std::make_shared<TwilioIPMessagingNotificationClientListener>();
 	if(notificationClientObserver == nullptr) {
-		LOGD( TAG, "notificationClientObserver is NULL");
+		LOG_DEBUG( TAG, "notificationClientObserver is NULL");
 	}
 
 	auto m_twilsock = rtd::TNTwilsockClientFactory::create(nullptr, tokenStr, configurationProvider);
 	m_twilsock->connect();
 
-	LOGD( TAG,"Creating ITNNotificationClientPtr");
+	LOG_DEBUG( TAG,"Creating ITNNotificationClientPtr");
 	ITNNotificationClientPtr notificationClientPtr;
 	notificationClientPtr = TNNotificationClientFactory::CreateNotificationClient(tokenStr,m_twilsock, configurationProvider);
 	notificationClientPtr->Init(notificationClientObserver);
 
 	if(notificationClientPtr == nullptr) {
-		LOGD(TAG, "notificationClientPtr is NULL");
+		LOG_DEBUG(TAG, "notificationClientPtr is NULL");
 	}
 
 	clientParams_->messagingListener = messagingListener;
@@ -141,36 +128,36 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_createMessagingClient
   (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext) {
 
-	LOGD( TAG,"Checking token validity.");
+	LOG_DEBUG( TAG,"Checking token validity.");
 
 	if (token == nullptr) {
-		LOG_E(TAG,"token is null");
+		LOG_ERROR(TAG,"token is null");
 		return 0;
 	}
 
 	const char *tokenStr = env->GetStringUTFChars(token, 0);
-	LOGD(TAG,"Checking nativeClientParam.");
+	LOG_DEBUG(TAG,"Checking nativeClientParam.");
 
 	if (nativeClientContext == 0) {
-			LOG_W(TAG, "client context is null");
+			LOG_WARN(TAG, "client context is null");
 			return 0;
 	} else {
 
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
-		LOGD(TAG,"client context is recreated.");
+		LOG_DEBUG(TAG,"client context is recreated.");
 
 		if(clientParamsRecreate->messagingListener == nullptr) {
-			LOG_W( TAG, "messagingListener is NULL.");
+			LOG_WARN( TAG, "messagingListener is NULL.");
 			return 0;
 		}
 
 		if(clientParamsRecreate->configurationProvider == nullptr) {
-			LOG_W(TAG, "configurationProvider is NULL.");
+			LOG_WARN(TAG, "configurationProvider is NULL.");
 			return 0;
 		}
 
 		if( clientParamsRecreate->notificationClient == nullptr) {
-			LOG_W(TAG, "notificationClient is NULL.");
+			LOG_WARN(TAG, "notificationClient is NULL.");
 			return 0;
 		}
 
@@ -179,13 +166,13 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 			return 0;
 		}
 
-		LOGD( TAG,"Creating the msgClient.");
+		LOG_DEBUG( TAG,"Creating the msgClient.");
 
 		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr, "Android",
 				clientParamsRecreate->messagingListener,
 				clientParamsRecreate->configurationProvider,
 				clientParamsRecreate->notificationClient,
-				([](TMResult result) { LOG_W( TAG,"Created the msgClient."); }));
+				([](TMResult result) { LOG_WARN( TAG,"Created the msgClient."); }));
 
 		clientParamsRecreate->messagingClient = messagingClient;
 
@@ -205,9 +192,9 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
   (JNIEnv *env, jobject obj, jlong nativeClientContext) {
 	jobject channels = nullptr;
 
-	LOGW(TAG,"Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative : Checking nativeClientContext.");
+	LOG_WARN(TAG,"Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_getChannelsNative : Checking nativeClientContext.");
 	if (nativeClientContext == 0) {
-			LOGW(TAG,"client context is null");
+			LOG_WARN(TAG,"client context is null");
 			return 0;
 	} else {
 
@@ -217,10 +204,10 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
 			if(clientParamsRecreate->messagingClient != nullptr) {
 				//get channels object//
 				ITMChannelsPtr channelsLocal = clientParamsRecreate->messagingClient->getChannels();
-				LOGW(TAG,"clientParamsRecreate->messagingClient is NOT null");
+				LOG_WARN(TAG,"clientParamsRecreate->messagingClient is NOT null");
 				while (channelsLocal == nullptr)
 				{
-					LOGW(TAG,"Messaging lib not ready, retrying...");
+					LOG_WARN(TAG,"Messaging lib not ready, retrying...");
 					Poco::Thread::sleep(1000);
 					channelsLocal = clientParamsRecreate->messagingClient->getChannels();
 				}
@@ -232,7 +219,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
 
 				jclass java_channels_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/ChannelsImpl");
 				if(java_channels_impl_cls != nullptr) {
-					LOGW(TAG, "Found java_channels_impl_cls class" );
+					LOG_WARN(TAG, "Found java_channels_impl_cls class" );
 				}
 
 				jmethodID construct = tw_jni_get_method_by_class(env, java_channels_impl_cls, "<init>", "(Lcom/twilio/ipmessaging/impl/TwilioIPMessagingClientImpl;J)V");
@@ -250,23 +237,43 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClie
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_updateToken
-  (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext) {
+  (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext, jobject listener) {
 
 	if (nativeClientContext == 0) {
-		LOGW(TAG,"client context is null");
+		LOG_WARN(TAG,"client context is null");
 	} else {
 		const char *tokenStr = env->GetStringUTFChars(token, 0);
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 		if(clientParamsRecreate != nullptr) {
-			ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
-			if(messagingClient != nullptr) {
-				messagingClient->updateToken(tokenStr,[](TMResult result){
-					if (result == rtd::TMResult::kTMResultSuccess) {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "updateToken is successful.");
-					} else {
-						__android_log_print(ANDROID_LOG_INFO, TAG, "updateToken failed.");
-					}
-				});
+			if(listener != nullptr) {
+				jobject j_statusListener_ = env->NewGlobalRef(listener);
+				jclass cls = (env)->GetObjectClass(j_statusListener_);
+				jmethodID j_onSuccess_ = (env)->GetMethodID(cls, "onSuccess", "()V");
+				jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
+
+				ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
+				if(messagingClient != nullptr) {
+					messagingClient->updateToken(tokenStr,[j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
+						JNIEnvAttacher jniAttacher;
+						if (result == rtd::TMResult::kTMResultSuccess) {
+							LOG_DEBUG(TAG, "updateToken is successful. Calling java listener.");
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						} else {
+							LOG_WARN(TAG, "updateToken channel failed. Calling java listener.");
+							//Call Java
+							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
+							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
+						}
+					});
+				}
+			} else {
+				LOG_DEBUG(TAG, "Updating token.StatusListener is set to null.");
+				ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
+				if(messagingClient != nullptr) {
+					messagingClient->updateToken(tokenStr, nullptr);
+				}
 			}
 		}
 
@@ -282,7 +289,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_shutDownNative
   (JNIEnv *env, jobject obj, jlong nativeClientContext) {
 	if (nativeClientContext == 0) {
-		LOGW(TAG,"client context is null");
+		LOG_WARN(TAG,"client context is null");
 	} else {
 		IPMessagingClientContext *clientParamsRecreate = reinterpret_cast<IPMessagingClientContext *>(nativeClientContext);
 		if(clientParamsRecreate != nullptr) {

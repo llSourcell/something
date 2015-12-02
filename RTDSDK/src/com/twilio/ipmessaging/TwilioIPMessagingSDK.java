@@ -1,6 +1,7 @@
 package com.twilio.ipmessaging;
 
 import com.twilio.ipmessaging.impl.TwilioIPMessagingSDKImpl;
+import com.twilio.common.TwilioAccessManager;
 import com.twilio.ipmessaging.Constants.InitListener;
 import android.content.Context;
 
@@ -12,7 +13,7 @@ import android.content.Context;
 public class TwilioIPMessagingSDK {
 	
 	/**
-	 * Determines if the Twilio IPMessaging SDK has been initialized or not.
+	 * Determines if the Twilio IP Messaging SDK has been initialized or not.
 	 * 
 	 * If you expect your application to run in the background when the user has
 	 * switched to other applications, you will want to check the return value of
@@ -57,12 +58,24 @@ public class TwilioIPMessagingSDK {
 	}
 	
 	/**
-	 * Shuts down the Twilio IPMessaging SDK.
+	 * Creates a new IP Messaging client instance with a token manager.
+	 * @param <TwilioAccessManager>
 	 * 
-	 * This will terminate all connections, release all Device objects, and
+	 * @param accessManager Instance of TwilioAccessManager. 
+	 * @param listener		IPMessagingClientListener for this IPMessagingClient.
+	 * @return 				The newly initialized TwilioIPMessagingClient.
+	 */
+	public static TwilioIPMessagingClient createIPMessagingClientWithAccessManager(TwilioAccessManager accessManager, IPMessagingClientListener listener) {
+		return TwilioIPMessagingSDKImpl.getInstance().createClientWithAccessManager(accessManager, listener);
+	}
+	
+	/**
+	 * Shuts down the Twilio IP Messaging SDK.
+	 * 
+	 * This will terminate all connections, release all TwilioIPMessagingClient objects, and
 	 * release any resources used by the SDK.
 	 * 
-	 * Note that any attempt to access existing Device or Connection objects
+	 * Note that any attempt to access existing TwilioIPMessagingClient
 	 * after calling this method may cause an exception to be thrown, or a crash.
 	 */
 	public static void shutdown()
@@ -70,4 +83,29 @@ public class TwilioIPMessagingSDK {
 		TwilioIPMessagingSDKImpl.getInstance().shutdown();
 	}
 
+	/**
+	 * Returns the version of the TwilioIPMessagingSDK.
+	 *
+	 *@return The version of the SDK.
+	 */
+	public static String getVersion() {
+		return TwilioIPMessagingSDKImpl.getInstance().getVersion();
+	}
+
+	/**
+	 * Sets the logging level for messages logged by the Twilio IP Messaging
+	 * SDK.
+	 *
+	 * Log levels correspond to those specified by Android's
+	 * {@link android.util.Log} class.
+	 *
+	 * To disable all Twilio SDK logging, set this to
+	 * {@link android.util.Log#ASSERT}. The default is
+	 * {@link android.util.Log#ERROR}.
+	 *
+	 * @level The logging level
+	 */
+	public static void setLogLevel(int level) {
+		TwilioIPMessagingSDKImpl.getInstance().setLogLevel(level);
+	}
 }

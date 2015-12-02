@@ -1,5 +1,7 @@
 package com.twilio.ipmessaging;
 
+import com.twilio.ipmessaging.Constants.StatusListener;
+
 /**
  * Representation of an IP Messaging Message object.
  * 
@@ -40,9 +42,10 @@ public interface Message {
 	/** Updates the body for a message.
 	 * 
 	 *  @param body The body for the message.
+	 *  @param listener Listener that will receive callback of the result.
 	 *  
 	 */
-	public void updateMessageBody(String body);
+	public void updateMessageBody(String body, StatusListener listener);
 
 	/** Returns the Channel Sid of the channel this message belongs to.
 	 * 

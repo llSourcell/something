@@ -1,7 +1,6 @@
 package com.twilio.ipmessaging;
 
 import java.util.Map;
-
 import com.twilio.ipmessaging.Constants.StatusListener;
 
 import android.app.PendingIntent;
@@ -14,28 +13,28 @@ public interface TwilioIPMessagingClient {
 	 * @return the unique id for this TwilioIPMessagingClient.
 	 */
 	public String getIdentity();
-	
+		
 	/**
-	 * Method to update the authentication token for this client.
+	 * Method to retrieve listener for this TwilioIPMessagingClient.
 	 * 
-	 * @param accessToken	an AccessToken for this Client.
+	 * @return IPMessagingClientListener the listener for this TwilioIPMessagingClient.
 	 */
-	public void updateToken(String accessToken);
-	
+	public IPMessagingClientListener getListener();
 	
 	/**
 	 * Method to set listener for this TwilioIPMessagingClient.
 	 * 
 	 * @param listener	the listener for this TwilioIPMessagingClient.
 	 */
+
 	public void setListener(IPMessagingClientListener listener);
 	
 	/**
-	 * Method to retrieve listener for this TwilioIPMessagingClient.
+	 * Method to update the authentication token for this client.
 	 * 
-	 * @return IPMessagingClientListener the listener for this TwilioIPMessagingClient.
+	 * @param accessToken	an AccessToken for this Client.
 	 */
-	public IPMessagingClientListener getListener();	
+	public void updateToken(String accessToken, StatusListener listener);
 	
 	/**
 	 * List of channels available to the TwilioIPMessagingClient.
@@ -77,7 +76,7 @@ public interface TwilioIPMessagingClient {
 
 	
 	/**
-	 * Cleanly shut down the messaging subsystem when you are done with it. 
+	 * Cleanly shuts down the messaging subsystem when you are done with it. 
 	 * 
 	 */
 	public void shutdown();

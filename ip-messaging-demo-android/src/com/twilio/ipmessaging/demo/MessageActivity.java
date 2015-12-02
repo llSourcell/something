@@ -54,7 +54,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private List<Message> messages =  new ArrayList<Message>();
 	private List<Member> members =  new ArrayList<Member>();
 	private Channel channel;
-	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy", "get attribute"};
+	private static final String[] EDIT_OPTIONS = {"Change Friendly Name", "Change Topic", "List Members", "Invite Member", "Add Member", "Remove Member", "Leave", "Change ChannelType", "destroy", "get attribute", "Change Unique Name", "Get Unique Name"};
 	
 	private static final int NAME_CHANGE = 0;
 	private static final int TOPIC_CHANGE = 1;
@@ -66,6 +66,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private static final int CHANNEL_TYPE = 7;
 	private static final int CHANNEL_DESTROY = 8;
 	private static final int CHANNEL_ATTRIBUTE = 9;
+	private static final int SET_CHANNEL_UNIQUE_NAME = 10;
+	private static final int GET_CHANNEL_UNIQUE_NAME = 11;
 	
 	private static final int REMOVE = 0;
 	private static final int EDIT = 1;
@@ -73,6 +75,10 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private AlertDialog editTextDialog;
 	private AlertDialog memberListDialog;
     private AlertDialog changeChannelTypeDialog;
+    private StatusListener messageListener;
+    private StatusListener leaveListener;
+    private StatusListener destroyListener;
+    private StatusListener nameUpdateListener;
     
 	
 	
@@ -175,7 +181,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 				} else if(which == ADD_MEMBER) {
 					showAddMemberDialog();
 				} else if (which == LEAVE) {
-					channel.leave(new StatusListener() {
+					leaveListener = new StatusListener() {
             			
     					@Override
     					public void onError() {
@@ -187,14 +193,15 @@ public class MessageActivity extends Activity implements ChannelListener{
     						logger.e("Successful at leaving channel");
     						finish();
     					}
-    	      		});	     	
+    	      		};
+					channel.leave(leaveListener);	     	
 					
 				} else if (which == REMOVE_MEMBER) {
 					showRemoveMemberDialog();
 				} else if (which == CHANNEL_TYPE) {
 					showChangeChannelType();
 				}   else if (which == CHANNEL_DESTROY) {
-					channel.destroy(new StatusListener() {
+					destroyListener = new StatusListener() {
             			
     					@Override
     					public void onError() {
@@ -206,11 +213,17 @@ public class MessageActivity extends Activity implements ChannelListener{
     						logger.e("Successful at destroying channel");
     						finish();
     					}
-    	      		});	     	
-				} if (which == CHANNEL_ATTRIBUTE) {
-					Map<String,String> attrs = channel.getAttributes();
+    	      		};
+					channel.destroy(destroyListener);	     	
+				} else if (which == CHANNEL_ATTRIBUTE) {
+					Map<String, String> attrs = channel.getAttributes();
 					showToast(attrs.toString());
-				} 
+				} else if (which == SET_CHANNEL_UNIQUE_NAME) {
+					showChangeUniqueNameDialog();
+				} else if (which == GET_CHANNEL_UNIQUE_NAME) {
+					String uniquName = channel.getUniqueName();
+					showToast(uniquName);
+				}
 			}
 		});
 		
@@ -226,12 +239,13 @@ public class MessageActivity extends Activity implements ChannelListener{
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setView(inflater.inflate(R.layout.dialog_edit_friendly_name, null))
 				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
 						logger.e(friendlyName);
-						channel.setFriendlyName(friendlyName, new StatusListener() {
+						nameUpdateListener = new StatusListener() {
 	            			
 	    					@Override
 	    					public void onError() {
@@ -242,7 +256,8 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    					public void onSuccess() {
 	    						logger.e("successfully changed name");
 	    					}
-	    	      		});	     	
+	    	      		};
+					channel.setFriendlyName(friendlyName, nameUpdateListener );	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -311,12 +326,12 @@ public class MessageActivity extends Activity implements ChannelListener{
 	            			
 	    					@Override
 	    					public void onError() {
-	    						logger.e("Error inviteByIdentity");
+	    						logger.e("Error inviteByIdentity.");
 	    					}
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("Successful at inviteByidentityl");
+	    						logger.e("Successful at inviteByidentity.");
 	    					}
 	    	      		});	     	
 					}
@@ -454,6 +469,60 @@ public class MessageActivity extends Activity implements ChannelListener{
 		changeChannelTypeDialog.show();
 	}
 	
+	
+	private void showUpdateMessageDialog(final Message message) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_edit_message, null))
+				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String updatedMsg = ((EditText) editTextDialog.findViewById(R.id.update_message)).getText()
+								.toString();
+						message.updateMessageBody(updatedMsg, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error at updating message");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Success at updating message");
+	    						runOnUiThread(new Runnable() {
+			            	        @Override
+			            	        public void run() {
+			            	        	final Channel thisChannel = MessageActivity.this.channel;
+			            	    		final Messages messagesObject = channel.getMessages();
+			            	    		if(messagesObject != null) {
+			            	    			Message[] messagesArray = messagesObject.getMessages();
+			            	    			if(messagesArray.length > 0 ) {
+			            	    				messages = new ArrayList<Message>(Arrays.asList(messagesArray));
+			            	    				Collections.sort(messages, new CustomMessageComparator());
+			            	    			}
+			            	    		}
+
+			            	    	    adapter.getItems().clear();
+			            	    	    adapter.getItems().addAll(messages);
+			            	        	adapter.notifyDataSetChanged();
+			            	        }
+			            	    });
+	    					}
+	    	      		});	     	
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		editTextDialog = builder.create();
+		editTextDialog.show();
+	}
+	
 
 	private void setupInput() {
 		// Setup our input methods. Enter key on the keyboard or pushing the
@@ -543,7 +612,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 											}
 										});	     	
 									} else if (which == EDIT){
-										//::TODO
+										showUpdateMessageDialog(message);
 									}
 								}
 							});
@@ -597,6 +666,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	@Override
 	public void onMessageChange(Message message) {
 		if(message != null) {
+			showToast(message.getSid() + " changed");
 			logger.d("Received onMessageChange "  + message.getSid());
 		} else {
 			logger.d("Received onMessageChange ");
@@ -606,6 +676,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	@Override
 	public void onMessageDelete(Message message) {
 		if(message != null) {
+			showToast(message.getSid() + " deleted");
 			logger.d("Received onMessageDelete "  + message.getSid());
 		} else {
 			logger.d("Received onMessageDelete.");
@@ -672,5 +743,43 @@ public class MessageActivity extends Activity implements ChannelListener{
 			typingIndc.setText(null);
 			logger.d(member.getIdentity() + " ended typing");
 		}
+	}
+	
+	private void showChangeUniqueNameDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+		// Get the layout inflater
+		LayoutInflater inflater = getLayoutInflater();
+
+		// Inflate and set the layout for the dialog
+		// Pass null as the parent view because its going in the dialog layout
+		builder.setView(inflater.inflate(R.layout.dialog_edit_unique_name, null))
+				.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						String uniqueName = ((EditText) editTextDialog.findViewById(R.id.update_unique_name)).getText()
+								.toString();
+						logger.e(uniqueName);
+						channel.setUniqueName(uniqueName, new StatusListener() {
+
+							@Override
+							public void onError() {
+								logger.e("Error changing uniqueName");
+							}
+
+							@Override
+							public void onSuccess() {
+								logger.e("successfully changed uniqueName");
+							}
+						});
+					}
+				});
+		editTextDialog = builder.create();
+		editTextDialog.show();
+	}
+
+	@Override
+	public void onChannelHistoryLoaded(Channel channel) {
+		logger.d("Received onChannelSynchronization callback " + channel.getFriendlyName());
 	}
 }

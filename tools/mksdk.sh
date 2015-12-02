@@ -15,7 +15,8 @@ Members.java
 Message.java
 Messages.java
 TwilioIPMessagingClient.java
-TwilioIPMessagingSDK.java"
+TwilioIPMessagingSDK.java
+Constants.java"
 TWILIO_HOWTOS="
 android-ip-messaging-demo-android"
 #TWILIO_HELPER_LIBS="
@@ -166,8 +167,8 @@ javadoc \
     -classpath "${ANDROID_SDK_HOME}/platforms/android-${ANDROID_API}/android.jar" \
     -d "${docdest}" \
     -version \
-    -top '<h1>Twilio Client for Android</h1>' \
-    -windowtitle 'Twilio Client for Android' \
+    -top '<h1>Twilio IP Messaging Android SDK</h1>' \
+    -windowtitle 'Twilio IP Messaging Android SDK' \
     -charset UTF-8 \
     -docencoding UTF-8 \
     -linkoffline http://developer.android.com/reference/  "$mydir" \

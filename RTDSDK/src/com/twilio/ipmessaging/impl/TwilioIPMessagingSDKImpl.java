@@ -8,11 +8,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.twilio.common.TwilioAccessManager;
+import com.twilio.common.TwilioAccessManagerFactory;
+import com.twilio.common.TwilioAccessManagerListener;
 import com.twilio.ipmessaging.Constants.InitListener;
+import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
+import com.twilio.ipmessaging.TwilioIPMessagingClient;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService;
 import com.twilio.ipmessaging.TwilioIPMessagingClientService.TwilioBinder;
-import com.twilio.ipmessaging.TwilioIPMessagingSDK;
+import com.twilio.ipmessaging.Version;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,7 +28,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 
-public class TwilioIPMessagingSDKImpl {
+public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 	
 	static {
 		System.loadLibrary("twilio-rtd-native"); 
@@ -53,6 +58,7 @@ public class TwilioIPMessagingSDKImpl {
 	private IPMessagingClientListenerInternal ipMessagingClientListenerInternal;
 	
 	protected final Map<UUID, WeakReference<TwilioIPMessagingClientImpl>> clients = new HashMap<UUID, WeakReference<TwilioIPMessagingClientImpl>>();
+	protected final Map<TwilioAccessManager, WeakReference<TwilioIPMessagingClientImpl>> accessManagers = new HashMap<TwilioAccessManager, WeakReference<TwilioIPMessagingClientImpl>>();
 
 		
 	private TwilioIPMessagingSDKImpl() {
@@ -128,14 +134,16 @@ public class TwilioIPMessagingSDKImpl {
 					if (service.name.equals(TWILIO_IPMESSAGING_SERVICE_NAME))
 					{
 						serviceFound = true;
-						if (service.exported)
+						if (service.exported) {
 							throw new RuntimeException(TWILIO_IPMESSAGING_SERVICE_NAME+" is exported.  You must add android:exported=\"false\" to the <service> declaration in AndroidManifest.xml");
+						}
 					}
 				}
 			}
 
-			if (!serviceFound)
+			if (!serviceFound) {
 				throw new RuntimeException(TWILIO_IPMESSAGING_SERVICE_NAME + " is not declared in AndroidManifest.xml");
+			}
 		} catch (Exception e) {
 			inListener.onError(e);
 			sdkIniting = false;
@@ -222,6 +230,43 @@ public class TwilioIPMessagingSDKImpl {
 		}
 	}
 	
+	public TwilioIPMessagingClientImpl createClientWithToken(String token, IPMessagingClientListener listener, TwilioAccessManager accessMgr) {
+		if(token != null) {
+
+			final TwilioIPMessagingClientImpl client = new TwilioIPMessagingClientImpl(context, token, accessMgr, listener);
+			synchronized (clients)
+			{
+				clients.put(client.getUUID(), new WeakReference<TwilioIPMessagingClientImpl>(client));
+			}
+			return client;
+		} else {
+			return null;
+		}
+	}
+	
+	public TwilioIPMessagingClient createClientWithAccessManager(TwilioAccessManager accessManager,
+			IPMessagingClientListener listener) {
+		if(accessManager == null) {
+			return null;
+		} 
+		
+		if(accessManager.getListener() == null) {
+			accessManager.setListener(this);
+		}
+		String newCapabilityToken = accessManager.getToken();		
+		TwilioIPMessagingClientImpl twilioIpmClient = createClientWithToken(newCapabilityToken, listener, accessManager);
+		accessManagers.put(accessManager,  new WeakReference<TwilioIPMessagingClientImpl>(twilioIpmClient));
+		return twilioIpmClient;
+	}
+	
+	public String getVersion() {
+		return Version.SDK_VERSION;
+	}
+
+	public void setLogLevel(int level) {
+		Logger.setLogLevel(level);
+		setLogLevelNative(level);
+	}
 	
 	public void shutdown()
 	{
@@ -256,6 +301,40 @@ public class TwilioIPMessagingSDKImpl {
 		state.set(State.UNINITIALIZED);
 
 	}
+
+	@Override
+	public void onAccessManagerTokenExpire(TwilioAccessManager accessManager) {
+		logger.e("Received onAccessManagerTokenExpire event.");
+		WeakReference<TwilioIPMessagingClientImpl> twilioIpmClient =  accessManagers.get(accessManager);
+		if(twilioIpmClient != null) {
+			logger.e("Found twilioIpmClient");
+			twilioIpmClient.get().updateToken(accessManager.getToken(), new StatusListener() {
+
+				@Override
+				public void onSuccess() {
+					logger.d("Updated token successfully.");
+				}
+
+				@Override
+				public void onError() {
+					//TODO:: @kbagchi TBD what to do, when this fails.
+					logger.e("Received onError() updating token.");
+				}});
+		}
+	}
+
+
+	@Override
+	public void onError(TwilioAccessManager accessManager, String errorMsg) {
+		logger.e("Received TwilioAccessManager event.");
+	}
+
+
+	@Override
+	public void onTokenUpdated(TwilioAccessManager accessManager) {
+		logger.e("Received onTokenUpdated event.");
+	} 
 	
 	private native void create();	
+	private native void setLogLevelNative(int level);
 }
