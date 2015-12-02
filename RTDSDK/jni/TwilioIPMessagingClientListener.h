@@ -23,7 +23,7 @@ using namespace rtd;
 class TwilioIPMessagingClientListener : public ITMClientListener
 {
 public:
-    TwilioIPMessagingClientListener(JNIEnv* env,jobject obj,jobject j_listenert);
+    TwilioIPMessagingClientListener(JNIEnv* env,jobject obj,jobject j_listener);
     virtual ~TwilioIPMessagingClientListener();
 
     void onMessage(TMAction action, ITMessagePtr message);
