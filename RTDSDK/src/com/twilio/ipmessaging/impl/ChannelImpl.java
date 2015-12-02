@@ -500,6 +500,10 @@ public class ChannelImpl implements Channel, Parcelable{
 		}		
 	}
 	
+	protected void setTwilioIPMessagingClient(TwilioIPMessagingClientImpl twilioIpmClient) {
+		this.ipmClient = twilioIpmClient;
+	}
+	
 	private native void joinChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void leaveChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);
 	private native void destroyChannel(long nativeChannelContextHandle, String channel_sid, StatusListener listener);

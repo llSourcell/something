@@ -322,54 +322,83 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessa
 	}
 }
 
+
 /*
  * Class:     com_twilio_ipmessaging_impl_MessagesImpl
  * Method:    getMessagesNative
  * Signature: (J)[Lcom/twilio/ipmessaging/Message;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative
-  (JNIEnv *env, jobject obj , jlong nativeMessagesContext1){
-	jobject message;
-
-	jlong nativeMessagesContext = tw_jni_fetch_long(env, obj, "nativeMessagesContextHandler");
-
-	LOG_DEBUG(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : Checking nativeMessagesContext.");
-
+JNIEXPORT jlongArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessageIndexArrayNative
+  (JNIEnv *env, jobject obj , jlong nativeMessagesContext){
+	jlongArray messageIndexArray;
 	if (nativeMessagesContext == 0) {
 			LOG_WARN(TAG, "client context is null");
 			return nullptr;
 	} else {
-
 		MessagesContext *MessagesContextRecreate = reinterpret_cast<MessagesContext *>(nativeMessagesContext);
-
-		LOG_DEBUG(TAG, "client context is recreated.");
-
 		if(MessagesContextRecreate == nullptr) {
 			LOG_WARN(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
 			return 0;
 		}
-
 		if(MessagesContextRecreate->messages == nullptr) {
 			LOG_WARN(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
 			return 0;
 		}
 
 		ITMessagesPtr messages = MessagesContextRecreate->messages;
-
 		std::vector<ITMessagePtr> messageList;
 		messages->getMessagesList(messageList);
+		LOG_DEBUG(TAG,"Message count : %d",messageList.size());
+
+		jlong buffer[messageList.size()];
+		messageIndexArray = env->NewLongArray(messageList.size());
+
+		for (int i= 0; i< messageList.size() ; i++ ) {
+			ITMessagePtr messagePtr = messageList[i];
+			uint64_t index;
+			messagePtr->getMessageIndex(index);
+			buffer[i] = index;
+		}
+
+		env->SetLongArrayRegion(messageIndexArray, 0, messageList.size(), buffer);
+		return messageIndexArray;
+	}
+	return nullptr;
+}
+
+
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_MessagesImpl
+ * Method:    getMessage
+ * Signature: (JJ)Lcom/twilio/ipmessaging/Message;
+ */
+JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessageByIndex
+ (JNIEnv *env, jobject obj, jlong messsageindex, jlong nativeMessagesContext) {
+	jobject message;
+	if (nativeMessagesContext == 0) {
+			LOG_WARN(TAG, "client context is null");
+			return nullptr;
+	} else {
+		MessagesContext *MessagesContextRecreate = reinterpret_cast<MessagesContext *>(nativeMessagesContext);
+		if(MessagesContextRecreate == nullptr) {
+			LOG_WARN(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : MessagesContextRecreate is NULL.");
+			return 0;
+		}
+		if(MessagesContextRecreate->messages == nullptr) {
+			LOG_WARN(TAG,"Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative : ITMessagesPtr is NULL.");
+			return 0;
+		}
 
 		jclass java_message_impl_cls = tw_jni_find_class(env, "com/twilio/ipmessaging/impl/MessageImpl");
 		if(java_message_impl_cls != NULL) {
 			LOG_WARN(TAG, "Found java_message_impl_cls class" );
 		}
-
 		jmethodID construct = tw_jni_get_method_by_class(env, java_message_impl_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
-		jobjectArray messagesArray = (jobjectArray) env->NewObjectArray(messageList.size(),java_message_impl_cls, 0);
 
-		for (int i= 0; i< messageList.size() ; i++ ) {
-			ITMessagePtr messagePtr = messageList[i];
-
+		ITMessagesPtr messages = MessagesContextRecreate->messages;
+		if(messages != nullptr){
+			ITMessagePtr messagePtr = messages->getMessageByIndex(messsageindex);
 			MessageContext* messageContext_ = new MessageContext();
 			messageContext_->message = messagePtr;
 			jlong messageContextHandle = reinterpret_cast<jlong>(messageContext_);
@@ -382,20 +411,13 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_get
 			LOG_WARN(TAG, "body is %s", body);
 
 			jstring authorString = env->NewStringUTF(author);
-			//jstring bodyString = env->NewStringUTF(body);
 			jstring bodyString = str2jstring(env, body);
 			jstring timeStampString  = env->NewStringUTF(timestamp);
 
-			message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle );
+			message = tw_jni_new_object(env, java_message_impl_cls, construct, authorString, bodyString, timeStampString, messageContextHandle);
 			LOG_DEBUG(TAG,"Created Message Object.");
-			env->SetObjectArrayElement(messagesArray, i, message);
-			LOG_DEBUG(TAG, "Added object to array");
 		}
-
-		return messagesArray;
 	}
-
-	return nullptr;
+	return message;
 }
-
 

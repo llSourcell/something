@@ -39,13 +39,23 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_sendMessage
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_removeMessageNative
   (JNIEnv *, jobject, jobject, jobject);
+
 /*
  * Class:     com_twilio_ipmessaging_impl_MessagesImpl
- * Method:    getMessagesNative
- * Signature: (J)[Lcom/twilio/ipmessaging/Message;
+ * Method:    getMessageIndexArrayNative
+ * Signature: (J)[J
  */
-JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessagesNative
+JNIEXPORT jlongArray JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessageIndexArrayNative
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_twilio_ipmessaging_impl_MessagesImpl
+ * Method:    getMessage
+ * Signature: (JJ)Lcom/twilio/ipmessaging/Message;
+ */
+JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_MessagesImpl_getMessageByIndex
+  (JNIEnv *, jobject, jlong, jlong);
+
 
 #ifdef __cplusplus
 }

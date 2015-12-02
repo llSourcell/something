@@ -141,21 +141,27 @@ public class ChannelsImpl implements Channels {
 	}
 
 	public Channel[] getChannelsArraysAndCombine() {	
+		
 		Channel[] localCopyChannelArray;
-		localCopyChannelArray =  getChannelsNative(this.nativeChannelsHandler, this.ipmClient);
+		String[] localCopyChannelSidArray;
+		localCopyChannelSidArray =  getChannelSidArrayNative(this.nativeChannelsHandler);
 	
 		if (this.ipmClient.publicChannelMap != null) {
 			logger.d("ChannelList Size : " + this.ipmClient.publicChannelMap.size());
 		}
 
-		if(localCopyChannelArray != null ) {
-			for(int i=0; i<localCopyChannelArray.length; i++) {
-				if(localCopyChannelArray[i] != null) {
-					logger.d(localCopyChannelArray[i].getSid() + "|" + localCopyChannelArray[i].hashCode());
-					this.ipmClient.publicChannelMap.put(localCopyChannelArray[i].getSid(), (ChannelImpl) localCopyChannelArray[i]);
+		if(localCopyChannelSidArray != null ) {
+			for(int i=0; i<localCopyChannelSidArray.length; i++) {
+				if(localCopyChannelSidArray[i] != null) {
+					logger.d(localCopyChannelSidArray[i]);
+					ChannelImpl channel = this.getChannelNative(localCopyChannelSidArray[i], this.nativeChannelsHandler);
+					channel.setTwilioIPMessagingClient(this.ipmClient);
+					this.ipmClient.publicChannelMap.put(localCopyChannelSidArray[i], channel);
 				}
 			}
 		}
+		
+		localCopyChannelArray = this.ipmClient.publicChannelMap.values().toArray(new ChannelImpl[0]);
 				
 		List<ChannelImpl> list = new ArrayList<ChannelImpl>(this.ipmClient.privateChannelList.values());
 		if(list != null && list.size() > 0) {
@@ -237,6 +243,7 @@ public class ChannelsImpl implements Channels {
 	private native void createChannelNativeWithOptionsWithListener(String friendlyName, String uniqueName, String jsonAttr, int type, long nativeChannelsContext, CreateChannelListener listener, IPMessagingClientListenerInternal internalListener, TwilioIPMessagingClientImpl ipmClient);
 	private native ChannelImpl getChannelNative(String channelId, long handle);
 	private native ChannelImpl[] getChannelsNative(long handle, TwilioIPMessagingClientImpl ipmClient);
+	private native String[] getChannelSidArrayNative(long handle);
 	private native ChannelImpl getChannelNativeWithUniqueName(String uniqueChannelName, long handle);
 
 }
