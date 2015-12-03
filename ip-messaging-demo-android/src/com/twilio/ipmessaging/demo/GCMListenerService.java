@@ -1,10 +1,6 @@
 package com.twilio.ipmessaging.demo;
 
 import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.google.android.gms.gcm.GcmListenerService;
 

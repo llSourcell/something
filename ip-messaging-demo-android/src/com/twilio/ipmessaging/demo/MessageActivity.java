@@ -284,18 +284,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 						logger.e(topic);
 						Map<String,String> attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
-						channel.setAttributes(attrMap, new StatusListener() {
-	            			
-	    					@Override
-	    					public void onError() {
-	    						logger.e("Error at channel setAttributes");
-	    					}
-	    	
-	    					@Override
-	    					public void onSuccess() {
-	    						logger.e("Success at channel setAttributes");
-	    					}
-	    	      		});	     	
+						
+						channel.setAttributes(attrMap, new StatusListener(){
+
+							@Override
+							public void onSuccess() {
+								logger.d("Attributes were set successfullly.");
+							}
+
+							@Override
+							public void onError() {
+								logger.e("Setting attributes failed.");
+							}}); 	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -410,7 +410,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    					public void onSuccess() {
 	    						logger.e("Successful at removeMember operation");
 	    					}
-	    	      		});	     	
+	    	      		});	    	
 						memberListDialog.dismiss();
 					}
 				});
@@ -422,51 +422,6 @@ public class MessageActivity extends Activity implements ChannelListener{
 	
 	private void showChangeChannelType() {
 
-		// Strings to Show In Dialog with Radio Buttons
-		final CharSequence[] items = { " Public ", " Private " };
-		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
-		builder.setTitle("Select The Channel Type");
-		builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int item) {
-				switch (item) {
-				case 0:
-					// PUBLIC
-					logger.e("Setting channel type to public");
-					channel.setType(ChannelType.CHANNEL_TYPE_PUBLIC, new StatusListener() {
-            			
-    					@Override
-    					public void onError() {
-    						logger.e("Error public channel Type update");
-    					}
-    	
-    					@Override
-    					public void onSuccess() {
-    						logger.e("Successfull at public channel Type update");
-    					}
-    	      		});	     	
-					break;
-				case 1:
-					// PRIVATE
-					logger.e("Setting channel type to private");
-					channel.setType(ChannelType.CHANNEL_TYPE_PRIVATE, new StatusListener() {
-            			
-    					@Override
-    					public void onError() {
-    						logger.e("Failed at private channel Type update");
-    					}
-    	
-    					@Override
-    					public void onSuccess() {
-    						logger.e("Successfull at private channel Type update");
-    					}
-    	      		});	     	
-					break;
-				}
-				changeChannelTypeDialog.dismiss();
-			}
-		});
-		changeChannelTypeDialog = builder.create();
-		changeChannelTypeDialog.show();
 	}
 	
 	

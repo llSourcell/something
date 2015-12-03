@@ -60,11 +60,7 @@ public class MembersImpl implements Members{
 	public void removeMember(Member member, StatusListener listener) {
 		long nativeMemberContextHandle = ((MemberImpl)member).getNativeMemberHandler();
 		if(member != null) {
-			if(listener != null) {
-				remove(nativeMemberContextHandle, this.nativeMembersContextHandle, listener);
-			} else {
-				logger.e("Listener is null.");
-			}
+			remove(nativeMemberContextHandle, this.nativeMembersContextHandle, listener);
 		}
 		
 	}
