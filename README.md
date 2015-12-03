@@ -1,6 +1,6 @@
 # Twilio IP Messaging SDK for Android #
  
-## How to build the RTDSDK project ##
+## To build the RTDSDK project ##
 
 * Run `git submodule update --init` to get `twilio-jni` depedency.
 * Run `./RTDSDK/Script/combine-dependencies.sh` to get twilio-common-android library, RTD libraries and their dependencies.
@@ -8,7 +8,7 @@
 
 
 
-## How to run the demo app ##
+## To run the demo app ##
 
 `ip-messaging-demo-android` currently depedns on twilio-ip-messaging-android, twilio-common-android and Google Play Services library. 
 
@@ -21,3 +21,4 @@
 ## Troubleshooting tips ##
 
 * To see the crash dumb run `adb logcat | $ANDROID_NDK_ROOT/ndk-stack -sym $PROJECT_HOME/android-ip-messaging-api/RTDSDK/obj/local/armeabi-v7a`
+* Enable debug level log `TwilioIPMessagingSDK.setLogLevel(android.util.Log.DEBUG);`
