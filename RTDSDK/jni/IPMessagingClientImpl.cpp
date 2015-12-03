@@ -126,10 +126,10 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 
 
 JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientImpl_createMessagingClient
-  (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext) {
+  (JNIEnv *env, jobject obj, jstring token, jlong nativeClientContext, jstring endpointPlatform) {
 
 	LOG_DEBUG( TAG,"Checking token validity.");
-
+	const char* endpointPlatformStr = "Android";
 	if (token == nullptr) {
 		LOG_ERROR(TAG,"token is null");
 		return 0;
@@ -166,15 +166,22 @@ JNIEXPORT jlong JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClient
 			return 0;
 		}
 
-		LOG_DEBUG( TAG,"Creating the msgClient.");
+		if(endpointPlatform != NULL) {
+			jboolean copy = false;
+			endpointPlatformStr = env->GetStringUTFChars(endpointPlatform, &copy);
+		}
 
-		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr, "Android",
+		LOG_DEBUG(TAG,"Creating the msgClient. endpointPlatformStr is %s", endpointPlatformStr);
+
+		ITMClientPtr messagingClient = ITMClient::createClient(tokenStr, endpointPlatformStr,
 				clientParamsRecreate->messagingListener,
 				clientParamsRecreate->configurationProvider,
 				clientParamsRecreate->notificationClient,
 				([](TMResult result) { LOG_WARN( TAG,"Created the msgClient."); }));
 
 		clientParamsRecreate->messagingClient = messagingClient;
+
+		env->ReleaseStringUTFChars(endpointPlatform, endpointPlatformStr);
 
 	}
 
