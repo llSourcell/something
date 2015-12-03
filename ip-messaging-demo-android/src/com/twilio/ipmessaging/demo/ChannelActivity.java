@@ -42,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
+
 @SuppressLint("InflateParams")
 public class ChannelActivity extends Activity implements ChannelListener, IPMessagingClientListener{
 

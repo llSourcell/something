@@ -63,7 +63,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_joinChannel
 				LOG_WARN(TAG, "Channel is null");
 			}
 		} else {
-			LOG_WARN(TAG, "join channel listener is null.");
+			LOG_WARN(TAG, "Joining Channel. StausListener is null.");
 			ITMChannelPtr channel = channelContext->channel;
 			if(channel != nullptr) {
 				LOG_DEBUG(TAG, "Joining channel with sid : %s ", nativeString);
@@ -119,6 +119,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_leaveChannel
 				LOG_WARN(TAG,"channel is null");
 			}
 		} else {
+			LOG_WARN(TAG, "Leaving Channel. StausListener is null.");
 			if(channel != nullptr) {
 				LOG_DEBUG(TAG,"Leaving channel with sid : %s ", nativeString);
 				channel->leave(nullptr);
@@ -177,7 +178,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_destroyChann
 				LOG_WARN(TAG, "channel is null");
 			}
 		} else {
-			LOG_DEBUG(TAG, "StatusListener passed is null.");
+			LOG_WARN(TAG, "Destroying Channel. StausListener is null.");
 			if(channel != nullptr) {
 				LOG_WARN(TAG, "Destroying channel with sid : %s ", nativeString);
 				channel->destroy(nullptr);
@@ -235,7 +236,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 				env->DeleteGlobalRef(j_statusListener_);
 			}
 		} else {
-			LOG_DEBUG(TAG, "StatusListener passed is null.");
+			LOG_WARN(TAG, "Setting FriendlyName. StausListener is null.");
 			if(channel != nullptr) {
 				LOG_DEBUG(TAG, "Update Name for channel with sid : %s ", nativeSidString);
 				channel->setFriendlyName(nativeNameString, nullptr);
@@ -255,7 +256,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
  */
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChannelType
   (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, int type, jobject listener) {
-
 	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
@@ -269,18 +269,18 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 			jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 			if(channel != nullptr) {
-				LOG_WARN("Update channel Type for channel with sid : %s ", nativeSidString);
+				LOG_WARN(TAG,"Update channel Type for channel with sid : %s ", nativeSidString);
 				if(type == rtd::kTMChannelTypePublic) {
 					LOG_DEBUG(TAG, "Setting Channel Type to public");
 					channel->setType(rtd::kTMChannelTypePublic, [j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
 						JNIEnvAttacher jniAttacher;
 						if (result == rtd::TMResult::kTMResultSuccess) {
-							LOG_DEBUG(TAG, "Destroy channel is successful. Calling java listener.");
+							LOG_DEBUG(TAG, "SetType channel is successful. Calling java listener.");
 							//Call Java
 							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onSuccess_);
 							jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
 						} else {
-							LOG_DEBUG(TAG, "Destroy channel failed");
+							LOG_DEBUG(TAG, "SetType channel failed");
 
 							//Call Java
 							jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
@@ -310,7 +310,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 				env->DeleteGlobalRef(j_statusListener_);
 			}
 		} else {
-			LOG_DEBUG(TAG, "StatusListener passed is null.");
+			LOG_WARN(TAG, "Setting Type. StausListener is null.");
 			if(channel != nullptr) {
 				LOG_WARN("Update channel Type for channel with sid : %s ", nativeSidString);
 				if(type == rtd::kTMChannelTypePublic) {
@@ -370,12 +370,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateChanne
 				env->DeleteGlobalRef(j_statusListener_);
 			}
 		} else {
-			LOG_DEBUG(TAG, "StatusListener passed is null.");
+			LOG_WARN(TAG, "Setting Attributes.StatusListener is null.");
 			if(channel != nullptr) {
-				LOG_WARN("Update Attribute for channel with sid : %s ", nativeSidString);
+				LOG_DEBUG(TAG,"Update Attribute for channel with sid : %s ", nativeSidString);
 				channel->setAttributes(nativeAttrString, nullptr);
 			} else {
-				LOG_DEBUG(TAG, "Channel is null.");
+				LOG_ERROR(TAG, "Channel is null.");
 			}
 		}
 	}
@@ -426,7 +426,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_declineChann
 				LOG_WARN(TAG,"declineChannelInvite ELEMENT NOT found");
 			}
 		} else {
-			LOG_DEBUG(TAG, "StatusListener passed is null.");
+			LOG_WARN(TAG, "declineInvitation : StatusListener passed is null.");
 			if(channel != nullptr) {
 				LOG_DEBUG(TAG,"Decline invite for channel with sid : %s ", nativeSidString);
 				channel->declineInvitation(nullptr);
@@ -664,7 +664,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUnique
 				env->DeleteGlobalRef(j_statusListener_);
 			}
 		} else {
-			LOG_DEBUG(TAG, "StatusListener is null.");
+			LOG_WARN(TAG, "Setting UniqueName. StatusListener is null.");
 			if(channel != nullptr) {
 				LOG_DEBUG("Update Unique Name for channel with sid : %s ", nativeSidString);
 				channel->setUniqueName(nativeNameString, nullptr);

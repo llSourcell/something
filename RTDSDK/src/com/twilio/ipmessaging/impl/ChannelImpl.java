@@ -201,13 +201,9 @@ public class ChannelImpl implements Channel, Parcelable{
 	@Override
 	public void setAttributes(Map<String, String> updatedAttributes, StatusListener listener) {
 		if(updatedAttributes != null) {
-			if (listener != null) {
-				JSONObject jsonObj = new JSONObject(updatedAttributes);
-				if(jsonObj != null) { 
-					this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString(), listener);
-				}
-			} else {
-				logger.e("StatusListener is null.");
+			JSONObject jsonObj = new JSONObject(updatedAttributes);
+			if(jsonObj != null) { 
+				this.updateChannelAttributes(getNativeClientContextHandle(), this.getSid(), jsonObj.toString(), listener);
 			}
 		}
 	}
@@ -219,7 +215,10 @@ public class ChannelImpl implements Channel, Parcelable{
 	
 	@Override
 	public void setFriendlyName(String friendlyName, StatusListener listener) {
-		if (friendlyName != null && this.getSid() != null) {
+		if (this.getSid() != null) {
+			if(friendlyName == null) {
+				friendlyName = "";
+			}
 			synchronized(this) {
 				updateChannelName(this.nativeChannelContextHandle, this.getSid(), friendlyName, listener);
 			}
@@ -232,33 +231,16 @@ public class ChannelImpl implements Channel, Parcelable{
 	}
 	
 	@Override
-	public void setType(ChannelType type, StatusListener listener) {
-		if (listener != null) {
-			int channelType = 0;
-			switch (type) {
-			case CHANNEL_TYPE_PUBLIC:
-				channelType = 0;
-				break;
-			case CHANNEL_TYPE_PRIVATE:
-				channelType = 1;
-				break;
-			}
-			synchronized(this) {
-				updateChannelType(this.nativeChannelContextHandle, this.getSid(), channelType, listener);
-			}
-		} else {
-			logger.e("StatusListener is null.");
-		}
-	}
-	
-	@Override
 	public String getUniqueName() {
 		return getUniqueName(this.nativeChannelContextHandle);
 	}
 	
 	@Override
 	public void setUniqueName(String uniqueName, StatusListener listener) {
-		this.updateUniqueName(this.nativeChannelContextHandle,this.getSid(), uniqueName, listener);
+		if(uniqueName == null) {
+			uniqueName = "";
+			this.updateUniqueName(this.nativeChannelContextHandle,this.getSid(), uniqueName, listener);
+		}
 	}
 
 	@Override

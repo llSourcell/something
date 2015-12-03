@@ -252,7 +252,7 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_remove
 					}
 				}
 			} else {
-				LOG_DEBUG(TAG, "Removing member. StatusListener is set to null.");
+				LOG_WARN(TAG, "Removing member. StatusListener is set to null.");
 				if(membersContextRecreate->members != nullptr) {
 					ITMMembersPtr members = membersContextRecreate->members;
 					ITMMemberPtr memberPtr = memberContextRecreate->member;

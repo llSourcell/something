@@ -114,13 +114,6 @@ public interface Channel {
 	public ChannelType getType();
 	
 	/**
-	 * Updates the channel type for this channel.
-	 * 
-	 * @param type updated channel type.
-	 */
-	public void setType(ChannelType type, StatusListener listener);
-	
-	/**
 	 * Method that returns the unique Name of the channel.
 	 * 
 	 * @return the unique Name.
