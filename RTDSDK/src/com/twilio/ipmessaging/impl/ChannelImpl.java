@@ -239,8 +239,8 @@ public class ChannelImpl implements Channel, Parcelable{
 	public void setUniqueName(String uniqueName, StatusListener listener) {
 		if(uniqueName == null) {
 			uniqueName = "";
-			this.updateUniqueName(this.nativeChannelContextHandle,this.getSid(), uniqueName, listener);
 		}
+		this.updateUniqueName(this.nativeChannelContextHandle,this.getSid(), uniqueName, listener);
 	}
 
 	@Override
