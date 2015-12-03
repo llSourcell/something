@@ -632,24 +632,8 @@ JNIEXPORT jint JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUniqueName
   (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring modifiedChannelName, jobject listener) {
 
-	if( modifiedChannelName == NULL ){
-			LOG_DEBUG(TAG, "Unique Name for channel is null");
-			if( listener != nullptr ) {
-				jobject j_statusListener_ = env->NewGlobalRef(listener);
-				jclass cls = (env)->GetObjectClass(j_statusListener_);
-				jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
-
-				//Call Java
-				JNIEnvAttacher jniAttacher;
-				jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
-				jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
-			} else {
-				LOG_DEBUG(TAG, "StatusListener passed is null.");
-			}
-			return;
-	}
+	const char *nativeNameString =  env->GetStringUTFChars(modifiedChannelName, JNI_FALSE);
 	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
-	const char *nativeNameString = env->GetStringUTFChars(modifiedChannelName, JNI_FALSE);
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
