@@ -632,8 +632,8 @@ JNIEXPORT jint JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getStatus
 JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUniqueName
   (JNIEnv *env, jobject obj, jlong nativeChannelContext, jstring channel_sid, jstring modifiedChannelName, jobject listener) {
 
+	const char *nativeNameString =  env->GetStringUTFChars(modifiedChannelName, JNI_FALSE);
 	const char *nativeSidString = env->GetStringUTFChars(channel_sid, JNI_FALSE);
-	const char *nativeNameString = env->GetStringUTFChars(modifiedChannelName, JNI_FALSE);
 	ChannelContext *channelContext = reinterpret_cast<ChannelContext *>(nativeChannelContext);
 
 	if(channelContext != nullptr) {
@@ -654,7 +654,6 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_updateUnique
 						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
 					} else {
 						LOG_DEBUG(TAG, "Update Unique Name for channel failed");
-
 						//Call Java
 						jniAttacher.get()->CallVoidMethod(j_statusListener_,j_onError_);
 						jniAttacher.get()->DeleteGlobalRef(j_statusListener_);
