@@ -13,7 +13,7 @@
 `ip-messaging-demo-android` currently depedns on twilio-ip-messaging-android, twilio-common-android and Google Play Services library. 
 
 * twilio-ip-messaging-android library : you can copy them from the public distribution. To create it locally run `/tools/mksdk.sh`and copy them from generated /output folder. Easiest way will be to copy everything under /output/twilio-ip-messaging-android/libs folder.
-* twilio-common-android libarry : You need to get the artifacts from http://nexus.corp.twilio.com/content/repositories/artifact-staging/com/twilio/sdk/twilio-common-android/0.1.4/ and copy them under /libs. Extrarct the content of twilio-rtc-ip-messaging.tar.bz2, copy .jar under /libs and *.so under /libs/armeabi-v7a. 
+* twilio-common-android library : You need to get the artifacts from http://nexus.corp.twilio.com/content/repositories/artifact-staging/com/twilio/sdk/twilio-common-android/0.1.4/ and copy them under /libs. Extrarct the content of twilio-rtc-ip-messaging.tar.bz2, copy .jar under /libs and *.so under /libs/armeabi-v7a. 
 
 * Google Play Services library : https://developers.google.com/android/guides/setup
 
