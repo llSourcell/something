@@ -721,7 +721,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 						String uniqueName = ((EditText) editTextDialog.findViewById(R.id.update_unique_name)).getText()
 								.toString();
 						logger.e(uniqueName);
-						channel.setUniqueName(null, new StatusListener() {
+						channel.setUniqueName(uniqueName, new StatusListener() {
 
 							@Override
 							public void onError() {
