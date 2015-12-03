@@ -257,7 +257,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    						logger.e("successfully changed name");
 	    					}
 	    	      		};
-					channel.setFriendlyName(null, nameUpdateListener );	     	
+					channel.setFriendlyName(friendlyName, nameUpdateListener );	     	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -285,7 +285,17 @@ public class MessageActivity extends Activity implements ChannelListener{
 						Map<String,String> attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
 						
-						channel.setAttributes(attrMap, null); 	
+						channel.setAttributes(attrMap, new StatusListener(){
+
+							@Override
+							public void onSuccess() {
+								logger.d("Attributes were set successfullly.");
+							}
+
+							@Override
+							public void onError() {
+								logger.e("Setting attributes failed.");
+							}}); 	
 					}
 				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
@@ -389,7 +399,18 @@ public class MessageActivity extends Activity implements ChannelListener{
 				new MemberViewHolder.OnMemberClickListener() {
 					@Override
 					public void onMemberClicked(Member member) {
-						membersObject.removeMember(member, null);
+						membersObject.removeMember(member, new StatusListener() {
+	            			
+	    					@Override
+	    					public void onError() {
+	    						logger.e("Error at removeMember operation");
+	    					}
+	    	
+	    					@Override
+	    					public void onSuccess() {
+	    						logger.e("Successful at removeMember operation");
+	    					}
+	    	      		});	    	
 						memberListDialog.dismiss();
 					}
 				});
@@ -402,6 +423,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	private void showChangeChannelType() {
 
 	}
+	
 	
 	private void showUpdateMessageDialog(final Message message) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
