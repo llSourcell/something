@@ -14,6 +14,7 @@ import com.twilio.ipmessaging.Constants;
 import com.twilio.ipmessaging.Constants.StatusListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
 import com.twilio.ipmessaging.TwilioIPMessagingClient;
+import com.twilio.ipmessaging.Version;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -36,6 +37,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private PendingIntent incomingIntent;
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
 	protected final Map<String, ChannelImpl> privateChannelList = new ConcurrentHashMap<String,ChannelImpl>();
+	protected String endpointPlatform = "Android|"+Version.SDK_VERSION+"|"+Utils.getDeviceManufacturer()+ "|"+Utils.getDeviceName()+"|"+Utils.getSDKVersion();
 	
 	protected final Map<String, Map<ChannelListener, Handler>> channelListenerMap = new ConcurrentHashMap<String, Map<ChannelListener, Handler>>();
 	
@@ -63,7 +65,8 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		};
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
 		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal, gcmRegistrationStatusListener);
-		createMessagingClient(token, this.nativeClientParamContextHandle);
+		
+		createMessagingClient(token, this.nativeClientParamContextHandle, endpointPlatform);
 	}
 
 
@@ -90,7 +93,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		};
 		this.ipMessagingClientListenerInternal = new IPMessagingClientListenerInternal(this, inListener);
 		nativeClientParamContextHandle = initNative(token, ipMessagingClientListenerInternal, gcmRegistrationStatusListener);
-		createMessagingClient(token, this.nativeClientParamContextHandle);
+		createMessagingClient(token, this.nativeClientParamContextHandle, endpointPlatform);
 	}
 
 
@@ -304,8 +307,10 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 		}
 	}
 	
+	
+	
 	public native long initNative(String token, IPMessagingClientListenerInternal listener, StatusListener reglistener);
-	public native long createMessagingClient(String token, long nativeClientParamContextHandle);
+	public native long createMessagingClient(String token, long nativeClientParamContextHandle, String endpointPlatform);
 	private native ChannelsImpl getChannelsNative(long nativeClientParam);
 	private native void updateToken(String token, long nativeClientParam, StatusListener listener);
 	private native void shutDownNative(long nativeClientParam);
