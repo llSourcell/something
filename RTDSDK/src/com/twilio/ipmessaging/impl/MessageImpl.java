@@ -6,7 +6,6 @@ import com.twilio.ipmessaging.Message;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Base64;
 
 public class MessageImpl implements Message, Parcelable {
 	private String author;
@@ -18,14 +17,14 @@ public class MessageImpl implements Message, Parcelable {
 
 	public MessageImpl(String author, String body, String timeStamp, long handle) {
 		this.author = author;
-		this.body = new String(Base64.decode(body, 0));
+		this.body = body;
 		this.date = timeStamp;
 		this.nativeMessageContextHandle = handle;
 	}
 	
 	public MessageImpl(String author, String body, String timeStamp, String sid, long handle) {
 		this.author = author;
-		this.body = new String(Base64.decode(body, 0));
+		this.body = body;
 		this.date = timeStamp;
 		this.sid = sid;
 		this.nativeMessageContextHandle = handle;
@@ -33,12 +32,12 @@ public class MessageImpl implements Message, Parcelable {
 	
 	public MessageImpl(String author, String body) {
 		this.author = author;
-		this.body = new String(Base64.decode(body, 0));
+		this.body = body;
 	}
 	
 	public MessageImpl(String sid, String author, String body) {
 		this.author = author;
-		this.body = new String(Base64.decode(body, 0));
+		this.body = body;
 	}
 
 	@Override
