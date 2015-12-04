@@ -94,11 +94,10 @@ public interface Channel {
 	/**
 	 * Method to set ChannelListener for this Channel.
 	 * 
-	 * @param listener The channel listener.
+	 * @param listener A channel listener.
 	 */
 	public void setListener(ChannelListener listener);
-
-		
+			
 	/**
 	 * Method to get the channel members.
 	 * 

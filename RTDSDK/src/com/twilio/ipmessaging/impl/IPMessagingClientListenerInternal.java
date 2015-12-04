@@ -221,7 +221,7 @@ public class IPMessagingClientListenerInternal {
 		}
 	}
 
-	public void onMemberDelete(final Member member, Channel channel) {
+	public void onMemberDelete(final Member member, final Channel channel) {
 		logger.d("Entered onMemberDelete");
 		if(channel != null) {
 			String cSid = channel.getSid();
@@ -258,24 +258,24 @@ public class IPMessagingClientListenerInternal {
 		}
 	}
 
-	public void onAttributesChange(Map<String, String> updatedAttributes) {
+	public void onAttributesChange(final Map<String, String> updatedAttributes) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void onError(int errorCode, String errorText) {
+	public void onError(final int errorCode, final String errorText) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	
-	public void onAttributesChange(String attribute) {
+	public void onAttributesChange(final String attribute) {
 		logger.d("Entered onChannelChange");
 		this.ipmClient.handleChannelAttributeChange(attribute);
 	}
 	
 	
-	public void onTypingStarted(Channel channel, final Member member) {
+	public void onTypingStarted(final Channel channel, final Member member) {
 		logger.d("Entered onTypingStarted");
 		if(channel != null) {
 			String cSid = channel.getSid();
@@ -349,31 +349,31 @@ public class IPMessagingClientListenerInternal {
 		}
 	}
 	
-	public void onChannelAdd(ChannelImpl channel) {
+	public void onChannelAdd(final ChannelImpl channel) {
 		logger.d("this.ipmClient" + this.ipmClient.hashCode());
 		synchronized(this.ipmClient) {
 			this.ipmClient.handleChannelAddEvent(channel);
 		}
 	}
 	
-	public void onChannelInvite(Channel channel) {
+	public void onChannelInvite(final Channel channel) {
 		logger.d("Entered onChannelInvite");
 		this.ipmClient.handleIncomingInvite(channel);		
 	}
 
 	
-	public void onChannelChange(ChannelImpl channel) {
+	public void onChannelChange(final ChannelImpl channel) {
 		logger.d("Entered onChannelChange");
 		this.ipmClient.handleChannelChanged(channel);	
 	}
 
 
-	public void onChannelDelete(ChannelImpl  channel) {
+	public void onChannelDelete(final ChannelImpl  channel) {
 		logger.d("Entered onChannelDelete");
 		this.ipmClient.handleChannelDeleted(channel);
 	}
 	
-	public void onChannelSync(ChannelImpl channel) {
+	public void onChannelSync(final ChannelImpl channel) {
 		logger.d("Entered onChannelSync");
 		if(channel != null) {
 			String cSid = channel.getSid();
@@ -415,7 +415,7 @@ public class IPMessagingClientListenerInternal {
 		}
 	}
 	
-	public void onChannelCreated(ChannelImpl channel) {
+	public void onChannelCreated(final ChannelImpl channel) {
 		logger.d("ipmClient " + this.ipmClient.hashCode());
 		synchronized(this.ipmClient) {
 			this.ipmClient.handleChannelCreate(channel);
