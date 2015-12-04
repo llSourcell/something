@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -44,8 +45,9 @@ public class GCMListenerService extends GcmListenerService {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-				.setSmallIcon(R.drawable.ic_launcher).setContentTitle("Twilio Notification").setContentText(message)
-				.setAutoCancel(true).setContentIntent(pendingIntent);
+				.setSmallIcon(R.drawable.ic_notification).setContentTitle("Twilio Notification").setContentText(message)
+				.setAutoCancel(true).setContentIntent(pendingIntent).setColor(Color.rgb(214, 10, 37));
+		
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
