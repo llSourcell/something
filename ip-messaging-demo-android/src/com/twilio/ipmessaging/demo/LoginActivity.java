@@ -76,12 +76,6 @@ public class LoginActivity extends Activity implements LoginListener {
 		});
 
 		this.logout = (Button) findViewById(R.id.logout);
-		this.logout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				chatClient.cleanupTest();
-			}
-		});
 		etRegId = (EditText) findViewById(R.id.etRegId);
 		chatClient = TwilioApplication.get().getBasicClient();
 

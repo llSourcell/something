@@ -86,10 +86,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	public BasicIPMessagingClient() {
 		super();
 	}
-
-	public void cleanupTest() {
-		// TODO
-	}
 	
 	public List<Channel> getChannelList() {
 		List<Channel> list = Arrays.asList(this.channels);
@@ -198,7 +194,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	@Override
 	public void onChannelHistoryLoaded(Channel channel) {
-		logger.e("Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
+		logger.d("Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
 	}
 
 	@Override
