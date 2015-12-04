@@ -1,9 +1,6 @@
 package com.twilio.ipmessaging.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
 import com.twilio.ipmessaging.Channel;
 import com.twilio.ipmessaging.ChannelListener;
 import com.twilio.ipmessaging.IPMessagingClientListener;
@@ -57,7 +54,9 @@ public class IPMessagingClientListenerInternal {
 	 					}	
 	 				}
 				} else {
-					channelImpl.handleIncomingMessage((MessageImpl) message);
+					if(channelImpl != null) {
+						channelImpl.handleIncomingMessage((MessageImpl) message);
+					}
 				}
 			}
 		}
@@ -97,7 +96,9 @@ public class IPMessagingClientListenerInternal {
 	 					}	
 	 				}
 				} else {
-					channelImpl.handleEditMessage((MessageImpl) message);
+					if(channelImpl != null) {
+						channelImpl.handleEditMessage((MessageImpl) message);
+					}
 				}
 			}
 		}
@@ -137,7 +138,9 @@ public class IPMessagingClientListenerInternal {
 	 					}	
 	 				}
 				} else {
-					channelImpl.handleDeleteMessage((MessageImpl) message);
+					if(channelImpl != null) {
+						channelImpl.handleDeleteMessage((MessageImpl) message);
+					}
 				}
 			}
 		}
@@ -174,7 +177,9 @@ public class IPMessagingClientListenerInternal {
  					}	
  				}
 			} else {
-				channelImpl.handleOnMemberJoin(member);
+				if(channelImpl != null) {
+					channelImpl.handleOnMemberJoin(member);
+				}
 			}
 		}
 	}
@@ -209,7 +214,9 @@ public class IPMessagingClientListenerInternal {
  					}	
  				}
 			} else {
-				channelImpl.handleOnMemberChange(member);
+				if(channelImpl != null) {
+					channelImpl.handleOnMemberChange(member);
+				}
 			}
 		}
 	}
@@ -244,7 +251,9 @@ public class IPMessagingClientListenerInternal {
  					}	
  				}
 			} else {
-				channelImpl.handleOnMemberDelete(member);
+				if(channelImpl != null) {
+					channelImpl.handleOnMemberDelete(member);
+				}
 			}
 		}
 	}
@@ -296,7 +305,9 @@ public class IPMessagingClientListenerInternal {
  					}	
  				}
 			} else {
-				channelImpl.handleOnTypingStarted(member);
+				if(channelImpl != null) {
+					channelImpl.handleOnTypingStarted(member);
+				}
 			}
 		}
 	}
@@ -331,7 +342,9 @@ public class IPMessagingClientListenerInternal {
  					}	
  				}
 			} else {
-				channelImpl.handleOnTypingEnded(member);
+				if(channelImpl != null) {
+					channelImpl.handleOnTypingEnded(member);
+				}
 			}
 		}
 	}
