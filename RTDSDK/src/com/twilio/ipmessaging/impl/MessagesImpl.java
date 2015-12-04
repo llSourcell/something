@@ -1,5 +1,6 @@
 package com.twilio.ipmessaging.impl;
 
+import java.nio.charset.Charset;
 import java.util.Formatter;
 
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -8,7 +9,6 @@ import com.twilio.ipmessaging.Messages;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Base64;
 
 public class MessagesImpl implements Messages , Parcelable {
 
@@ -23,8 +23,10 @@ public class MessagesImpl implements Messages , Parcelable {
 
 	@Override
 	public Message createMessage(String message) {
-		byte[] encodedBytes = Base64.encode(message.getBytes(), 0);
-		return createMessageNativeBuffer(encodedBytes);
+		String stringMod = null;
+		String unicodedString = escapeUnicode(message);
+		stringMod = new String(unicodedString.getBytes(Charset.forName("UTF-8")));
+		return createMessageNativeBuffer(stringMod.getBytes());
 	}
 
 	@Override
@@ -65,6 +67,19 @@ public class MessagesImpl implements Messages , Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String escapeUnicode(String input) {
+		StringBuilder b = new StringBuilder(input.length());
+		Formatter f = new Formatter(b);
+		for (char c : input.toCharArray()) {
+			if (c < 128) {
+				b.append(c);
+			} else {
+				f.format("\\u%04x", (int) c);
+			}
+		}
+		return b.toString();
 	}
 	
 	private native Message createMessageNative(String message);
