@@ -31,8 +31,8 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
-	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";	
-		
+	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
+	
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
 	private Button login;
@@ -76,12 +76,6 @@ public class LoginActivity extends Activity implements LoginListener {
 		});
 
 		this.logout = (Button) findViewById(R.id.logout);
-		this.logout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				chatClient.cleanupTest();
-			}
-		});
 		etRegId = (EditText) findViewById(R.id.etRegId);
 		chatClient = TwilioApplication.get().getBasicClient();
 

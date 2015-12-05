@@ -190,7 +190,7 @@ public class MessageActivity extends Activity implements ChannelListener{
     	
     					@Override
     					public void onSuccess() {
-    						logger.e("Successful at leaving channel");
+    						logger.d("Successful at leaving channel");
     						finish();
     					}
     	      		};
@@ -210,7 +210,7 @@ public class MessageActivity extends Activity implements ChannelListener{
     	
     					@Override
     					public void onSuccess() {
-    						logger.e("Successful at destroying channel");
+    						logger.d("Successful at destroying channel");
     						finish();
     					}
     	      		};
@@ -244,7 +244,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 					public void onClick(DialogInterface dialog, int id) {
 						String friendlyName = ((EditText) editTextDialog.findViewById(R.id.update_friendly_name)).getText()
 								.toString();
-						logger.e(friendlyName);
+						logger.d(friendlyName);
 						nameUpdateListener = new StatusListener() {
 	            			
 	    					@Override
@@ -254,7 +254,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("successfully changed name");
+	    						logger.d("successfully changed name");
 	    					}
 	    	      		};
 					channel.setFriendlyName(friendlyName, nameUpdateListener );	     	
@@ -281,7 +281,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 					public void onClick(DialogInterface dialog, int id) {
 						String topic = ((EditText) editTextDialog.findViewById(R.id.update_topic)).getText()
 								.toString();
-						logger.e(topic);
+						logger.d(topic);
 						Map<String,String> attrMap = new HashMap<String, String>();
 						attrMap.put("Topic", topic);
 						
@@ -319,7 +319,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 					public void onClick(DialogInterface dialog, int id) {
 						String memberName = ((EditText) editTextDialog.findViewById(R.id.invite_member)).getText()
 								.toString();
-						logger.e(memberName);
+						logger.d(memberName);
 						
 						Members membersObject = channel.getMembers();
 						membersObject.inviteByIdentity(memberName, new StatusListener() {
@@ -331,7 +331,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("Successful at inviteByidentity.");
+	    						logger.d("Successful at inviteByidentity.");
 	    					}
 	    	      		});	     	
 					}
@@ -357,7 +357,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 					public void onClick(DialogInterface dialog, int id) {
 						String memberName = ((EditText) editTextDialog.findViewById(R.id.add_member)).getText()
 								.toString();
-						logger.e(memberName);
+						logger.d(memberName);
 						
 						Members membersObject = channel.getMembers();
 						membersObject.addByIdentity(memberName, new StatusListener() {
@@ -369,7 +369,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("Successful at addByIdentity");
+	    						logger.d("Successful at addByIdentity");
 	    					}
 	    	      		});	     	
 					}
@@ -408,7 +408,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("Successful at removeMember operation");
+	    						logger.d("Successful at removeMember operation");
 	    					}
 	    	      		});	    	
 						memberListDialog.dismiss();
@@ -447,7 +447,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 	    	
 	    					@Override
 	    					public void onSuccess() {
-	    						logger.e("Success at updating message");
+	    						logger.d("Success at updating message");
 	    						runOnUiThread(new Runnable() {
 			            	        @Override
 			            	        public void run() {
@@ -562,7 +562,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 							
 											@Override
 											public void onSuccess() {
-												logger.e("Successful at removing message. It should be GONE!!");
+												logger.d("Successful at removing message. It should be GONE!!");
 												runOnUiThread(new Runnable() {
 							            	        @Override
 							            	        public void run() {
@@ -603,7 +603,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 				@Override
 				public void onSuccess() {
-					logger.e("Successful at sending message.");
+					logger.d("Successful at sending message.");
 					runOnUiThread(new Runnable() {
             	        @Override
             	        public void run() {
@@ -720,7 +720,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 					public void onClick(DialogInterface dialog, int id) {
 						String uniqueName = ((EditText) editTextDialog.findViewById(R.id.update_unique_name)).getText()
 								.toString();
-						logger.e(uniqueName);
+						logger.d(uniqueName);
 						channel.setUniqueName(uniqueName, new StatusListener() {
 
 							@Override
@@ -730,7 +730,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 
 							@Override
 							public void onSuccess() {
-								logger.e("successfully changed uniqueName");
+								logger.d("successfully changed uniqueName");
 							}
 						});
 					}

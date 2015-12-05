@@ -106,7 +106,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	        {
 	            @Override
 	            public void onCreated(final Channel newChannel){
-	            	logger.e("Successfully created a channel with options.");
+	            	logger.d("Successfully created a channel with options.");
 	            }
 
 				@Override
@@ -205,19 +205,19 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
-						logger.e("Creating channel with friendly Name|" + channelName +"|");
+						logger.d("Creating channel with friendly Name|" + channelName +"|");
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
 				            @Override
 				            public void onCreated(final Channel newChannel)
 				            {
-				            	logger.e("Successfully created a channel");
+				            	logger.d("Successfully created a channel");
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
 				            	 	newChannel.setListener(ChannelActivity.this);
-				            		logger.e("Channel created|SID|"+sid+"|TYPE|" + type.toString());
+				            		logger.d("Channel created|SID|"+sid+"|TYPE|" + type.toString());
 								} 
 				            }
 
@@ -254,7 +254,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
-						logger.e(channelName);
+						logger.d(channelName);
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						final Channel channel = channelsLocal.getChannelByUniqueName(channelName);
 				            		
@@ -318,7 +318,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						            	        	adapter.notifyDataSetChanged();
 						            	        }
 						            	    });
-				    						logger.e("Successfully joined channel");
+				    						logger.d("Successfully joined channel");
 				    					}
 				    	      			
 				    	      		};
@@ -341,12 +341,12 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 					channelsObject.loadChannelsWithListener(new StatusListener() {
 						@Override
 						public void onError() {
-							logger.e("Failed to loadChannelsWithListener");
+							logger.d("Failed to loadChannelsWithListener");
 						}
 		
 						@Override
 						public void onSuccess() {
-							logger.e("Successfully loadChannelsWithListener.");
+							logger.d("Successfully loadChannelsWithListener.");
 							if(channels != null) {
 								channels.clear();
 							}
@@ -438,7 +438,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 								@Override
 								public void onSuccess() {
-									logger.e("Successfully to declined channel invite");
+									logger.d("Successfully to declined channel invite");
 								}
 
 							};
@@ -462,7 +462,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 	@Override
 	public void onMessageDelete(Message message) {
-		logger.e("Member deleted");
+		logger.d("Member deleted");
 	}
 
 	@Override
@@ -522,12 +522,12 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	
 	@Override
 	public void onChannelHistoryLoaded(Channel channel) {
-		logger.e("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
+		logger.d("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
 	}
 
 	@Override
 	public void onChannelAdd(Channel channel) {
-		logger.e("Received onChannelAdd callback "+channel.getFriendlyName());
+		logger.d("Received onChannelAdd callback "+channel.getFriendlyName());
 		runOnUiThread(new Runnable() {
 	        @Override
 	        public void run() {
@@ -538,21 +538,21 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 	@Override
 	public void onChannelChange(Channel channel) {
-		logger.e("Received onChannelAdd callback "+channel.getFriendlyName());		
+		logger.d("Received onChannelAdd callback "+channel.getFriendlyName());		
 	}
 
 	@Override
 	public void onChannelDelete(Channel channel) {
-		logger.e("Received onChannelDelete callback "+channel.getFriendlyName());
+		logger.d("Received onChannelDelete callback "+channel.getFriendlyName());
 	}
 
 	@Override
 	public void onError(int errorCode, String errorText) {
-		logger.e("Received onError callback "+ errorCode + " " + errorText);		
+		logger.d("Received onError callback "+ errorCode + " " + errorText);		
 	}
 
 	@Override
 	public void onAttributesChange(String attributes) {
-		logger.e("Received onAttributesChange callback ");			
+		logger.d("Received onAttributesChange callback ");			
 	}
 }
