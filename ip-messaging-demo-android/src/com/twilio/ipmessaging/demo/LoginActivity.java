@@ -113,11 +113,11 @@ public class LoginActivity extends Activity implements LoginListener {
 	}
 
 	private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String> {
-
+		private String urlString;
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			LoginActivity.this.chatClient.doLogin(capabilityToken, LoginActivity.this);
+			LoginActivity.this.chatClient.doLogin(capabilityToken, LoginActivity.this, urlString);
 		}
 
 		@Override
@@ -130,6 +130,7 @@ public class LoginActivity extends Activity implements LoginListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
+				urlString = params[0];
 				capabilityToken = HttpHelper.httpGet(params[0]);
 				chatClient.setCapabilityToken(capabilityToken);
 			} catch (Exception e) {

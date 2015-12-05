@@ -250,7 +250,7 @@ public class TwilioIPMessagingSDKImpl implements TwilioAccessManagerListener {
 			return null;
 		} 
 		
-		if(accessManager.getListener() == null) {
+		if(accessManager.getListeners() == null) {
 			accessManager.setListener(this);
 		}
 		String newCapabilityToken = accessManager.getToken();		
