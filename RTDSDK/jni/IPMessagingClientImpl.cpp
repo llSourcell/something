@@ -259,7 +259,11 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_TwilioIPMessagingClientI
 				jmethodID j_onError_ = (env)->GetMethodID(cls, "onError", "()V");
 
 				ITMClientPtr messagingClient = clientParamsRecreate->messagingClient;
+				ITNTwilsockClientPtr twilsock = clientParamsRecreate->twilsock;
 				if(messagingClient != nullptr) {
+					LOG_DEBUG(TAG,"Calling updateToken on twiliosock.");
+					twilsock->updateToken(tokenStr);
+					LOG_DEBUG(TAG,"Calling updateToken on messagingClient.");
 					messagingClient->updateToken(tokenStr,[j_statusListener_,j_onSuccess_, j_onError_](TMResult result){
 						JNIEnvAttacher jniAttacher;
 						if (result == rtd::TMResult::kTMResultSuccess) {

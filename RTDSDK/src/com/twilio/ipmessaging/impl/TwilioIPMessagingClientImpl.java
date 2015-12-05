@@ -115,6 +115,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	public void updateToken(String accessToken, StatusListener listener) {
 		if(accessToken != null) {
 			synchronized(this) {
+				logger.e("Calling update Token");
 				this.updateToken(accessToken, this.nativeClientParamContextHandle, listener);
 			}
 		}
