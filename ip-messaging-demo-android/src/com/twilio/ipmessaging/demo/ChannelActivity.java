@@ -522,7 +522,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	
 	@Override
 	public void onChannelHistoryLoaded(Channel channel) {
-		logger.d("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
+		logger.e("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
 	}
 
 	@Override
