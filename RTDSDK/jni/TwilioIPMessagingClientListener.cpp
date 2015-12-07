@@ -344,14 +344,15 @@ void TwilioIPMessagingClientListener::onTyping(TMTypingAction action, ITMChannel
 
 void TwilioIPMessagingClientListener::onChannelSynchronization(
 		TMSynchronization event, ITMChannelPtr channelPtr) {
-	if (event == TMSynchronization::kTMSynchronizationCompleted) {
-		LOG_DEBUG(TAG, "onChannelSynchronization::kTMSynchronizationCompleted");
+	if (event == TMSynchronization::kTMSynchronizationAllCompleted) {
+		LOG_DEBUG(TAG, "onChannelSynchronization::kTMSynchronizationAllCompleted");
 		auto messages = channelPtr->getMessages();
 		if(messages == nullptr) {
 			return;
 		}
+
 		// FIXME: remove once we figure out how to handle this with a new callback to the client
-		LOG_DEBUG(TAG, "Calling onChannelAdd");
+		LOG_DEBUG(TAG, "Calling onChannelAdd:TMSynchronization::kTMSynchronizationAllCompleted");
 		this->onChannel(TMAction::kTMActionAdded,channelPtr);
 		messages->fetchLastMessages(
 				[this,channelPtr, messages](TMResult result, std::vector<uint64_t> indexes) {
@@ -369,6 +370,11 @@ void TwilioIPMessagingClientListener::onChannelSynchronization(
 						}
 					}
 				}, 2000000000);
+	} else if (event == TMSynchronization::kTMSynchronizationChannelCompleted) {
+		// FIXME: remove once we figure out how to handle this with a new callback to the client
+		LOG_DEBUG(TAG, "Calling onChannelAdd:TMSynchronization::kTMSynchronizationChannelCompleted");
+		this->onChannel(TMAction::kTMActionAdded,channelPtr);
+
 	}
 }
 
