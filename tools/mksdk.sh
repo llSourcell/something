@@ -41,6 +41,7 @@ function main {
     . ${mydir}/functions.sh
 
     target=debug
+    build_testapp=false
     while [ "$1" ]; do
         case "$1" in
             -h|--help)
@@ -49,16 +50,21 @@ function main {
                 ;;
             release)
                 target=release
+                shift
                 ;;
             debug)
                 target=debug
+                shift
+                ;;
+            -includetestapp)
+                build_testapp=true
+                shift
                 ;;
             *)
                 echo "Unrecognized option: $1" >&2
                 exit 1
                 ;;
         esac
-        shift
     done
 
     check_tools
@@ -66,7 +72,9 @@ function main {
     copy_javadocs
     #copy_docs
     #copy_files
-    setup_examples
+    if [ "$build_testapp" = true ] ; then
+        setup_examples
+    fi
     #pull_helper_lib
     #pull_server_code
     archive
