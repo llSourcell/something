@@ -70,8 +70,10 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_channel);
 		basicClient = TwilioApplication.get().getBasicClient();
-		basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
-		setupListView();
+		if(basicClient != null && basicClient.getIpMessagingClient() != null) {
+			basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
+			setupListView();
+		}
 	}
 
 	@Override
@@ -336,32 +338,32 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	private void getChannels(String channelId) {
 		if (this.channels != null) {
 			if(basicClient != null && basicClient.getIpMessagingClient() != null) {
-			channelsObject= basicClient.getIpMessagingClient().getChannels();
-				if(channelsObject != null) {
-					channelsObject.loadChannelsWithListener(new StatusListener() {
-						@Override
-						public void onError() {
-							logger.d("Failed to loadChannelsWithListener");
-						}
-		
-						@Override
-						public void onSuccess() {
-							logger.d("Successfully loadChannelsWithListener.");
-							if(channels != null) {
-								channels.clear();
+				channelsObject= basicClient.getIpMessagingClient().getChannels();
+					if(channelsObject != null) {
+						channelsObject.loadChannelsWithListener(new StatusListener() {
+							@Override
+							public void onError() {
+								logger.d("Failed to loadChannelsWithListener");
 							}
-							if (channelsObject != null) {
-								channelArray = channelsObject.getChannels();
-								setupListenersForChannel(channelArray);
-								if(ChannelActivity.this.channels != null && channelArray != null ) {
-									ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
-									Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
-									adapter.notifyDataSetChanged();
+			
+							@Override
+							public void onSuccess() {
+								logger.d("Successfully loadChannelsWithListener.");
+								if(channels != null) {
+									channels.clear();
+								}
+								if (channelsObject != null) {
+									channelArray = channelsObject.getChannels();
+									setupListenersForChannel(channelArray);
+									if(ChannelActivity.this.channels != null && channelArray != null ) {
+										ChannelActivity.this.channels.addAll(new ArrayList<Channel>(Arrays.asList(channelArray)));
+										Collections.sort(ChannelActivity.this.channels, new CustomChannelComparator());
+										adapter.notifyDataSetChanged();
+									}
 								}
 							}
-						}
-		      		});	     	
-				}
+			      		});	     	
+					}
 			}
 		}
 	}
