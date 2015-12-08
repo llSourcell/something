@@ -22,7 +22,7 @@ public class ChannelsImpl implements Channels {
 
 	private static final Logger logger = Logger.getLogger(ChannelsImpl.class);
 	private long nativeChannelsHandler;
-	private Channel[] alllObjects;
+	private Channel[] allObjects;
 	private Handler handler;
 	private TwilioIPMessagingClientImpl ipmClient;
 
@@ -137,7 +137,7 @@ public class ChannelsImpl implements Channels {
 	
 	@Override
 	public Channel[] getChannels() {	
-		return this.alllObjects;
+		return this.allObjects;
 	}
 
 	public Channel[] getChannelsArraysAndCombine() {	
@@ -162,20 +162,8 @@ public class ChannelsImpl implements Channels {
 		}
 		
 		localCopyChannelArray = this.ipmClient.publicChannelMap.values().toArray(new ChannelImpl[0]);
-				
-		List<ChannelImpl> list = new ArrayList<ChannelImpl>(this.ipmClient.privateChannelList.values());
-		if(list != null && list.size() > 0) {
-			ChannelImpl[] privateChannel = list.toArray(new ChannelImpl[list.size()]);
-			int publicChannelArrayLength = localCopyChannelArray.length;
-		    int privateChannelLength = list.toArray().length;
-		    ChannelImpl[] combineChannelArray= new ChannelImpl[publicChannelArrayLength+privateChannelLength];
-		    System.arraycopy(localCopyChannelArray, 0, combineChannelArray, 0, publicChannelArrayLength);
-		    System.arraycopy(privateChannel, 0, combineChannelArray, publicChannelArrayLength, privateChannelLength);
-		    alllObjects = combineChannelArray;
-		} else {
-			alllObjects = localCopyChannelArray;
-		}
-		return alllObjects;
+		allObjects = localCopyChannelArray;
+		return allObjects;
 	}
 	
 	@Override
