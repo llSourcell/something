@@ -35,6 +35,7 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	private StatusListener appGCMRegistrationStatusListener;
 	private long nativeClientParamContextHandle;
 	private PendingIntent incomingIntent;
+	private Channels channels;
 	protected final Map<String, ChannelImpl> publicChannelMap = new ConcurrentHashMap<String, ChannelImpl>();
 	protected String endpointPlatform = "Android|"+Version.SDK_VERSION+"|"+Utils.getDeviceManufacturer()+ "|"+Utils.getDeviceName()+"|"+Utils.getSDKVersion();
 	
@@ -121,8 +122,11 @@ public class TwilioIPMessagingClientImpl implements TwilioIPMessagingClient {
 	}
 
 	@Override
-	public Channels getChannels() {		
-		return getChannelsNative(this.nativeClientParamContextHandle);
+	public Channels getChannels() {	
+		if(channels == null) {
+			channels =  getChannelsNative(this.nativeClientParamContextHandle);
+		} 
+		return channels;
 	}
 
 	@Override
