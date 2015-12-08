@@ -19,7 +19,7 @@
     <string name="title_update_friendly_name">Enter a friendly name</string>
     <string name="title_update_topic">Enter a topic</string>
      <string name="title_update_message">Update message</string>
-    <string name="title_add_channel_name">Channel Friendly ame</string>
+    <string name="title_add_channel_name">Channel Friendly Name</string>
     <string name="title_invite_member">Invite member</string>
     <string name="title_add_member">Add member</string>
      <string name="title_search_channel_unique_name">Search Channel by Unique Name</string>
