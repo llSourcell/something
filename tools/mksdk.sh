@@ -100,7 +100,7 @@ function build_library {
 
     pushd "${twsdkroot}"/RTDSDK
 
-    rm -f build.xml
+    #rm -f build.xml
     android update lib-project -p "${twsdkroot}"/RTDSDK
 
     ant clean
@@ -142,13 +142,13 @@ function build_library {
 
     # jar and native libs
     mkdir "${tarroot}/libs"
-    cp "${twsdkroot}/RTDSDK/bin/classes.jar" "${tarroot}/libs/${tarname}.jar"
+    cp "${twsdkroot}/RTDSDK/bin/twilio-ip-messaging-android.jar" "${tarroot}/libs/${tarname}.jar"
     abis=$(sed -ne '/^APP_ABI/s/^APP_ABI :=//p' ${twsdkroot}/RTDSDK/jni/Application.mk)
-    for abi in $abis; do
-    if [ -d "${twsdkroot}/RTDSDK/libs/${abi}" ]; then
-    cp -PR "${twsdkroot}/RTDSDK/libs/${abi}" "${tarroot}/libs"
-    fi
-    done
+    #for abi in $abis; do
+    #   if [ -d "${twsdkroot}/RTDSDK/libs/${abi}" ]; then
+    #   cp -PR "${twsdkroot}/RTDSDK/libs/${abi}" "${tarroot}/libs"
+    #   fi
+    #   done
 
 
 }
