@@ -32,7 +32,7 @@ import android.widget.Toast;
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
-		
+
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
 	private Button login;

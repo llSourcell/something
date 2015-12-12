@@ -68,7 +68,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	public void doLogin(final String capabilityToken, final LoginListener listener, String url) {
 		this.urlString = url;
 		this.loginListenerHandler = setupListenerHandler();
-		TwilioIPMessagingSDK.setLogLevel(android.util.Log.DEBUG);
 		if(!TwilioIPMessagingSDK.isInitialized()) {
 			TwilioIPMessagingSDK.initializeSDK(context, new InitListener()
 	        {
@@ -242,7 +241,7 @@ private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String
 	@Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
-		ipMessagingClient.updateToken(null, new StatusListener() {
+		ipMessagingClient.updateToken(capabilityToken, new StatusListener() {
 
 		@Override
 		public void onSuccess() {
@@ -251,7 +250,7 @@ private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String
 
 		@Override
 		public void onError() {
-			logger.e("Updated Token failed");				
+			logger.d("Updated Token failed");				
 		}}); 
 		acessMgr.updateToken(null);
 	}
