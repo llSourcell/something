@@ -42,15 +42,13 @@ public class MessagesImpl implements Messages , Parcelable {
 
 	@Override
 	public Message[] getMessages() {
-		synchronized(this) {
+		synchronized (this) {
 			long[] indexArray = this.getMessageIndexArrayNative(this.nativeMessagesContextHandler);
 			Message[] messages = new Message[indexArray.length];
-			for(int i=0; i<indexArray.length; i++) {
-				if(indexArray[i] != 0) {
-					logger.d("index[i] " + indexArray[i]);
-					MessageImpl message = (MessageImpl)this.getMessageByIndex(indexArray[i], this.nativeMessagesContextHandler);
-					messages[i] = message;
-				}
+			for (int i = 0; i < indexArray.length; i++) {
+				logger.d("index[i] " + indexArray[i]);
+				MessageImpl message = (MessageImpl) this.getMessageByIndex(indexArray[i], this.nativeMessagesContextHandler);
+				messages[i] = message;
 			}
 			return messages;
 		}
