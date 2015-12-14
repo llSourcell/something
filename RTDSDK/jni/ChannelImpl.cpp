@@ -514,7 +514,7 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getMessag
 
 			while (messagesLocal == nullptr)
 			{
-			   LOG_DEBUG(TAG,"messages not available...");
+			   //LOG_DEBUG(TAG,"messages not available...");
 			   Poco::Thread::sleep(1000);
 			   messagesLocal = channel->getMessages();
 			}

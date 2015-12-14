@@ -24,7 +24,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	private static final Logger logger = Logger.getLogger(BasicIPMessagingClient.class);
 	private static final String TAG = "BasicIPMessagingClient";
-	private String capabilityToken;
+	private String accessToken;
 	private String gcmToken;
 	private long nativeClientParam;
 	private TwilioIPMessagingClient ipMessagingClient;
@@ -49,12 +49,12 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 		public void onLogoutFinished();
 	}
 
-	public String getCapabilityToken() {
-		return capabilityToken;
+	public String getAccessToken() {
+		return accessToken;
 	}
 
-	public void setCapabilityToken(String capabilityToken) {
-		this.capabilityToken = capabilityToken;
+	public void setAccessToken(String capabilityToken) {
+		this.accessToken = capabilityToken;
 	}
 
 	public String getGCMToken() {
@@ -149,7 +149,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	}
 
 	private void createClientWithToken(LoginListener listener) {
-		ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithToken(capabilityToken, BasicIPMessagingClient.this);
+		ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithToken(accessToken, BasicIPMessagingClient.this);
     	if(ipMessagingClient != null) {
     		ipMessagingClient.setListener(this);
         	Intent intent = new Intent(context,ChannelActivity.class);
@@ -165,7 +165,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	
 	
 	private void createClientWithAccessManager(final LoginListener listener) {
-         this.acessMgr = TwilioAccessManagerFactory.createAccessManager(this.capabilityToken, new TwilioAccessManagerListener() {
+         this.acessMgr = TwilioAccessManagerFactory.createAccessManager(this.accessToken, new TwilioAccessManagerListener() {
             @Override
             public void onAccessManagerTokenExpire(TwilioAccessManager twilioAccessManager) {
                 Log.d(TAG, "token expired.");
@@ -174,7 +174,24 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
             @Override
             public void onTokenUpdated(TwilioAccessManager twilioAccessManager) {
-                Log.d(TAG, "token updated.");
+                Log.d(TAG, "token updated. Creating client with valid token.");
+                ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithAccessManager(BasicIPMessagingClient.this.acessMgr, BasicIPMessagingClient.this);
+             	if(ipMessagingClient != null) {
+             		ipMessagingClient.setListener(BasicIPMessagingClient.this);
+                 	Intent intent = new Intent(context,ChannelActivity.class);
+                 	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                 	ipMessagingClient.setIncomingIntent(pendingIntent);
+                 	BasicIPMessagingClient.this.loginListenerHandler.post(new Runnable() {
+        					@Override
+        					public void run() {
+        						if(listener != null) {
+        							listener.onLoginFinished();
+        			        	}
+        					}
+        				});
+             	} else {
+             		listener.onLoginError("ipMessagingClientWithAccessManager is null");
+             	}
             }
 
             @Override
@@ -182,24 +199,6 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
                 Log.d(TAG, "token error: " + s);
             }
         });
-         
-         ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithAccessManager(BasicIPMessagingClient.this.acessMgr, BasicIPMessagingClient.this);
-     	if(ipMessagingClient != null) {
-     		ipMessagingClient.setListener(BasicIPMessagingClient.this);
-         	Intent intent = new Intent(context,ChannelActivity.class);
-         	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-         	ipMessagingClient.setIncomingIntent(pendingIntent);
-         	BasicIPMessagingClient.this.loginListenerHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						if(listener != null) {
-							listener.onLoginFinished();
-			        	}
-					}
-				});
-     	} else {
-     		listener.onLoginError("ipMessagingClientWithAccessManager is null");
-     	}
 	}
 
 	@Override
@@ -241,7 +240,7 @@ private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String
 	@Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
-		ipMessagingClient.updateToken(capabilityToken, new StatusListener() {
+		ipMessagingClient.updateToken(accessToken, new StatusListener() {
 
 		@Override
 		public void onSuccess() {
@@ -263,11 +262,11 @@ private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String
 	@Override
 	protected String doInBackground(String... params) {
 		try {
-			capabilityToken = HttpHelper.httpGet(params[0]);
+			accessToken = HttpHelper.httpGet(params[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return capabilityToken;
+		return accessToken;
 	}
 }
 }
