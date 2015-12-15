@@ -39,7 +39,7 @@ public class LoginActivity extends Activity implements LoginListener {
 	private Button logout;
 	private CheckBox gcmCxbx;
 	private Button stopGCM;
-	private String capabilityToken = null;
+	private String accessToken = null;
 	private EditText clientNameTextBox;
 	private BasicIPMessagingClient chatClient;
 	private String endpoint_id = "";
@@ -118,7 +118,7 @@ public class LoginActivity extends Activity implements LoginListener {
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			LoginActivity.this.chatClient.doLogin(capabilityToken, LoginActivity.this, urlString);
+			LoginActivity.this.chatClient.doLogin(accessToken, LoginActivity.this, urlString);
 		}
 
 		@Override
@@ -132,12 +132,12 @@ public class LoginActivity extends Activity implements LoginListener {
 		protected String doInBackground(String... params) {
 			try {
 				urlString = params[0];
-				capabilityToken = HttpHelper.httpGet(params[0]);
-				chatClient.setCapabilityToken(capabilityToken);
+				accessToken = HttpHelper.httpGet(params[0]);
+				chatClient.setAccessToken(accessToken);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return capabilityToken;
+			return accessToken;
 		}
 	}
 
