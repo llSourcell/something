@@ -3,7 +3,7 @@
 ## To build the RTDSDK project ##
 
 * Run `git submodule update --init` to get `twilio-jni` depedency.
-* Run `./RTDSDK/Script/combine-dependencies.sh` to get twilio-common-android library, RTD libraries and their dependencies.
+* Run `./RTDSDK/Scripts/combine-dependencies.sh` to get twilio-common-android library, RTD libraries and their dependencies.
 * Run `ndk-build` in `./RTDSDK/jni` directory to build the shared library.
 
 
