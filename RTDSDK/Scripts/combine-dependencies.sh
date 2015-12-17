@@ -52,10 +52,9 @@ fi
 
 pushd ${MVN_ARTIFACTS_DIR}
 # we're manually untaring
-mkdir -p android/twilio-common-android
-tar -xvzf twilio-common-android.tar -C ./android/twilio-common-android
+tar -xvf twilio-common-android.tar -C ./android/
 rm twilio-common-android.tar
-cp -R ./android/twilio-common-android/* ../libs
+cp ./android/twilio-common-android/libs/twilio-common-android.jar ../libs/
 
 popd
 
