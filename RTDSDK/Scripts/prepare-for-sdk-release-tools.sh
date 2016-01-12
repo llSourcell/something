@@ -26,10 +26,10 @@ DOCS_DIR="$PACKAGE_DIR/twilio-ip-messaging-android/javadoc"
 #/sdk/rtc/android/ip-messaging/releases/0.1.0.b41-15663c0/docs
 PLATFORM_NAME="android"
 PRODUCT_NAME="ip-messaging"
-PLATFORM_PATH="$PACKAGE_DIR/sdk/rtc/${PLATFORM_NAME}"
+PLATFORM_PATH="$PACKAGE_DIR/sdk/${PLATFORM_NAME}"
 PRODUCT_PATH="$PLATFORM_PATH/${PRODUCT_NAME}"
 RELEASE_VERSION_PATH="$PRODUCT_PATH/releases"
-ARTIFACT_NAME="twilio-rtc-${PRODUCT_NAME}.tar.bz2"
+ARTIFACT_NAME= "twilio-${PRODUCT_NAME}-${PLATFORM_NAME}-${RELEASE_VERSION}.tar.bz2"
 
 if [ ! -d "$PACKAGE_DIR" ]; then
 echo "Error: Couldn't find \"Package\" folder"
