@@ -17,7 +17,7 @@
     <mavenVersion>2.0.9</mavenVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <dependencies.ipmsg.version>2.1.7</dependencies.ipmsg.version>
-     <dependencies.twilio-common-android.version>0.1.15</dependencies.twilio-common-android.version>
+     <dependencies.twilio-common-android.version>0.1.17</dependencies.twilio-common-android.version>
   </properties>
 
   <build>
@@ -47,7 +47,7 @@
                 <configuration>
                     <artifactItems>
                         <artifactItem>
-                            <groupId>com.twilio.rtd.android</groupId>
+                            <groupId>com.twilio.sdk</groupId>
                             <artifactId>twilio-common-android</artifactId>
                             <version>${dependencies.twilio-common-android.version}</version>
                             <type>tar</type>
@@ -74,7 +74,7 @@
       <type>zip</type>
     </dependency>
     <dependency>
-        <groupId>com.twilio.rtd.android</groupId>
+        <groupId>com.twilio.sdk</groupId>
         <artifactId>twilio-common-android</artifactId>
         <version>${dependencies.twilio-common-android.version}</version>
         <type>tar</type>
