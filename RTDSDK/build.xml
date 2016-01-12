@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="RTDSDK" default="help">
 
+    <target name="-pre-compile">
+        <exec executable="/bin/bash">
+            <arg value="mk-version-class.sh"/>
+        </exec>
+    </target>
+
     <!-- Combine the Twilio SDK and artifacts into a single jar -->
     <target name="-jar-debug-postcompile" if="${build.is.packaging.debug}">
         <!-- This is executed for any "debug" build ("ant debug") -->

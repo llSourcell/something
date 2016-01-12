@@ -1,16 +1,5 @@
 package com.twilio.ipmessaging.demo;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
-import com.twilio.ipmessaging.Constants.StatusListener;
-import com.twilio.ipmessaging.TwilioIPMessagingSDK;
-
-import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
-import com.twilio.ipmessaging.demo.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -19,7 +8,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,11 +16,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.iid.InstanceID;
+import com.twilio.ipmessaging.Constants.StatusListener;
+import com.twilio.ipmessaging.TwilioIPMessagingSDK;
+import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+
 
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
-	private static final String AUTH_PHP_SCRIPT = "http://companyfoo.com/token";
-	
+	private static final String ACCESS_TOKEN_URL = "http://companyfoo.com/token";
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
 	private Button login;
@@ -65,7 +60,7 @@ public class LoginActivity extends Activity implements LoginListener {
 				String endpointIdFull = idChosen + "-" + LoginActivity.this.endpoint_id + "-android-"+ getApplication().getPackageName();
 
 				StringBuilder url = new StringBuilder();
-				url.append(AUTH_PHP_SCRIPT);
+				url.append(ACCESS_TOKEN_URL);
 				url.append("&identity=");
 				url.append(URLEncoder.encode(idChosen));
 				url.append("&endpointId=" + URLEncoder.encode(endpointIdFull));

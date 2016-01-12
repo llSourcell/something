@@ -1,21 +1,44 @@
 # Twilio IP Messaging SDK for Android #
  
-## To build the RTDSDK project ##
+## Building RTDSDK library ##
 
-* Run `git submodule update --init` to get `twilio-jni` depedency.
-* Run `./RTDSDK/Scripts/combine-dependencies.sh` to get twilio-common-android library, RTD libraries and their dependencies.
-* Run `ndk-build` in `./RTDSDK/jni` directory to build the shared library.
+1. Run `git submodule update --init` to get `twilio-jni` depedency.
 
+1. Run `./RTDSDK/Scripts/combine-dependencies.sh` to get twilio-common-android library, RTD libraries and their dependencies.
 
-## To run the demo app ##
+1. Run `ndk-build` in `./RTDSDK/jni` directory to build the shared library.
 
-`ip-messaging-demo-android` currently depends on twilio-ip-messaging-android, twilio-common-android and Google Play Services library.
+1. Run `./tools/mksdk.sh` to build the SDK.
 
-* twilio-ip-messaging-android library : you can copy them from the public distribution. To create it locally run `/tools/mksdk.sh -includetestapp`and copy them from generated /output folder. Easiest way will be to copy everything under /output/twilio-ip-messaging-android/libs folder.
-* twilio-common-android library : Get the latest artifact from http://nexus.corp.twilio.com/content/repositories/artifact-staging/com/twilio/sdk/twilio-common-android/ and copy the jar under /libs
-* Google Play Services library : Follow the instructions detailed under https://developers.google.com/android/guides/setup
+## Running the DemoApp ##
 
-After adding the demo app dependencies you will need to provide a valid `AUTH_PHP_SCRIPT` string for the variable in LoginActivity. 
+### Dependencies ###
+
+* twilio-ip-messaging-android
+* twilio-common-android
+* Google Play Services Library
+
+### Android Studio ###
+
+#### Developer Builds ####
+
+1. Run `ant clean debug` from `$RTD_SDK/RTDSDK/` to rebuild the jar.
+
+1. Replace the `twilio-ip-messaging-android.jar` in  `apps\libs` with the newly created artifact by either copying or symlinking.
+
+	* `cp -R $RTD_SDK/RTDSDK/bin/twilio-ip-messaging-android.jar $RTD_SDK/ip-messaging-demo-android/app/libs`
+
+	* `ln -s $RTD_SDK/RTDSDK/bin/twilio-ip-messaging-android.jar $RTD_SDK/ip-messaging-demo-android/app/libs`
+
+1. Provide a valid `ACCESS_TOKEN_URL` string in LoginActivity.
+
+1. Switch to `developer` from the `Build Variants` on the bottom left tab.
+
+1. Run the app.
+
+### Eclipse ###
+
+No. 
 
 ## Troubleshooting tips ##
 
