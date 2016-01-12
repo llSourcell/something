@@ -150,7 +150,6 @@ function build_library {
     #   fi
     #   done
 
-
 }
 
 
@@ -296,6 +295,7 @@ function archive {
 
     pushd "${tarroot}/.."
     tar cvjf "${buildroot}/${tarname}.tar.bz2" "$(basename ${tarroot})"
+    tar cvf "${buildroot}/${tarname}.tar" "$(basename ${tarroot})"
     zip -r9 "${buildroot}/${tarname}.zip" "$(basename ${tarroot})"
     popd
 
