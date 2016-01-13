@@ -27,7 +27,7 @@ import java.net.URLEncoder;
 
 public class LoginActivity extends Activity implements LoginListener {
 	private static final Logger logger = Logger.getLogger(LoginActivity.class);
-	private static final String ACCESS_TOKEN_URL = "http://companyfoo.com/token";
+	private static final String ACCESS_TOKEN_SERVICE_URL = BuildConfig.ACCESS_TOKEN_SERVICE_URL;
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
 	private Button login;
@@ -60,7 +60,7 @@ public class LoginActivity extends Activity implements LoginListener {
 				String endpointIdFull = idChosen + "-" + LoginActivity.this.endpoint_id + "-android-"+ getApplication().getPackageName();
 
 				StringBuilder url = new StringBuilder();
-				url.append(ACCESS_TOKEN_URL);
+				url.append(ACCESS_TOKEN_SERVICE_URL);
 				url.append("&identity=");
 				url.append(URLEncoder.encode(idChosen));
 				url.append("&endpointId=" + URLEncoder.encode(endpointIdFull));
