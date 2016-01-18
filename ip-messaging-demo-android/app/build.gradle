@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 def nexusReleaseVersion = project.VERSION_NAME
+def releaseVersion = project.VERSION_NAME
 def nexusDebugVersion = project.VERSION_NAME + "-SNAPSHOT"
 
 ext {
@@ -29,6 +30,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             signingConfig signingConfigs.debug
             buildConfigField("String", "ACCESS_TOKEN_SERVICE_URL", "$ACCESS_TOKEN_SERVICE_URL")
+            resValue("string", "app_name", "IPM Release")
         }
 
         debug {
@@ -36,6 +38,7 @@ android {
             versionNameSuffix "-debug"
             signingConfig signingConfigs.debug
             buildConfigField("String", "ACCESS_TOKEN_SERVICE_URL", "$ACCESS_TOKEN_SERVICE_URL")
+            resValue("string", "app_name", "IPM Debug")
         }
 
         developer {
@@ -45,6 +48,17 @@ android {
             jniDebuggable true
             signingConfig signingConfigs.debug
             buildConfigField("String", "ACCESS_TOKEN_SERVICE_URL", "$ACCESS_TOKEN_SERVICE_URL")
+            resValue("string", "app_name", "IPM Developer")
+        }
+
+        maven {
+            applicationIdSuffix ".developer.maven"
+            versionNameSuffix "-developer.maven"
+            debuggable true
+            jniDebuggable true
+            signingConfig signingConfigs.debug
+            buildConfigField("String", "ACCESS_TOKEN_SERVICE_URL", "$ACCESS_TOKEN_SERVICE_URL")
+            resValue("string", "app_name", "IPM Maven")
         }
     }
 
@@ -61,6 +75,9 @@ dependencies {
 
     // Use local artifacts copied or symlinked into app/libs by the developer
     developerCompile files('libs/twilio-ip-messaging-android.jar')
+
+    // Use maven cdn (prod or dev - follow instructions in build.gradle) to get latest release
+    mavenCompile 'com.twilio.rtd.android:twilio-ip-messaging-android:' + releaseVersion
 
     compile 'com.twilio.sdk:twilio-common-android:0.1.17'
 
