@@ -26,7 +26,16 @@ get_sdk_version() {
     git_rev=$(git rev-parse --short HEAD)
     [ -n "$git_rev" ] || return 1
 
-    echo "${version_prefix}${date_tag}-${git_rev}"
+    if [ "$1" = "debug" ]; then
+        echo "${version_prefix}${date_tag}-${git_rev}"
+    # all CI builds are passed `release`; however, the RELEASE_VERSION env variable only exists
+    # for RC's and CDN promotion builds.
+    elif [ "$1" = "release" ] && [ -z "${RELEASE_VERSION}" ]; then
+        echo "${version_prefix}${date_tag}-${git_rev}"
+    else
+        echo "${version_prefix}"
+    fi
+
     return 0
 }
 
