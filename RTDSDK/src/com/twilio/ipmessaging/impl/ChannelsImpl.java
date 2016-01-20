@@ -45,12 +45,6 @@ public class ChannelsImpl implements Channels {
 				break;
 		}
 	
-		/*if(listener != null) {
-			this.createChannelNativeWithListener(friendlyName, nativeType, this.nativeChannelsHandler, listener);
-		} else {
-			this.createChannelNative(friendlyName, nativeType, this.nativeChannelsHandler);
-		}*/
-		
 		if(listener != null) {
 			if(this.ipmClient != null) {
 				this.createChannelNativeWithListenerWithSDKListener(friendlyName, nativeType, this.nativeChannelsHandler, listener, this.ipmClient.getInternalListener(), this.ipmClient);
