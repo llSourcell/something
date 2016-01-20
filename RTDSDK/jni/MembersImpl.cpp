@@ -6,8 +6,11 @@
 #include <twilio-jni/tw-jni.h>
 #include <twilio-jni/tw-jni-compat.h>
 #include <android/log.h>
+#include "talk/app/webrtc/java/jni/jni_helpers.h"
 
 #define TAG  "MembersImpl(native)"
+
+using namespace webrtc_jni;
 
 JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getMembersNative
   (JNIEnv *env, jobject obj, jlong nativeMembersContext) {
@@ -55,12 +58,13 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_MembersImpl_getM
 			MemberContext* memberContext_ = new MemberContext();
 			memberContext_->member = memberPtr;
 			jlong messageContextHandle = reinterpret_cast<jlong>(memberContext_);
-			const char* sid = memberPtr->getSid().c_str();
-			const char* name = memberPtr->getUsername().c_str();
-			LOG_DEBUG(TAG,"Name  : %s.", name );
-			LOG_DEBUG(TAG,"sid is %s", sid);
-			jstring nameString = env->NewStringUTF(name);
-			jstring sidString = env->NewStringUTF(sid);
+			std::string sid = memberPtr->getSid();
+			std::string name = memberPtr->getUsername();
+
+			LOG_DEBUG(TAG,"Name  : %s.", name.c_str() );
+			LOG_DEBUG(TAG,"sid is %s", sid.c_str());
+			jstring nameString = JavaStringFromStdString(env, name);
+			jstring sidString = JavaStringFromStdString(env, sid);
 			member = tw_jni_new_object(env, java_member_impl_cls, construct, sidString, nameString, messageContextHandle);
 			LOG_DEBUG(TAG,"Created Member Object.");
 			env->SetObjectArrayElement(memberArray, i, member);

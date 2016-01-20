@@ -6,12 +6,12 @@
 #include <twilio-jni/tw-jni.h>
 #include <twilio-jni/tw-jni-compat.h>
 #include <android/log.h>
-
+#include "talk/app/webrtc/java/jni/jni_helpers.h"
 
 #define TAG  "MessageImpl(native)"
 
 using namespace rtd;
-
+using namespace webrtc_jni;
 /*
  * Class:     com_twilio_ipmessaging_impl_MessageImpl
  * Method:    getChannelSidNative
@@ -40,8 +40,8 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_MessageImpl_getChanne
 
 		messagePtr = messageContextRecreate->message;
 		ITMChannelPtr channelPtr = messagePtr->getChannel();
-		const char* sid = channelPtr->getSid().c_str();
-		sidString = env->NewStringUTF(sid);
+		std::string sid = channelPtr->getSid();
+		sidString = JavaStringFromStdString(env, sid);
 
 	}
 	return sidString;

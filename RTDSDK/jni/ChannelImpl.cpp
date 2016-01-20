@@ -17,8 +17,11 @@
 #include "ChannelImpl.h"
 #include "TwilioIPMessagingClientContextDefines.h"
 #include "TwilioIPMessagingLogger.h"
+#include "talk/app/webrtc/java/jni/jni_helpers.h"
 
 #define TAG  "ChannelImpl(native)"
+
+using namespace webrtc_jni;
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelImpl
@@ -451,8 +454,8 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChanne
 	if(clientChannelContext != nullptr) {
 		ITMChannelPtr channel = clientChannelContext->channel;
 		if(channel != nullptr) {
-			const char* sid = channel->getSid().c_str();
-			sidString = env->NewStringUTF(sid);
+			std::string sid = channel->getSid();
+			sidString = JavaStringFromStdString(env, sid);
 		}
 	}
 	return sidString;
@@ -489,8 +492,8 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getChanne
 	if(clientChannelContext != nullptr) {
 		ITMChannelPtr channel = clientChannelContext->channel;
 		if(channel != nullptr) {
-			const char* attr = channel->getAttributes().c_str();
-			attrString = env->NewStringUTF(attr);
+			std::string attr = channel->getAttributes();
+			attrString = JavaStringFromStdString(env, attr);
 		}
 	}
 	return attrString;
@@ -687,9 +690,9 @@ JNIEXPORT jstring JNICALL Java_com_twilio_ipmessaging_impl_ChannelImpl_getUnique
 	if(clientChannelContext != nullptr) {
 		ITMChannelPtr channel = clientChannelContext->channel;
 		if(channel != nullptr) {
-			const char* name = channel->getUniqueName().c_str();
-			LOG_DEBUG(TAG, "Retrieved unique name|%s|", name);
-			nameString = env->NewStringUTF(name);
+			std::string name = channel->getUniqueName();
+			LOG_DEBUG(TAG, "Retrieved unique name|%s|", name.c_str());
+			nameString = JavaStringFromStdString(env, name);
 		}
 	}
 	return nameString;

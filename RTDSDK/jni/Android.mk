@@ -2,6 +2,10 @@ TWSDK_JNI_PATH := $(call my-dir)
 
 include $(TWSDK_JNI_PATH)/../external/twilio-jni/Android.mk
 
+ifeq ($(PREFIX),)
+ PREFIX:= /usr/local/twilio-sdk
+endif
+
 LOCAL_PATH := $(TWSDK_JNI_PATH)
 LOCAL_PREBUILT_ROOT = $(TWSDK_JNI_PATH)/../target/android
 TOOLCHAIN_PLAT = darwin-x86_64
@@ -60,6 +64,14 @@ LOCAL_MODULE := PocoJSON
 LOCAL_SRC_FILES := $(LOCAL_PREBUILT_ROOT)/twilio-poco/lib/release/armv7/libPocoJSON.a
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PREBUILT_ROOT)/twilio-poco/include
 include $(PREBUILT_STATIC_LIBRARY)
+
+# jni-helpers
+include $(CLEAR_VARS)
+LOCAL_MODULE := jni-helpers
+LOCAL_SRC_FILES := $(PREFIX)/webrtc/android/armeabiv7a/lib/libjni-helpers.a
+LOCAL_EXPORT_C_INCLUDES := $(PREFIX)/webrtc/android/armeabiv7a/include
+include $(PREBUILT_STATIC_LIBRARY)
+
 
 # RTDMessaging
 
@@ -163,7 +175,8 @@ LOCAL_STATIC_LIBRARIES := \
 	PocoJSON \
 	PocoFoundation \
 	TwilioBoringSSL \
-	twilio-jni 
+	twilio-jni \
+	jni-helpers
 	
 	
 	
