@@ -1,6 +1,5 @@
 package com.twilio.ipmessaging.impl;
 
-import java.nio.charset.Charset;
 import java.util.Formatter;
 
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -23,10 +22,6 @@ public class MessagesImpl implements Messages , Parcelable {
 
 	@Override
 	public Message createMessage(String message) {
-		String stringMod = null;
-		//String unicodedString = escapeUnicode(message);
-		//stringMod = new String(unicodedString.getBytes(Charset.forName("UTF-8")));
-		//return createMessageNativeBuffer(stringMod.getBytes());
 		return createMessageNative(message);
 	}
 
