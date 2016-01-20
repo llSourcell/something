@@ -24,9 +24,10 @@ public class MessagesImpl implements Messages , Parcelable {
 	@Override
 	public Message createMessage(String message) {
 		String stringMod = null;
-		String unicodedString = escapeUnicode(message);
-		stringMod = new String(unicodedString.getBytes(Charset.forName("UTF-8")));
-		return createMessageNativeBuffer(stringMod.getBytes());
+		//String unicodedString = escapeUnicode(message);
+		//stringMod = new String(unicodedString.getBytes(Charset.forName("UTF-8")));
+		//return createMessageNativeBuffer(stringMod.getBytes());
+		return createMessageNative(message);
 	}
 
 	@Override
@@ -81,7 +82,6 @@ public class MessagesImpl implements Messages , Parcelable {
 	}
 	
 	private native Message createMessageNative(String message);
-	private native Message createMessageNativeBuffer(byte[] message);
 	private native void sendMessageNative(Message message, StatusListener listener);
 	private native void removeMessageNative(Message message, StatusListener listener);
 	private native Message[] getMessagesNative(long handle);

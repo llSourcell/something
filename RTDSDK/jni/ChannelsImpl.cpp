@@ -9,12 +9,12 @@
 #include <twilio-jni/tw-jni.h>
 #include <twilio-jni/tw-jni-compat.h>
 #include <android/log.h>
-
-
-using namespace rtd;
+#include "talk/app/webrtc/java/jni/jni_helpers.h"
 
 #define TAG  "ChannelsImpl(native)"
 
+using namespace rtd;
+using namespace webrtc_jni;
 
 /*
  * Class:     com_twilio_ipmessaging_impl_ChannelsImpl
@@ -81,11 +81,13 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					ChannelContext* channelContext_ = new ChannelContext();
 					channelContext_->channel = channelPtr;
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getFriendlyName().c_str();
-					LOG_DEBUG(TAG, "Channel Sid 1 %s", sid);
-					jstring nameString = jniAttacher.get()->NewStringUTF(name);
-					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
+					std::string sid = channelPtr->getSid();
+					std::string name = channelPtr->getFriendlyName();
+
+					LOG_DEBUG(TAG, "Channel sid :%s", sid.c_str());
+
+					jstring nameString = JavaStringFromStdString(jniAttacher.get(), name);
+					jstring sidString = JavaStringFromStdString(jniAttacher.get(), sid);
 					//create channel object
 					jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
 					if(java_channel_impl_cls != nullptr) {
@@ -202,8 +204,9 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					const char* sid = channelPtr->getSid().c_str();
 					const char* name = channelPtr->getFriendlyName().c_str();
 					LOG_DEBUG(TAG, "Channel Sid 1 %s", sid);
-					jstring nameString = jniAttacher.get()->NewStringUTF(name);
-					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
+					jstring nameString = JavaStringFromStdString(jniAttacher.get(), name);
+					jstring sidString = JavaStringFromStdString(jniAttacher.get(), sid);
+
 					//create channel object
 					jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
 					if(java_channel_impl_cls != nullptr) {
@@ -329,11 +332,13 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					ChannelContext* channelContext_ = new ChannelContext();
 					channelContext_->channel = channelPtr;
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getFriendlyName().c_str();
-					LOG_DEBUG(TAG, "Channel Sid 1 %s", sid);
-					jstring nameString = jniAttacher.get()->NewStringUTF(name);
-					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
+					std::string sid = channelPtr->getSid();
+					std::string name = channelPtr->getFriendlyName();
+
+					LOG_DEBUG(TAG, "Channel sid %s", sid.c_str());
+
+					jstring nameString = JavaStringFromStdString(jniAttacher.get(), name);
+					jstring sidString = JavaStringFromStdString(jniAttacher.get(), sid);
 					//create channel object
 					jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
 					if(java_channel_impl_cls != nullptr) {
@@ -468,11 +473,12 @@ JNIEXPORT void JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_createChann
 					ChannelContext* channelContext_ = new ChannelContext();
 					channelContext_->channel = channelPtr;
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getFriendlyName().c_str();
-					LOG_DEBUG(TAG, "Channel Sid 1 %s", sid);
-					jstring nameString = jniAttacher.get()->NewStringUTF(name);
-					jstring sidString = jniAttacher.get()->NewStringUTF(sid);
+					std::string sid = channelPtr->getSid();
+					std::string  name = channelPtr->getFriendlyName();
+					LOG_DEBUG(TAG, "Channel Sid 1 %s", sid.c_str());
+
+					jstring nameString = JavaStringFromStdString(jniAttacher.get(), name);
+					jstring sidString = JavaStringFromStdString(jniAttacher.get(), sid);
 					//create channel object
 					jclass java_channel_impl_cls = tw_jni_find_class(jniAttacher.get(), "com/twilio/ipmessaging/impl/ChannelImpl");
 					if(java_channel_impl_cls != nullptr) {
@@ -577,14 +583,15 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
 					channelContext_->channel = channelPtr;
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 
-					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getFriendlyName().c_str();
+					std::string sid = channelPtr->getSid();
+					std::string name = channelPtr->getFriendlyName();
 
-					LOG_DEBUG(TAG, "Channel Name  : %s.", name );
-					LOG_DEBUG(TAG, "Channel Sid %s", sid);
+					LOG_DEBUG(TAG, "Channel Name  : %s.", name.c_str() );
+					LOG_DEBUG(TAG, "Channel Sid %s", sid.c_str());
 
-					jstring nameString = env->NewStringUTF(name);
-					jstring sidString = env->NewStringUTF(sid);
+					jstring nameString = JavaStringFromStdString(env, name);
+					jstring sidString = JavaStringFromStdString(env, sid);
+
 					int status = 0;
 					switch (channelPtr->getStatus()) {
 						case rtd::TMChannelStatus::kTMChannelStatusInvited:
@@ -668,8 +675,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 		for (int i= 0; i<publicChannels.size() ; i++ ) {
 			ITMChannelPtr channelPtr = publicChannels[i];
-			const char* sid = channelPtr->getSid().c_str();
-			const char* name = channelPtr->getFriendlyName().c_str();
+			std::string sid = channelPtr->getSid().c_str();
+			std::string name = channelPtr->getFriendlyName().c_str();
 			channelPtr = channels->getChannel(sid);
 			int status = 0;
 			switch (channelPtr->getStatus()) {
@@ -701,8 +708,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 			ChannelContext* channelContext_ = new ChannelContext();
 			channelContext_->channel = channelPtr;
 			jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
-			jstring nameString = env->NewStringUTF(name);
-			jstring sidString = env->NewStringUTF(sid);
+			jstring nameString = JavaStringFromStdString(env, name);
+			jstring sidString = JavaStringFromStdString(env, sid);
 			channel = tw_jni_new_object(env, java_channel_impl_cls, construct, nameString, sidString, channelContextHandle, status, type, ipmClient);
 
 			env->SetObjectArrayElement(channelsArray, i, channel);
@@ -745,8 +752,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_get
 
 		for (int i= 0; i<publicChannels.size() ; i++ ) {
 			ITMChannelPtr channelPtr = publicChannels[i];
-			const char* sid = channelPtr->getSid().c_str();
-			jstring sidString = env->NewStringUTF(sid);
+			std::string sid = channelPtr->getSid();
+			jstring sidString = JavaStringFromStdString(env, sid);
 			env->SetObjectArrayElement(channelSidArray, i, sidString);
 		}
 	}
@@ -794,14 +801,14 @@ JNIEXPORT jobject JNICALL Java_com_twilio_ipmessaging_impl_ChannelsImpl_getChann
 					channelContext_->channel = channelPtr;
 					jlong channelContextHandle = reinterpret_cast<jlong>(channelContext_);
 
-					const char* sid = channelPtr->getSid().c_str();
-					const char* name = channelPtr->getFriendlyName().c_str();
+					std::string sid = channelPtr->getSid().c_str();
+					std::string name = channelPtr->getFriendlyName().c_str();
 
-					LOG_DEBUG(TAG, "Channel Name  : %s.", name );
-					LOG_DEBUG(TAG, "Channel Sid %s", sid);
+					LOG_DEBUG(TAG, "Channel Name  : %s.", name.c_str() );
+					LOG_DEBUG(TAG, "Channel Sid %s", sid.c_str());
 
-					jstring nameString = env->NewStringUTF(name);
-					jstring sidString = env->NewStringUTF(sid);
+					jstring nameString = JavaStringFromStdString(env, name);
+					jstring sidString = JavaStringFromStdString(env, sid);
 					int status = 0;
 					switch (channelPtr->getStatus()) {
 						case rtd::TMChannelStatus::kTMChannelStatusInvited:
