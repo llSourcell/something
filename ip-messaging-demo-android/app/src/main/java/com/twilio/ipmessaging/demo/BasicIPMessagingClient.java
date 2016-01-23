@@ -19,6 +19,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.content.Context;
+
 
 public class BasicIPMessagingClient implements IPMessagingClientListener, TwilioAccessManagerListener {
 
@@ -31,7 +33,9 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	private TwilioAccessManager acessMgr;
 	private Handler loginListenerHandler;
 	private String urlString;
-	
+	public static final String BROADCAST_FILTER = "ManageConection_broadcast_receiver_intent_filter";
+
+
 	public BasicIPMessagingClient(Context context) {
 		super();
 		this.context = context;
@@ -58,6 +62,8 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 
 	public void doLogin(final String capabilityToken, final LoginListener listener, String url) {
+		Log.v("YO", "The current token in doLogin is" + capabilityToken);
+
 		this.urlString = url;
 		this.loginListenerHandler = setupListenerHandler();
 		if(!TwilioIPMessagingSDK.isInitialized()) {
@@ -143,7 +149,8 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	private void createClientWithToken(LoginListener listener) {
 		ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithToken(accessToken, BasicIPMessagingClient.this);
     	if(ipMessagingClient != null) {
-    		ipMessagingClient.setListener(this);
+
+			ipMessagingClient.setListener(this);
         	Intent intent = new Intent(context,ChannelActivity.class);
         	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         	ipMessagingClient.setIncomingIntent(pendingIntent);
@@ -157,7 +164,8 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	
 	
 	private void createClientWithAccessManager(final LoginListener listener) {
-         this.acessMgr = TwilioAccessManagerFactory.createAccessManager(this.accessToken, new TwilioAccessManagerListener() {
+		Log.v("YO", "About to create IPM client " + accessToken);
+		this.acessMgr = TwilioAccessManagerFactory.createAccessManager(this.accessToken, new TwilioAccessManagerListener() {
             @Override
             public void onAccessManagerTokenExpire(TwilioAccessManager twilioAccessManager) {
                 Log.d(TAG, "token expired.");
@@ -169,10 +177,15 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
                 Log.d(TAG, "token updated. Creating client with valid token.");
                 ipMessagingClient = TwilioIPMessagingSDK.createIPMessagingClientWithAccessManager(BasicIPMessagingClient.this.acessMgr, BasicIPMessagingClient.this);
              	if(ipMessagingClient != null) {
-             		ipMessagingClient.setListener(BasicIPMessagingClient.this);
+					Log.d(TAG, "init'd the ipm client");
+
+					ipMessagingClient.setListener(BasicIPMessagingClient.this);
                  	Intent intent = new Intent(context,ChannelActivity.class);
                  	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                  	ipMessagingClient.setIncomingIntent(pendingIntent);
+					Intent i = new Intent(BROADCAST_FILTER);
+					i.putExtra("connection_established", true);
+					context.sendBroadcast(i);
                  	BasicIPMessagingClient.this.loginListenerHandler.post(new Runnable() {
         					@Override
         					public void run() {

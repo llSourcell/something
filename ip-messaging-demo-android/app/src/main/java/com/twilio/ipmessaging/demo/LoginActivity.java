@@ -69,6 +69,8 @@ public class LoginActivity extends Activity implements LoginListener {
 
 		this.logout = (Button) findViewById(R.id.logout);
 		chatClient = TwilioApplication.get().getBasicClient();
+
+
 	}
 
 	@Override
@@ -120,7 +122,7 @@ public class LoginActivity extends Activity implements LoginListener {
 			try {
 
 				urlString = params[0];
-				accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM1MDgwOTUiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzUwODA5NSwiZXhwIjoxNDUzNTExNjk1LCJncmFudHMiOnsiaWRlbnRpdHkiOiJZYXduaW5nT3dlblV0aWNhIiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVM0NTRhOGY3ZWFmNWE0ZjRmOTU4ZjAxZDAxMWMwNDhmMyIsImVuZHBvaW50X2lkIjoiVHdpbGlvQ2hhdERlbW86WWF3bmluZ093ZW5VdGljYToifX19.0kQujTOFowgkazU41GWY3ov1q0iUVkevNBBuPpqFp6A";
+				accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM1ODI2MzMiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzU4MjYzMywiZXhwIjoxNDUzNTg2MjMzLCJncmFudHMiOnsiaWRlbnRpdHkiOiJRdWlldFRhbW15SW5kaWFuYXBvbGlzIiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVM0NTRhOGY3ZWFmNWE0ZjRmOTU4ZjAxZDAxMWMwNDhmMyIsImVuZHBvaW50X2lkIjoiVHdpbGlvQ2hhdERlbW86UXVpZXRUYW1teUluZGlhbmFwb2xpczoifX19.X0rtcwoZAj6SnGaddMe6L9hKVElZ-SHpPg13GXpkaes";
 				//accessToken = HttpHelper.httpGet(params[0]);
 
 				chatClient.setAccessToken(accessToken);

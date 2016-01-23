@@ -42,10 +42,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 import android.util.Log;
+import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 
 
 @SuppressLint("InflateParams")
-public class ChannelActivity extends Activity implements ChannelListener, IPMessagingClientListener{
+public class ChannelActivity extends Activity implements ChannelListener, IPMessagingClientListener, LoginListener{
 
 	private static final String[] CHANNEL_OPTIONS = { "Join" };
 	private static final int JOIN = 0;
@@ -64,16 +68,96 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	private ProgressDialog progressDialog;
 	private StatusListener joinListener;
 	private StatusListener declineInvitationListener;
-	
+
+	private String accessToken = null;
+
+	private String urlString;
+	private Context context = this;
+
+
+	private static final String ACCESS_TOKEN_SERVICE_URL = BuildConfig.ACCESS_TOKEN_SERVICE_URL;
+
+	@Override
+	public void onLoginStarted() {
+		Log.v("Log", "Log in started");
+	}
+
+	@Override
+	public void onLoginFinished() {
+		//Intent intent = new Intent(this, ChannelActivity.class);
+		//this.startActivity(intent);
+	}
+
+	@Override
+	public void onLoginError(String errorMessage) {
+	}
+
+	@Override
+	public void onLogoutFinished() {
+		// TODO Auto-generated method stub
+	}
+
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_channel);
+		//init the client
 		basicClient = TwilioApplication.get().getBasicClient();
+
+		//init the IPM client
+		accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM1ODgxMDYiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzU4ODEwNiwiZXhwIjoxNDUzNTkxNzA2LCJncmFudHMiOnsiaWRlbnRpdHkiOiJUYXdkcnlKZW5vdmFVdGljYSIsImlwX21lc3NhZ2luZyI6eyJzZXJ2aWNlX3NpZCI6IklTNDU0YThmN2VhZjVhNGY0Zjk1OGYwMWQwMTFjMDQ4ZjMiLCJlbmRwb2ludF9pZCI6IlR3aWxpb0NoYXREZW1vOlRhd2RyeUplbm92YVV0aWNhOiJ9fX0.rsKqczl5KXvOIys5SPRN8ySxA51mx3GK2woyXoMJnM0";
+		basicClient.setAccessToken(accessToken);
+		StringBuilder url = new StringBuilder();
+		url.append(ACCESS_TOKEN_SERVICE_URL);
+		urlString = url.toString();
+		ChannelActivity.this.basicClient.doLogin(accessToken, ChannelActivity.this, urlString);
+		Log.v("YO", "The current token is" + accessToken + urlString);
+
+
+		if(basicClient != null) {
+			Log.v("YO","YOYOYOYO");
+		}
+		if(basicClient.getIpMessagingClient() != null) {
+			Log.v("YO","lolololol");
+		}
 		if(basicClient != null && basicClient.getIpMessagingClient() != null) {
 			basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
 			setupListView();
+
+		} else {
+			Log.v("OH", "OH SHIT the client isn't initialized");
 		}
+
+	}
+
+	BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.v("YO", "DID THIS WORK?");
+			if(basicClient != null && basicClient.getIpMessagingClient() != null) {
+				basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
+				setupListView();
+
+			} else {
+				Log.v("OH", "OH SHIT the client isn't initialized");
+			}
+		}
+	};
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		registerReceiver(mReceiver, new IntentFilter(basicClient.BROADCAST_FILTER));
+		Log.v("YO", "DID THIS WORK??");
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(mReceiver);
+		super.onDestroy();
 	}
 
 	@Override
@@ -146,12 +230,12 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();		
-		handleIncomingIntent(getIntent());
-		getChannels(null);
-	}
+//	@Override
+//	protected void onResume() {
+//		super.onResume();
+//		handleIncomingIntent(getIntent());
+//		getChannels(null);
+//	}
 
 	private boolean handleIncomingIntent(Intent intent) {
 		if(intent != null) {
