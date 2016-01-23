@@ -142,30 +142,6 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 			TwilioIPMessagingSDK.shutdown();
 			finish();
 			break;
-		case R.id.action_unregistercm:
-			String gcmToken = basicClient.getGCMToken();
-			basicClient.getIpMessagingClient().unregisterGCMToken(gcmToken, new StatusListener() {
-
-				@Override
-				public void onError() {
-					Log.v("Log", "GCM unregistration not successful");
-					runOnUiThread(new Runnable() {
-						  public void run() {
-							  Toast.makeText(ChannelActivity.this, "GCM unregistration not successful", Toast.LENGTH_SHORT).show();
-						  }
-					});
-				}
-
-				@Override
-				public void onSuccess() {
-					Log.v("Log", "GCM unregistration successful");
-					runOnUiThread(new Runnable() {
-						  public void run() {
-							  Toast.makeText(ChannelActivity.this, "GCM unregistration successful", Toast.LENGTH_SHORT).show();
-						  }
-					});
-				}
-			});
 		}
 		return super.onOptionsItemSelected(item);
 	}
