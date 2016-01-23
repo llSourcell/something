@@ -41,13 +41,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
+import android.util.Log;
 
 
 @SuppressLint("InflateParams")
 public class ChannelActivity extends Activity implements ChannelListener, IPMessagingClientListener{
 
 	private static final String[] CHANNEL_OPTIONS = { "Join" };
-	private static final Logger logger = Logger.getLogger(ChannelActivity.class);
 	private static final int JOIN = 0;
 	//private static final int DESTROY = 1;
 
@@ -108,12 +108,12 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	        {
 	            @Override
 	            public void onCreated(final Channel newChannel){
-	            	logger.d("Successfully created a channel with options.");
+	            	Log.v("Log", "Successfully created a channel with options.");
 	            }
 
 				@Override
 				public void onError() {
-					logger.e("Error creating a channel");
+					Log.v("Log","Error creating a channel");
 				}
 	        });
 			break;
@@ -148,7 +148,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 				@Override
 				public void onError() {
-					logger.w("GCM unregistration not successful");
+					Log.v("Log", "GCM unregistration not successful");
 					runOnUiThread(new Runnable() {
 						  public void run() {
 							  Toast.makeText(ChannelActivity.this, "GCM unregistration not successful", Toast.LENGTH_SHORT).show();
@@ -158,7 +158,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 				@Override
 				public void onSuccess() {
-					logger.d("GCM unregistration successful");
+					Log.v("Log", "GCM unregistration successful");
 					runOnUiThread(new Runnable() {
 						  public void run() {
 							  Toast.makeText(ChannelActivity.this, "GCM unregistration successful", Toast.LENGTH_SHORT).show();
@@ -207,19 +207,19 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
-						logger.d("Creating channel with friendly Name|" + channelName +"|");
+						Log.v("Log", "Creating channel with friendly Name|" + channelName +"|");
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						channelsLocal.createChannel(channelName,type, new CreateChannelListener()
 				        {
 				            @Override
 				            public void onCreated(final Channel newChannel)
 				            {
-				            	logger.d("Successfully created a channel");
+				            	Log.v("Log", "Successfully created a channel");
 				            	if(newChannel != null) {
 				            		final String sid = newChannel.getSid();
 				            		ChannelType type = newChannel.getType();
 				            	 	newChannel.setListener(ChannelActivity.this);
-				            		logger.d("Channel created|SID|"+sid+"|TYPE|" + type.toString());
+				            		Log.v("Log", "Channel created|SID|"+sid+"|TYPE|" + type.toString());
 								} 
 				            }
 
@@ -256,7 +256,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						
 						String channelName = ((EditText) createChannelDialog.findViewById(R.id.channel_name)).getText()
 								.toString();
-						logger.d(channelName);
+						Log.v("Log", channelName);
 						Channels channelsLocal= basicClient.getIpMessagingClient().getChannels();
 						final Channel channel = channelsLocal.getChannelByUniqueName(channelName);
 				            		
@@ -309,7 +309,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 				            			
 				    					@Override
 				    					public void onError() {
-				    						logger.e("failed to join channel");
+				    						Log.v("Log", "failed to join channel");
 				    					}
 				    	
 				    					@Override
@@ -320,7 +320,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						            	        	adapter.notifyDataSetChanged();
 						            	        }
 						            	    });
-				    						logger.d("Successfully joined channel");
+				    						Log.v("Log", "Successfully joined channel");
 				    					}
 				    	      			
 				    	      		};
@@ -343,12 +343,12 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 						channelsObject.loadChannelsWithListener(new StatusListener() {
 							@Override
 							public void onError() {
-								logger.d("Failed to loadChannelsWithListener");
+								Log.v("Log", "Failed to loadChannelsWithListener");
 							}
 			
 							@Override
 							public void onSuccess() {
-								logger.d("Successfully loadChannelsWithListener.");
+								Log.v("Log", "Successfully loadChannelsWithListener.");
 								if(channels != null) {
 									channels.clear();
 								}
@@ -371,20 +371,20 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	@Override
 	public void onMessageAdd(Message message) {
 		if(message != null) {
-			logger.d("Received onMessageAdd event");
+			Log.v("Log", "Received onMessageAdd event");
 		}
 	}
 
 	@Override
 	public void onAttributesChange(Map<String, String> updatedAttributes) {
 		if(updatedAttributes != null) {
-			logger.d("updatedAttributes event received");
+			Log.v("Log", "updatedAttributes event received");
 		}
 	}
 
 	public void onMessageChange(Message message) {
 		if(message != null) {
-			logger.d("Received onMessageChange event");
+			Log.v("Log", "Received onMessageChange event");
 		}		
 	}
 	
@@ -408,7 +408,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 			            			
 			    					@Override
 			    					public void onError() {
-			    						logger.d("Failed to join channel");
+			    						Log.v("Log", "Failed to join channel");
 			    					}
 			    					
 			    					@Override
@@ -419,7 +419,7 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 					            	        	adapter.notifyDataSetChanged();
 					            	        }
 					            	    });
-			    						logger.d("Successfully joined channel");
+			    						Log.v("Log", "Successfully joined channel");
 			    					}
 			    	      		});	     	
                                 incomingChannelInvite = null;
@@ -435,12 +435,12 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 								@Override
 								public void onError() {
-									logger.d("Failed to decline channel invite");
+									Log.v("Log", "Failed to decline channel invite");
 								}
 
 								@Override
 								public void onSuccess() {
-									logger.d("Successfully to declined channel invite");
+									Log.v("Log", "Successfully to declined channel invite");
 								}
 
 							};
@@ -464,27 +464,27 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 	@Override
 	public void onMessageDelete(Message message) {
-		logger.d("Member deleted");
+		Log.v("Log", "Member deleted");
 	}
 
 	@Override
 	public void onMemberJoin(Member member) {
 		if(member != null) {
-			logger.d(member.getIdentity() + " joined");
+			Log.v("Log", member.getIdentity() + " joined");
 		}
 	}
 
 	@Override
 	public void onMemberChange(Member member) {
 		if(member != null) {
-			logger.d(member.getIdentity() + " changed");
+			Log.v("Log", member.getIdentity() + " changed");
 		}
 	}
 	
 	@Override
 	public void onMemberDelete(Member member) {
 		if(member != null) {
-			logger.d(member.getIdentity() + " deleted");
+			Log.v("Log", member.getIdentity() + " deleted");
 		}
 		
 	}
@@ -511,25 +511,21 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 	@Override
 	public void onTypingStarted(Member member){
 		if(member != null) {
-			logger.d(member.getIdentity() + " started typing");
 		}
 	}
 	
 	@Override
 	public void onTypingEnded(Member member) {
 		if(member != null) {
-			logger.d(member.getIdentity() + " ended typing");
 		}
 	}
 	
 	@Override
 	public void onChannelHistoryLoaded(Channel channel) {
-		logger.e("Received onChannelHistoryLoaded callback "+channel.getFriendlyName());
 	}
 
 	@Override
 	public void onChannelAdd(Channel channel) {
-		logger.d("Received onChannelAdd callback "+channel.getFriendlyName());
 		runOnUiThread(new Runnable() {
 	        @Override
 	        public void run() {
@@ -540,21 +536,17 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 
 	@Override
 	public void onChannelChange(Channel channel) {
-		logger.d("Received onChannelAdd callback "+channel.getFriendlyName());		
 	}
 
 	@Override
 	public void onChannelDelete(Channel channel) {
-		logger.d("Received onChannelDelete callback "+channel.getFriendlyName());
 	}
 
 	@Override
 	public void onError(int errorCode, String errorText) {
-		logger.d("Received onError callback "+ errorCode + " " + errorText);		
 	}
 
 	@Override
 	public void onAttributesChange(String attributes) {
-		logger.d("Received onAttributesChange callback ");			
 	}
 }

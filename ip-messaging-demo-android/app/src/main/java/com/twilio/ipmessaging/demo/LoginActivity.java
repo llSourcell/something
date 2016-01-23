@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.google.android.gms.iid.InstanceID;
 import com.twilio.ipmessaging.Constants.StatusListener;
@@ -26,7 +27,6 @@ import java.net.URLEncoder;
 
 
 public class LoginActivity extends Activity implements LoginListener {
-	private static final Logger logger = Logger.getLogger(LoginActivity.class);
 	private static final String ACCESS_TOKEN_SERVICE_URL = BuildConfig.ACCESS_TOKEN_SERVICE_URL;
 	private static final String DEFAULT_CLIENT_NAME = "TestUser";
 	private ProgressDialog progressDialog;
@@ -62,7 +62,7 @@ public class LoginActivity extends Activity implements LoginListener {
 				StringBuilder url = new StringBuilder();
 				url.append(ACCESS_TOKEN_SERVICE_URL);
 
-				logger.e("url string : " + url.toString());
+				Log.v("Log", "url string : " + url.toString());
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
 		});
@@ -126,7 +126,6 @@ public class LoginActivity extends Activity implements LoginListener {
 				urlString = params[0];
 				accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM1MDgwOTUiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzUwODA5NSwiZXhwIjoxNDUzNTExNjk1LCJncmFudHMiOnsiaWRlbnRpdHkiOiJZYXduaW5nT3dlblV0aWNhIiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVM0NTRhOGY3ZWFmNWE0ZjRmOTU4ZjAxZDAxMWMwNDhmMyIsImVuZHBvaW50X2lkIjoiVHdpbGlvQ2hhdERlbW86WWF3bmluZ093ZW5VdGljYToifX19.0kQujTOFowgkazU41GWY3ov1q0iUVkevNBBuPpqFp6A";
 				//accessToken = HttpHelper.httpGet(params[0]);
-				logger.e("yoyoyoo" + accessToken);
 
 				chatClient.setAccessToken(accessToken);
 			} catch (Exception e) {
@@ -138,14 +137,11 @@ public class LoginActivity extends Activity implements LoginListener {
 
 	@Override
 	public void onLoginStarted() {
-		logger.d("Log in started");
+		Log.v("Log", "Log in started");
 	}
 	
 		@Override
 		public void onLoginFinished() {
-			if (gcmCxbx.isChecked()) {
-				getGCMRegistrationToken();
-			}
 			LoginActivity.this.progressDialog.dismiss();
 			Intent intent = new Intent(this, ChannelActivity.class);
 			this.startActivity(intent);
@@ -154,7 +150,6 @@ public class LoginActivity extends Activity implements LoginListener {
 	@Override
 	public void onLoginError(String errorMessage) {
 		LoginActivity.this.progressDialog.dismiss();
-		logger.e("Error logging in : " + errorMessage);
 		Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
 	}
 
@@ -163,38 +158,6 @@ public class LoginActivity extends Activity implements LoginListener {
 		// TODO Auto-generated method stub
 	}
 	
-	public void getGCMRegistrationToken() {
-		new AsyncTask<Void, Void, String>() {
-			@Override
-			protected String doInBackground(Void... params) {
-				String token = "";
-				InstanceID instanceId = InstanceID.getInstance(getApplicationContext());
-				try {
-					token = instanceId.getToken(PROJECT_NUMBER, null);
-					chatClient.setGCMToken(token);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return token;
-			}
 
-			@Override
-			protected void onPostExecute(final String token) {
-				etRegId.setText(token);
-				chatClient.getIpMessagingClient().registerGCMToken(token, new StatusListener() {
-
-					@Override
-					public void onError() {
-						logger.w("GCM registration not successful");
-					}
-
-					@Override
-					public void onSuccess() {
-						logger.d("GCM registration successful");
-					}
-				});
-			}
-	        }.execute(null, null, null);
-	    }
 
 }

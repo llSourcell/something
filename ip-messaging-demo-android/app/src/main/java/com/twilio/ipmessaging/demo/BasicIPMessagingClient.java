@@ -22,7 +22,6 @@ import android.util.Log;
 
 public class BasicIPMessagingClient implements IPMessagingClientListener, TwilioAccessManagerListener {
 
-	private static final Logger logger = Logger.getLogger(BasicIPMessagingClient.class);
 	private static final String TAG = "BasicIPMessagingClient";
 	private String accessToken;
 	private String gcmToken;
@@ -81,7 +80,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	            @Override
 	            public void onError(Exception error)
 	            {
-	               logger.e("Error initializing the SDK :" + error.getMessage());
+	               Log.v("Log", "Error initializing the SDK :" + error.getMessage());
 	            }
 	        });
 		} else {
@@ -110,38 +109,38 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 	@Override
 	public void onChannelAdd(Channel channel) {
 		if(channel != null) {
-			logger.d("A Channel :"+ channel.getFriendlyName() + " got added");	
+			Log.v("Log", "A Channel :"+ channel.getFriendlyName() + " got added");
 		} else {
-			logger.d("Received onChannelAdd event.");
+			Log.v("Log", "Received onChannelAdd event.");
 		}
 	}
 
 	@Override
 	public void onChannelChange(Channel channel) {
 		if(channel != null) {
-			logger.d("Channel Name : "+ channel.getFriendlyName() + " got Changed");	
+			Log.v("Log", "Channel Name : "+ channel.getFriendlyName() + " got Changed");
 		} else {
-			logger.d("received onChannelChange event.");
+			Log.v("Log","received onChannelChange event.");
 		}
 	}
 
 	@Override
 	public void onChannelDelete(Channel channel) {
 		if(channel != null) {
-			logger.d("A Channel :"+ channel.getFriendlyName() + " got deleted");	
+			Log.v("Log", "A Channel :"+ channel.getFriendlyName() + " got deleted");
 		} else {
-			logger.d("received onChannelDelete event.");
+			Log.v("Log", "received onChannelDelete event.");
 		}
 	}
 
 	@Override
 	public void onError(int errorCode, String errorText) {
-		logger.d("Received onError event.");	
+		Log.v("Log", "Received onError event.");
 	}
 
 	@Override
 	public void onAttributesChange(String attributes) {
-		logger.d("Received onAttributesChange event.");	
+		Log.v("Log","Received onAttributesChange event.");
 	}
 	
 	public TwilioIPMessagingClient getIpMessagingClient() {
@@ -203,22 +202,22 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 
 	@Override
 	public void onChannelHistoryLoaded(Channel channel) {
-		logger.d("Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
+		Log.v("Log", "Received onChannelHistoryLoaded callback " + channel.getFriendlyName());
 	}
 
 	@Override
 	public void onAccessManagerTokenExpire(TwilioAccessManager arg0) {
-		logger.d("Received AccessManager:onAccessManagerTokenExpire.");
+		Log.v("Log","Received AccessManager:onAccessManagerTokenExpire.");
 	}
 
 	@Override
 	public void onError(TwilioAccessManager arg0, String arg1) {
-		logger.d("Received AccessManager:onError.");
+		Log.v("Log", "Received AccessManager:onError.");
 	}
 
 	@Override
 	public void onTokenUpdated(TwilioAccessManager arg0) {
-		logger.d("Received AccessManager:onTokenUpdated.");
+		Log.v("Log", "Received AccessManager:onTokenUpdated.");
 	}
 	
 	private Handler setupListenerHandler() {
@@ -244,12 +243,12 @@ private class GetCapabilityTokenAsyncTask extends AsyncTask<String, Void, String
 
 		@Override
 		public void onSuccess() {
-			logger.d("Updated Token was successfull");
+			Log.v("Log", "Updated Token was successfull");
 		}
 
 		@Override
 		public void onError() {
-			logger.d("Updated Token failed");				
+			Log.v("Log", "Updated Token failed");
 		}}); 
 		acessMgr.updateToken(null);
 	}
