@@ -61,11 +61,7 @@ public class LoginActivity extends Activity implements LoginListener {
 
 				StringBuilder url = new StringBuilder();
 				url.append(ACCESS_TOKEN_SERVICE_URL);
-				url.append("&identity=");
-				url.append(URLEncoder.encode(idChosen));
-				url.append("&endpointId=" + URLEncoder.encode(endpointIdFull));
-				url.append(clientNameTextBox.getText().toString());
-				url.append("&endpoint_id=" + LoginActivity.this.endpoint_id);
+
 				logger.e("url string : " + url.toString());
 				new GetCapabilityTokenAsyncTask().execute(url.toString());
 			}
@@ -126,8 +122,12 @@ public class LoginActivity extends Activity implements LoginListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
+
 				urlString = params[0];
-				accessToken = HttpHelper.httpGet(params[0]);
+				accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM1MDgwOTUiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzUwODA5NSwiZXhwIjoxNDUzNTExNjk1LCJncmFudHMiOnsiaWRlbnRpdHkiOiJZYXduaW5nT3dlblV0aWNhIiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVM0NTRhOGY3ZWFmNWE0ZjRmOTU4ZjAxZDAxMWMwNDhmMyIsImVuZHBvaW50X2lkIjoiVHdpbGlvQ2hhdERlbW86WWF3bmluZ093ZW5VdGljYToifX19.0kQujTOFowgkazU41GWY3ov1q0iUVkevNBBuPpqFp6A";
+				//accessToken = HttpHelper.httpGet(params[0]);
+				logger.e("yoyoyoo" + accessToken);
+
 				chatClient.setAccessToken(accessToken);
 			} catch (Exception e) {
 				e.printStackTrace();

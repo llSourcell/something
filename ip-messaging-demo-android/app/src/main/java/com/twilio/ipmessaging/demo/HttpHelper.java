@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import android.util.Log;
 
 public abstract class HttpHelper
 {
@@ -45,6 +46,7 @@ public abstract class HttpHelper
 
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			InputStream is = conn.getInputStream();
+			Log.v("YO", "token is" + is);
 			String capabilityToken = stringFromInputStream(is);
 			is.close();
 			conn.disconnect();
