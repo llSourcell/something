@@ -56,7 +56,7 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 			txtInfo.setText(textInfo.toString());
 			body.setText(message.getMessageBody());
 			
-			boolean left = (message.getAuthor().compareTo(LoginActivity.local_author) ==0)? true:false;
+			boolean left = false;
 			body.setBackgroundResource(left ? R.drawable.bubble_a : R.drawable.bubble_b);
 			singleMessageContainer.setGravity(left ? Gravity.LEFT : Gravity.RIGHT);
 		}
