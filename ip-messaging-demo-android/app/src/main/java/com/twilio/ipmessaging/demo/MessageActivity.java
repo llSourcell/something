@@ -23,13 +23,17 @@ import com.twilio.ipmessaging.demo.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -44,7 +48,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import uk.co.ribot.easyadapter.EasyAdapter;
 
-public class MessageActivity extends Activity implements ChannelListener{
+import com.twilio.ipmessaging.demo.BasicIPMessagingClient.LoginListener;
+
+
+public class MessageActivity extends Activity implements ChannelListener, LoginListener{
 
 	private static final String[] MESSAGE_OPTIONS = { "Remove", "Edit" };
 	private static final Logger logger = Logger.getLogger(MessageActivity.class);
@@ -79,26 +86,89 @@ public class MessageActivity extends Activity implements ChannelListener{
     private StatusListener leaveListener;
     private StatusListener destroyListener;
     private StatusListener nameUpdateListener;
-    
-	
-	
+
+	private String accessToken = null;
+	private String urlString;
+	private BasicIPMessagingClient basicClient;
+	private static final String ACCESS_TOKEN_SERVICE_URL = BuildConfig.ACCESS_TOKEN_SERVICE_URL;
+
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		createUI();
+	public void onLoginStarted() {
+		Log.v("Log", "Log in started");
 	}
-	
+
+	@Override
+	public void onLoginFinished() {
+		//Intent intent = new Intent(this, ChannelActivity.class);
+		//this.startActivity(intent);
+	}
+
+	@Override
+	public void onLoginError(String errorMessage) {
+	}
+
+	@Override
+	public void onLogoutFinished() {
+		// TODO Auto-generated method stub
+	}
+
+	BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			createUI();
+		}
+	};
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Intent intent = getIntent();
-		if (intent != null) {
-			Channel channel = intent.getParcelableExtra(Constants.EXTRA_CHANNEL);
-			if(channel != null) {
-				setupListView(channel);
-			}
+		registerReceiver(mReceiver, new IntentFilter(basicClient.BROADCAST_FILTER));
+		Log.v("YO", "DID THIS WORK??");
+		if(basicClient != null && basicClient.getIpMessagingClient() != null) {
+
 		}
 	}
+
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(mReceiver);
+		super.onDestroy();
+	}
+
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		//init the client
+		basicClient = TwilioApplication.get().getBasicClient();
+
+		//init the IPM client
+		accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM2MTUyMDEiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzYxNTIwMSwiZXhwIjoxNDUzNjE4ODAxLCJncmFudHMiOnsiaWRlbnRpdHkiOiJKb2x0aW5Bbm5hQW5jaG9yYWdlIiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVM0NTRhOGY3ZWFmNWE0ZjRmOTU4ZjAxZDAxMWMwNDhmMyIsImVuZHBvaW50X2lkIjoiVHdpbGlvQ2hhdERlbW86Sm9sdGluQW5uYUFuY2hvcmFnZToifX19.AZweCewTeyD7tzVCZ72VDpyUGmRGvpT1gGXf95m3Lwk";
+		basicClient.setAccessToken(accessToken);
+		StringBuilder url = new StringBuilder();
+		url.append(ACCESS_TOKEN_SERVICE_URL);
+		urlString = url.toString();
+		MessageActivity.this.basicClient.doLogin(accessToken, MessageActivity.this, urlString);
+		Log.v("YO", "The current token is" + accessToken + urlString);
+
+
+
+
+
+	}
+	
+	//@Override
+//	protected void onResume() {
+//		super.onResume();
+//		Intent intent = getIntent();
+//		if (intent != null) {
+//			Channel channel = intent.getParcelableExtra(Constants.EXTRA_CHANNEL);
+//			if(channel != null) {
+//				setupListView(channel);
+//			}
+//		}
+//	}
 	
 	private void createUI() {
 		setContentView(R.layout.activity_message);
@@ -107,7 +177,7 @@ public class MessageActivity extends Activity implements ChannelListener{
 			String channelSid = getIntent().getStringExtra("C_SID");
 			Channels channelsObject = basicClient.getIpMessagingClient().getChannels();
 			if(channelsObject != null) {
-				channel = channelsObject.getChannel(channelSid);
+				channel = channelsObject.getChannelByUniqueName("general");
 				if(channel != null) {
 					channel.setListener(MessageActivity.this);
 					this.setTitle("Name:"+channel.getFriendlyName() + " Type:" + ((channel.getType()==ChannelType.CHANNEL_TYPE_PUBLIC)? "Public":"Private"));

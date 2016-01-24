@@ -180,7 +180,7 @@ public class BasicIPMessagingClient implements IPMessagingClientListener, Twilio
 					Log.d(TAG, "init'd the ipm client");
 
 					ipMessagingClient.setListener(BasicIPMessagingClient.this);
-                 	Intent intent = new Intent(context,ChannelActivity.class);
+                 	Intent intent = new Intent(context,MessageActivity.class);
                  	PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                  	ipMessagingClient.setIncomingIntent(pendingIntent);
 					Intent i = new Intent(BROADCAST_FILTER);
