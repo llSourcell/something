@@ -107,28 +107,13 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 		basicClient = TwilioApplication.get().getBasicClient();
 
 		//init the IPM client
-		accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM1ODgxMDYiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzU4ODEwNiwiZXhwIjoxNDUzNTkxNzA2LCJncmFudHMiOnsiaWRlbnRpdHkiOiJUYXdkcnlKZW5vdmFVdGljYSIsImlwX21lc3NhZ2luZyI6eyJzZXJ2aWNlX3NpZCI6IklTNDU0YThmN2VhZjVhNGY0Zjk1OGYwMWQwMTFjMDQ4ZjMiLCJlbmRwb2ludF9pZCI6IlR3aWxpb0NoYXREZW1vOlRhd2RyeUplbm92YVV0aWNhOiJ9fX0.rsKqczl5KXvOIys5SPRN8ySxA51mx3GK2woyXoMJnM0";
+		accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxLTE0NTM2MDEwNTUiLCJpc3MiOiJTSzZjMzY4M2VmZTAyNmFmNjA4MDNiY2ZkZjg5ODYwOTkxIiwic3ViIjoiQUNlM2MxZDU0ODgwMTMxODEwOWRlNTA5MzY1NDRiZWU4NiIsIm5iZiI6MTQ1MzYwMTA1NSwiZXhwIjoxNDUzNjA0NjU1LCJncmFudHMiOnsiaWRlbnRpdHkiOiJWaXZhY2lvdXNNdWZhc2FIYW5vdmVyIiwiaXBfbWVzc2FnaW5nIjp7InNlcnZpY2Vfc2lkIjoiSVM0NTRhOGY3ZWFmNWE0ZjRmOTU4ZjAxZDAxMWMwNDhmMyIsImVuZHBvaW50X2lkIjoiVHdpbGlvQ2hhdERlbW86Vml2YWNpb3VzTXVmYXNhSGFub3ZlcjoifX19.R6NpB2i-tdxvoTM9xuY4zo1_Y3CW7_0bZEAwvIucGos";
 		basicClient.setAccessToken(accessToken);
 		StringBuilder url = new StringBuilder();
 		url.append(ACCESS_TOKEN_SERVICE_URL);
 		urlString = url.toString();
 		ChannelActivity.this.basicClient.doLogin(accessToken, ChannelActivity.this, urlString);
 		Log.v("YO", "The current token is" + accessToken + urlString);
-
-
-		if(basicClient != null) {
-			Log.v("YO","YOYOYOYO");
-		}
-		if(basicClient.getIpMessagingClient() != null) {
-			Log.v("YO","lolololol");
-		}
-		if(basicClient != null && basicClient.getIpMessagingClient() != null) {
-			basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
-			setupListView();
-
-		} else {
-			Log.v("OH", "OH SHIT the client isn't initialized");
-		}
 
 	}
 
@@ -139,6 +124,42 @@ public class ChannelActivity extends Activity implements ChannelListener, IPMess
 			if(basicClient != null && basicClient.getIpMessagingClient() != null) {
 				basicClient.getIpMessagingClient().setListener(ChannelActivity.this);
 				setupListView();
+				final Channel channel = channelsObject.getChannelByUniqueName("general");
+				Log.v("YO", "This is the channel" + channel.getFriendlyName());
+				if (channel.getStatus() == Channel.ChannelStatus.JOINED) {
+					Log.v("YO", "You've joined the channel");
+					Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+					i.putExtra(Constants.EXTRA_CHANNEL, (Parcelable) channel);
+					i.putExtra("C_SID", channel.getSid());
+					startActivity(i);
+				} else {
+					Log.v("YO", "You haven't joined the channel");
+					joinListener = new StatusListener() {
+
+						@Override
+						public void onError() {
+							Log.v("Log", "failed to join channel");
+						}
+
+						@Override
+						public void onSuccess() {
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									adapter.notifyDataSetChanged();
+								}
+							});
+							Log.v("Log", "Successfully joined channel");
+							Intent i = new Intent(ChannelActivity.this, MessageActivity.class);
+							i.putExtra(Constants.EXTRA_CHANNEL, (Parcelable) channel);
+							i.putExtra("C_SID", channel.getSid());
+							startActivity(i);
+						}
+
+					};
+					channel.join(joinListener);
+
+				}
 
 			} else {
 				Log.v("OH", "OH SHIT the client isn't initialized");
